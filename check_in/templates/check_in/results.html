@@ -1,0 +1,9 @@
+<h1>{{ location.location_name }}</h1>
+
+<ul>
+    {% for event in location.event_set.all %}
+        <li>{{ event.event_name }} -- {{ event.visit_counter }} visit{{ event.visit_counter|pluralize }}</li>
+        {% endfor %}
+</ul>
+
+<a href ="{% url 'check_in:detail' location.id %}">Visit again?</a>

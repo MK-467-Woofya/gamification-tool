@@ -1,0 +1,9 @@
+li a {
+    color: green;
+    font-weight: bold;
+}
+
+li a:visited {
+    color: pink;
+    font-weight: bold;
+}

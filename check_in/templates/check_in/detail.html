@@ -1,0 +1,12 @@
+<form action="{% url 'check_in:visit_event' location.id %}" method="post">
+    {% csrf_token %}
+    <fieldset>
+        <legend><h1>{{ location.location_name }}</h1></legend>
+        {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+        {% for event in location.event_set.all %}
+            <input type="radio" name="event" id="event{{ forloop.counter }}" value="{{ event.id }}">
+            <label for="event{{ forloop.counter }}">{{ event.event_name }}</label><br>
+        {% endfor %}
+    </fieldset>
+    <input type="submit" value="Visit Event">
+    </form>

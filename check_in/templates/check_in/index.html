@@ -1,0 +1,11 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'check_in/style.css' %}">
+{% if latest_locations_list %}
+    <ul>
+    {% for location in latest_locations_list %}
+        <li><a href="/check_in/{{ location.id }}/">{{ location.location_name }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No Locations are available.</p>
+{% endif %}

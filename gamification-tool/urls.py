@@ -1,5 +1,5 @@
 """
-URL configuration for myproject project.
+URL configuration for gamification-tool project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/5.1/topics/http/urls/
@@ -15,8 +15,12 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import include, path
 
 urlpatterns = [
+    path("user/", include("user.urls")),
+    path("leaderboard/", include("leaderboard.urls")),
+    path("marketplace/", include("marketplace.urls")),
+    path("check_in/", include("check_in.urls")),
     path('admin/', admin.site.urls),
 ]
