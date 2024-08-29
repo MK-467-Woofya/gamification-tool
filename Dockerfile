@@ -15,7 +15,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # set Django environment
-ENV DJANGO_SETTINGS_MODULE=gamification-tool.settings
+ENV DJANGO_SETTINGS_MODULE=gamification_tool.settings
 ENV PYTHONUNBUFFERED=1
 
 # run Django server

@@ -1,6 +1,5 @@
 from django.contrib import admin
 
-# Register your models here.
 from .models import CustomUser
-
+"""Module for registering models to admin site of application"""
 admin.site.register(CustomUser)
