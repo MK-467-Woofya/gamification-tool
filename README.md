@@ -31,6 +31,16 @@ _Note: this admin section will be removed from the readme once everyone's up and
 Admin endpoints can be reached at http://localhost:8000/admin/  
 Similarly for each app in the project, e.g.: http://localhost:8000/check_in/
 
+Currently API endpoints can be reached only for the user app:  
+- http://localhost:8000/ returns the user API root  
+- http://localhost:8000/users/ returns the list of users
+- http://localhost:8000/users/\<id\>- returns the user by their id
+
+More REST API endpoints will be added soon, and moved to the http://localhost:8000/api/v1/users
+
+
+
+
 ## Stop the container
 
 1. To spin down a container:  
@@ -44,6 +54,7 @@ When updating models in Django, in order to update the database table for a spec
 2. Push database migration  
 `$ docker-compose exec web python manage.py migrate`
 
+If the migration isn't working due to a major change to a database table structure i.e. changing the user entity to a customised user entity, either drop the database and start with a fresh migration, or there are hack ways to comment out some auth sections in the code which will aloow the migration to go through you can find on stackoverflow.
 
 ## How to access database:
 
