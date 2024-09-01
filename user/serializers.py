@@ -6,6 +6,7 @@ from .models import CustomUser
 # Serializaers for each model/entity
 
 class CustomUserSerializer(serializers.HyperlinkedModelSerializer):
+    groups = serializers.StringRelatedField(many=True)
     url = serializers.HyperlinkedIdentityField(view_name="users-detail") # links to the basename used in user.urls.py
     class Meta:
         model = CustomUser

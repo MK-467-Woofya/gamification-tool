@@ -38,6 +38,13 @@ Currently API endpoints can be reached only for the user app:
 
 More REST API endpoints will be added soon, and moved to the http://localhost:8000/api/v1/users
 
+## Access react webpage
+cd frontend
+npm install
+
+npm install react-router-dom axios
+
+npm start
 
 
 

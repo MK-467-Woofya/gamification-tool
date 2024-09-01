@@ -16,11 +16,24 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
+from rest_framework import routers
+from user import views as user_views
+
+from django.views.generic import TemplateView
+from django.urls import re_path
+
+
 
 urlpatterns = [
-    path("", include("user.urls")),
+    path('admin/', admin.site.urls),
+    path("api/", include("user.urls")),
     path("leaderboard/", include("leaderboard.urls")),
     path("marketplace/", include("marketplace.urls")),
     path("check_in/", include("check_in.urls")),
-    path('admin/', admin.site.urls),
+    
 ]
+
+urlpatterns += [
+    re_path(r'^.*$', TemplateView.as_view(template_name='index.html')),
+]
+
