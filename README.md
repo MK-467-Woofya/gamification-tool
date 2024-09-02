@@ -7,9 +7,10 @@ Please make sure you installed Docker before running
 1. Spin up containers:  
 `$ docker-compose up --build`
 
-This builds and runs two containers:
-1. web  
-2. db  
+This builds and runs three containers:
+1. frontend
+2. backend
+3. db  
 
 Note: These containers can be referenced in terminal either by web and db, or by their id which can be found using `$ docker ps` to list currently running containers
 
@@ -32,9 +33,9 @@ Admin endpoints can be reached at http://localhost:8000/admin/
 Similarly for each app in the project, e.g.: http://localhost:8000/check_in/
 
 Currently API endpoints can be reached only for the user app:  
-- http://localhost:8000/ returns the user API root  
-- http://localhost:8000/users/ returns the list of users
-- http://localhost:8000/users/\<id\>- returns the user by their id
+- http://localhost:8000/api/ returns the user API root  
+- http://localhost:8000/api/users/ returns the list of users
+- http://localhost:8000/users/1/ returns the user by their id
 
 More REST API endpoints will be added soon, and moved to the http://localhost:8000/api/v1/users
 

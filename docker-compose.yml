@@ -10,22 +10,41 @@ services:
       POSTGRES_USER: myuser
       POSTGRES_PASSWORD: mypassword
     networks:
-      - mynetwork
+      - django-postgres
 
-  web:
-    build: .
+  backend:
+    build: ./backend
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
-      - .:/app
+      - ./backend/:/usr/src/app
     ports:
       - "8000:8000"
     depends_on:
       - db
     networks:
-      - mynetwork
+      - react-django
+      - django-postgres
+  
+  frontend:
+    build: ./frontend
+    
+    volumes:
+      - ./frontend/:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - '3000:3000'
+  
+    depends_on:
+      - backend
+
+    networks:
+      - react-django
 
 networks:
-  mynetwork:
+  react-django:
+  django-postgres:
 
 volumes:
   postgres_data:
+  media:
+  static:
