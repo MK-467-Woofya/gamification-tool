@@ -12,3 +12,8 @@ urlpatterns = [
     path("", include(router.urls)), # /user
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 ]
+
+# leaderboard - no need this part because @action in views.py/CustomerUserViewSet will create path for it
+# urlpatterns += [
+#     path('leaderboard/', views.CustomerUserViewSet.as_view({'get': 'leaderboard'}), name='leaderboard')
+# ]

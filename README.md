@@ -48,7 +48,7 @@ npm install react-router-dom axios
 
 npm start
 
-
+http://localhost:3000/
 
 ## Stop the container
 
