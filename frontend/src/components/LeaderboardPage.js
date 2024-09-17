@@ -8,7 +8,7 @@ function LeaderboardPage() {
 
     useEffect(() => {
         // Fetch leaderboard data
-        axios.get('http://localhost:8000/api/users/leaderboard/')
+        axios.get('http://localhost:8000/leaderboard/leaderboard/')
             .then(response => {
                 console.log(response.data);
                 setUsers(response.data); // Update state with leaderboard data
