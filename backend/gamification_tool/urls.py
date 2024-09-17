@@ -30,10 +30,11 @@ urlpatterns = [
     path("leaderboard/", include("leaderboard.urls")),
     path("marketplace/", include("marketplace.urls")),
     path("check_in/", include("check_in.urls")),
-    
 ]
 
+# 例如，只捕捉以 'frontend/' 开头的路径
 urlpatterns += [
-    re_path(r'^.*$', TemplateView.as_view(template_name='index.html')),
+    re_path(r'^frontend/.*$', TemplateView.as_view(template_name='index.html')),
 ]
+
 

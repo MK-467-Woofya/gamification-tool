@@ -1,26 +1,32 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import './styles.css';
 
 function LeaderboardPage() {
     const [users, setUsers] = useState([]);
-    const [currentUserId, setCurrentUserId] = useState(2); // assume that user id is 2, in future implementation it should be auto-fetched
-
+    const [timeframe, setTimeframe] = useState('weekly');  // weekly by default
 
     useEffect(() => {
-        // Fetch leaderboard data
-        axios.get('http://localhost:8000/leaderboard/leaderboard/')
+        // request data by time period
+        axios.get(`http://localhost:8000/leaderboard/${timeframe}/`)
             .then(response => {
                 console.log(response.data);
-                setUsers(response.data); // Update state with leaderboard data
+                setUsers(response.data);
             })
             .catch(error => {
                 console.error('Error fetching leaderboard data:', error);
             });
-    }, []);
+    }, [timeframe]);
 
     return (
         <div>
-            <h1>Leaderboard</h1>
+            <h1>{timeframe.charAt(0).toUpperCase() + timeframe.slice(1)} Leaderboard</h1>
+            <select onChange={(e) => setTimeframe(e.target.value)}>
+                <option value="weekly">Weekly</option>
+                <option value="monthly">Monthly</option>
+                <option value="yearly">Yearly</option>
+                <option value="alltime">All Time</option>
+            </select>
             <table>
                 <thead>
                     <tr>
@@ -30,14 +36,15 @@ function LeaderboardPage() {
                     </tr>
                 </thead>
                 <tbody>
-                    {users.map((user, index) => (
-                        <tr key={index} style={{ backgroundColor: user.id === currentUserId ? 'lightgreen' : 'transparent' }}>
+                    {Array.isArray(users) && users.map((user, index) => (
+                        <tr key={index}>
                             <td>{user.username}</td>
                             <td>{user.points_accumulated}</td>
                             <td>{user.points_spendable}</td>
                         </tr>
                     ))}
                 </tbody>
+
             </table>
         </div>
     );
