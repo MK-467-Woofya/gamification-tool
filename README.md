@@ -1,6 +1,7 @@
 # gamification-tool
 This is a web app based on Django with PostgreSQL for database and Docker for containarizing
 
+
 Please make sure you installed Docker before running
 
 # How to run
