@@ -1,10 +1,10 @@
 /* global */
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f7f9fc;
+    background-color: #f0f4f8;
     color: #333;
     margin: 0;
-    padding: 0;
+    padding: 20px;
 }
 
 h1 {
@@ -30,8 +30,8 @@ button:hover {
 }
 
 .container {
-    width: 33%;
-    margin: 0 auto;
+    width: 50%; 
+    margin: auto;
     padding: 20px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     background: white;
@@ -40,15 +40,15 @@ button:hover {
 
 /* Table styles */
 table {
-    width: 100%; /* Full width */
-    border-collapse: collapse; 
+    width: 100%; 
+    border-collapse: collapse;
     margin-top: 20px;
 }
 
 th, td {
     padding: 12px 15px;
     text-align: left;
-    border-bottom: 2px solid #3498db; 
+    border-bottom: 2px solid #3498db;
 }
 
 th {
@@ -70,7 +70,7 @@ tr:nth-child(even) {
 select {
     padding: 10px;
     margin-bottom: 20px;
-    border: 2px solid #3498db; 
+    border: 2px solid #3498db;
     border-radius: 5px;
     font-size: 16px;
     cursor: pointer;
