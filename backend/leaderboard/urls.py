@@ -11,7 +11,7 @@ urlpatterns = [
     path('weekly/', weekly_leaderboard, name='weekly_leaderboard'),
     path('monthly/', monthly_leaderboard, name='monthly_leaderboard'),
     path('yearly/', yearly_leaderboard, name='yearly_leaderboard'),
-    path('alltime/', leaderboard, name='leaderboard'),  # 总榜
+    path('alltime/', leaderboard, name='leaderboard'),  # total
 
 ]
 
