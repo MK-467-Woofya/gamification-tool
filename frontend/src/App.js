@@ -26,8 +26,8 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import HomePage from './components/HomePage';
 import ProfilePage from './components/ProfilePage';
-
 import LeaderboardPage from './components/LeaderboardPage';
+import QuestPage from './components/QuestPage';
 
 function App() {
     return (
@@ -36,6 +36,7 @@ function App() {
                 <Route path="/" element={<HomePage />} />
                 <Route path="/profile" element={<ProfilePage />} />
                 <Route path="/leaderboard" element={<LeaderboardPage />} />  {/* leaderboard */}
+                <Route path="/quests" element={<QuestPage />} />
             </Routes>
         </Router>
     );
