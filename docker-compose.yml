@@ -1,29 +1,54 @@
 version: '3'
 
 services:
-  db:
+  api_db:
     image: postgres:13
     volumes:
-      - postgres_data:/var/lib/postgresql/data/
+      - api_postgres_data:/var/lib/postgresql/data/
+    environment:
+      POSTGRES_DB: apidatabase
+      POSTGRES_USER: apiuser
+      POSTGRES_PASSWORD: apipassword
+      PGPORT: 5433
+    networks:
+      - api-api_db
+
+  web_db:
+    image: postgres:13
+    volumes:
+      - web_postgres_data:/var/lib/postgresql/data/
     environment:
       POSTGRES_DB: mydatabase
       POSTGRES_USER: myuser
       POSTGRES_PASSWORD: mypassword
     networks:
-      - django-postgres
+      - web-web_db
 
-  backend:
-    build: ./backend
+  api:
+    build: ./api
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
-      - ./backend/:/usr/src/app
+      - ./api/:/usr/src/app
     ports:
       - "8000:8000"
     depends_on:
-      - db
+      - api_db
     networks:
-      - react-django
-      - django-postgres
+      - frontend-api
+      - api-api_db
+
+  web:
+    build: ./web
+    command: python manage.py runserver 0.0.0.0:8080
+    volumes:
+      - ./web/:/usr/src/app
+    ports:
+      - "8080:8080"
+    depends_on:
+      - web_db
+    networks:
+      - frontend-web
+      - web-web_db
   
   frontend:
     build: ./frontend
@@ -35,16 +60,20 @@ services:
       - '3000:3000'
   
     depends_on:
-      - backend
+      - api
+      - web
 
     networks:
-      - react-django
+      - frontend-api
 
 networks:
-  react-django:
-  django-postgres:
+  frontend-api:
+  api-api_db:
+  frontend-web:
+  web-web_db:
 
 volumes:
-  postgres_data:
+  api_postgres_data:
+  web_postgres_data:
   media:
   static:

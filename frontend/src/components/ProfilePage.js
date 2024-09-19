@@ -1,13 +1,25 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-
+/**
+ * User profile showing basic information about user, 
+ * and linking to other user pages
+ * 
+ */
 const ProfilePage = () => {
     const [user, setUser] = useState(null);
 
     useEffect(() => {
         console.log('Fetching user data...'); // useEffect
-        // axios.get('/api/users/2/')
-        axios.get('http://localhost:8000/api/users/2/')
+
+        const url = "http://localhost:8000/api/users/username/";
+        const username = sessionStorage.getItem('username');
+
+        const headers = {
+            'Content-Type': 'application/json',
+            'Gamification-Api-Key': process.env.REACT_APP_API_KEY
+        };
+
+        axios.get(url + username + '/', { headers })
 
             .then(response => {
                 console.log('User data fetched:', response.data); // data grab
@@ -31,18 +43,19 @@ const ProfilePage = () => {
             <section>
                 <h2>Basic Information</h2>
                 <p>Username: {user.username}</p>
-                <p>Email: {user.email}</p>
+                <p>User ID: {user.id}</p>
             </section>
 
             <section>
                 <h2>Points Information</h2>
-                <p>Total Points: {user.points_accumulated}</p>
-                <p>Spendable Points: {user.points_spendable}</p>
+                <p>Level: {user.level}</p>
+                <p>Experience: {user.experience_points}</p>
+                <p>Shop Points: {user.shop_points}</p>
             </section>
 
             <section>
                 <h2>Achievements and Titles</h2>
-                {/* Future Development: Display user's achievements and titles here */}
+                <p>Title: {user.title}</p>
             </section>
 
             <section>
