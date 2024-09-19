@@ -89,10 +89,10 @@ We need to make our own .env files.
 The pip package python-dotenv should already be installed from the `requirements.txt` earlier. If not, install it.
 
 Here's the example for the Django environment variables in the web backend.
-![alt text](readme-imgs/env-1.png) 
+![alt text](readme-imgs/env-1.png)  
 The Django Secret key is added to .env. Check the commented SECRET_KEY variable in settings.py for both API and web to get the values.
 
-At the moment the database environment variables can be found in `docker-compose.yml` in the project root so just copy them over.
+At the moment the database environment variables can be found in `docker-compose.yml` in the project root so just copy them over.  
 ![alt text](readme-imgs/env-2.png) 
 
 Do the same for the API .env
@@ -100,7 +100,7 @@ Do the same for the API .env
 #### Frontend .env file
 The React .env file is handled by the react-scripts library.  
 All frontend secrets need to start with `REACT_APP_` to be recognised by React:   
-![alt text](readme-imgs/env-3.png)
+![alt text](readme-imgs/env-3.png)  
 This value should be the API key generated later in the next section.
 
 ### Building and running the containers
@@ -166,7 +166,7 @@ So that leaves Postman for testing endpoints.
 Current endpoint testing is in this postman collection [here](https://app.getpostman.com/join-team?invite_code=bd83f7113fd74ced7c850f964c050351)
 
 #### For the API
-All authorized requests require an API key - Gamification-Api-Key. This is the key that you need to store in the `frontend/.env` file 
+All authorized requests require an API key - Gamification-Api-Key. This is the key that you need to store in the `frontend/.env` file  
 ![alt text](readme-imgs/api-1.png)  
 
 This is generated in the admin dashboard as below.
