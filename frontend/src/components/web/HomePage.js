@@ -13,19 +13,21 @@ export const HomePage = () => {
         else{
             (async () => {
             try {
-                const {data} = await axios.get('http://localhost:8080/users/users/1/', {
+                const url = 'localhost:8080/users/users/username/' + username;
+                const {data} = await axios.get(url, {
                 headers: {
                   'Authorization': 'Bearer ' + localStorage.getItem('access_token'),  
                   'Content-Type': 'application/json',
                 }
               });
 
-              setMessage(data.message);
+              setMessage(data.username);
             } catch (e) {
                 console.log('not auth')
             }
         })()};
-    }, []);
+    }, []); 
+    
 
     // Post user to API by username. Post fails if already in database (needs better logic!)
     useEffect(() => {
@@ -49,7 +51,7 @@ export const HomePage = () => {
     }, []);
 
     return <div className="form-signin mt-5 text-center">
-        <h3>Hi {username}{message}</h3>
+        <h3>Hi {username}</h3>
         
     </div>
 }

@@ -2,7 +2,7 @@ import {useEffect} from "react";
 import axios from "axios";
 
 /**
- * Logout component
+ * Logout view
  * Clears authorization, session and local storage
  */
 export const LogoutPage = () => {
@@ -23,8 +23,8 @@ export const LogoutPage = () => {
                 sessionStorage.clear();
                 axios.defaults.headers.common['Authorization'] = null;
 
-                // wait 5 seconds before redirecting
-                await delay(5000);
+                // wait 3 seconds before redirecting
+                await delay(3000);
 
                 window.location.href = '/login'
             } catch (e) {

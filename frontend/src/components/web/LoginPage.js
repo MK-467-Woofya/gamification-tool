@@ -1,10 +1,14 @@
 import axios from "axios";
 import {useState} from "react";
 /**
- * Login component
+ * Login view
  * Renders login form and sets access tokens
  */
 export const LoginPage = () => {
+
+    if(localStorage.getItem('access_token') != null){
+      window.location.href = '/'  
+}
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 

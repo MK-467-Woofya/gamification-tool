@@ -1,23 +1,34 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import {Navigation} from './components/navigations';
-import {HomePage} from './components/HomePage';
-import ProfilePage from './components/ProfilePage';
-import {Quests} from './components/Quests';
-import {LoginPage} from './components/LoginPage';
-import {LogoutPage} from './components/logout';
+import { NavigationBar } from './components/ui/NavigationBar';
+import { HomePage } from './components/web/HomePage';
+import { LoginPage } from './components/web/LoginPage';
+import { LogoutPage } from './components/web/LogoutPage';
+import { LocationsPage } from './components/web/LocationsPage';
+import { EventsPage } from './components/web/EventsPage';
+import { ProfilePage } from './components/api/ProfilePage';
+import { CheckInsPage } from './components/api/CheckInsPage';
+import { QuestsPage } from './components/api/QuestsPage';
+import { LeaderboardPage } from './components/api/LeaderboardPage';
+import { MarketplacePage } from './components/api/MarketplacePage';
+
 
 
 function App() {
     return (
         <div className="App">
             <Router>
-                <Navigation></Navigation>
+                <NavigationBar></NavigationBar>
                 <Routes>
                     <Route path="/" element={<HomePage />} />
                     <Route path="/login" element={<LoginPage />} />
-                    <Route path="/profile" element={<ProfilePage />} />
-                    <Route path="/quests" element={<Quests />} />
+                    <Route path="/user/profile" element={<ProfilePage />} />
+                    <Route path="/locations" element={<LocationsPage />} />
+                    <Route path="/events" element={<EventsPage />} />
+                    <Route path="/user/checkins" element={<CheckInsPage />} />
+                    <Route path="/user/quests" element={<QuestsPage />} />
+                    <Route path="/user/leaderboard/" element={<LeaderboardPage />} />                    
+                    <Route path="/user/marketplace" element={<MarketplacePage />} />
                     <Route path="/logout" element={<LogoutPage />} />
                 </Routes>
             </Router>

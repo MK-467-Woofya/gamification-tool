@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 /**
- * User profile showing basic information about user, 
- * and linking to other user pages
+ * User profile showing the Gamification information about user, 
+ * and linking to other user API pages
  * 
  */
-const ProfilePage = () => {
+export const ProfilePage = () => {
     const [user, setUser] = useState(null);
 
     useEffect(() => {
@@ -65,5 +65,3 @@ const ProfilePage = () => {
         </div>
     );
 }
-
-export default ProfilePage;

@@ -1,14 +1,48 @@
 # gamification-tool
 Gamification tool is a multi-container application built for Woofya.
 
-It is comprised of three main parts:
-1. An __API tool__ built on Django Rest Framework
-2. A __Web backend__ mock Woofya built to simulate the real application, also delivered through a Django REST application.
-3. A __Reactjs frontend__ for delivering the content. 
+## Overview of the Project  
+
+This project is an API tool aiming to provide the Woofya application with gamification features to enhance the user experience on the platform and incentivise users to interact with the main features of the application.    
+
+A simiplified description of the main Woofya application is that it provides features to dog owners based primarily around finding dog-friendly and dog-centric locations and activities for users to share with their pet. 
+
+The API provides extensions to these features through user check-ins, quests, titles, and other gamification and social systems.
+
+Ultimately, through enhanced interaction, this project seeks to incentivise attending these events and fostering more experiences between dog and owner.
+
+The project is comrised of three main parts:
+
+### 1. An __API tool__ built on Django Rest Framework
+The main focus of the project. A dedicated API tool which provides extensibility to the main mocked Woofya application described below. 
+
+API users are extensions of a Woofya user and only store the user's username along with the gamification aspects provided by the API including points, quests, check-ins by the user, titles, badges, etc.
+
+After users login via the mock woofya site, an API user is created if the username doesn't exist within API database. Currently this is done at the mock homepage, but if used by the real main application, will need to be either integrated into the main application front end somewhere or possbily ran as a batch to connect the database of current users.  
+
+Users can then access their gamification profile features. The API endpoints only require the username from the main application backend and an application-wide token.
+
+### 2. A __Web backend__ mock Woofya built to simulate the real application, also delivered through a Django REST application.
+This is the part of the project simulating the main Woofya application. For this project's purposes it should contain the main application users, locations, events - any relevant features of the main Woofya application the API needs to interact with.  
+
+Implementations in the web backend need only be minimal. Users only need credentials, for instance. And views for locations to check in to only need to show the API functionality. As such, there is no need to worry about making forms in the front end for creating, updating or deleting these entities. Posting directly to the endpoint, using the admin dashboard, or using some database initialiser is suitable enough.  
+
+Integration into the main application in production would remove the need for this backend, replacing the endpoints with those used by Woofya.
+
+
+### 3. A __Reactjs frontend__ for delivering the content. 
+The frontend exists to primarily display the user gamification end points and their interactions with the main application. For instance, users will see and interact with their points, have a collection of titles, locations visited, quests active and completed, and have access to a marketplace for spending points.  
+
+Views simulating minimal versions of main application features are necessary for this project. E.g. Locations to check-in to. However, In the case of integration into the main application, these views would no longer be required, or could possibly be repurposed testing.
+
 
 ## Table of Contents
 
 - [gamification-tool](#gamification-tool)
+  - [Overview of the Project](#overview-of-the-project)
+    - [1. An __API tool__ built on Django Rest Framework](#1-an-api-tool-built-on-django-rest-framework)
+    - [2. A __Web backend__ mock Woofya built to simulate the real application, also delivered through a Django REST application.](#2-a-web-backend-mock-woofya-built-to-simulate-the-real-application-also-delivered-through-a-django-rest-application)
+    - [3. A __Reactjs frontend__ for delivering the content.](#3-a-reactjs-frontend-for-delivering-the-content)
   - [Table of Contents](#table-of-contents)
   - [How to run](#how-to-run)
     - [Project setup](#project-setup)

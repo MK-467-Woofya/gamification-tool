@@ -5,7 +5,7 @@ import React, { useState, useEffect} from 'react';
  * Navigation bar component. Includes all main routes
  * 
  */
-export function Navigation() {
+export const NavigationBar = () => {
   const [isAuth, setIsAuth] = useState(false);
 
   useEffect(() => {
@@ -24,22 +24,28 @@ export function Navigation() {
             <Nav.Link href="/">Home</Nav.Link>
             : null}
           {isAuth ?
-            <Nav.Link href="/profile">Profile</Nav.Link>
-            : null}
-          {isAuth ?
-            <Nav.Link href="/leaderboard">Leaderboard</Nav.Link>
-            : null}
-          {isAuth ?
             <Nav.Link href="/locations">Locations</Nav.Link>
             : null}
           {isAuth ?
-            <Nav.Link href="/quests">Quests</Nav.Link>
+            <Nav.Link href="/events">Events</Nav.Link>
             : null}
           {isAuth ?
-            <Nav.Link href="/marketplace">Marketplace</Nav.Link>
+            <Nav.Link href="/user/leaderboard">Leaderboard</Nav.Link>
             : null}
           </Nav>
           <Nav>
+          {isAuth ?
+            <Nav.Link href="/user/profile">Profile</Nav.Link>
+            : null}
+          {isAuth ?
+            <Nav.Link href="/user/checkins">Check Ins</Nav.Link>
+            : null}
+          {isAuth ?
+            <Nav.Link href="/user/quests">Quests</Nav.Link>
+            : null}
+          {isAuth ?
+            <Nav.Link href="/user/marketplace">Marketplace</Nav.Link>
+            : null}
           {isAuth ?
             <Nav.Link href="/logout">Logout</Nav.Link>:
             <Nav.Link href="/login">Login</Nav.Link>
