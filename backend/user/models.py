@@ -2,19 +2,37 @@ from django.db import models, transaction
 from django.contrib.auth.models import AbstractUser
 from django.conf import settings
 from django.utils import timezone
+from django.dispatch import receiver
+from django.db.models.signals import post_save
 
 
 class CustomUser(AbstractUser):
     """
     CustomUser class extending the Django user authentication User class.
     """
+
+    CITY_CHOICES = [
+        ('Melbourne', 'Melbourne'),
+        ('Sydney', 'Sydney'),
+        # add more locations here
+    ]
     title = models.CharField("User title", max_length=100)
     level = models.IntegerField("Account level", default=1)
     points_accumulated = models.IntegerField("Total points user has accumulated", default=0)
     points_spendable = models.IntegerField("Points remaining for shop currency", default=0)
-    
+    location = models.CharField("Location", max_length=100, choices=CITY_CHOICES, blank=True, null=True)  # Optional location field
+
     def __str__(self):
         return self.username
+    
+
+class FriendList(models.Model): # this is a many to many relation linking with user model
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name="friend_list")
+    friends = models.ManyToManyField(CustomUser, related_name="friends", blank=True)
+
+    def __str__(self):
+        return f"{self.user.username}'s friend list"
+
 
 
 class PointsLog(models.Model):
@@ -49,3 +67,12 @@ def update_user_points(user, points_accumulated_delta, points_spendable_delta):
         points_accumulated=user.points_accumulated,
         points_spendable=user.points_spendable
     )
+
+@receiver(post_save, sender=CustomUser)
+def create_initial_points_log(sender, instance, created, **kwargs):
+    if created:
+        PointsLog.objects.create(
+            user=instance,
+            points_accumulated=instance.points_accumulated,
+            points_spendable=instance.points_spendable
+        )

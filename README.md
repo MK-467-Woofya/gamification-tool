@@ -39,6 +39,16 @@ Currently API endpoints can be reached only for the user app:
 
 More REST API endpoints will be added soon, and moved to the http://localhost:8000/api/v1/users
 
+## script for backend testing
+There's a python script for creating 100 new users with different score:
+`$ docker-compose exec backend python manage.py create_users`
+
+Another script to create points log(if user have no log):
+`$ docker-compose exec backend python manage.py create_pointsLog`
+
+
+
+
 ## Access react webpage
 cd frontend
 npm install
