@@ -1,4 +1,5 @@
 import React from 'react';
+import { Button, Typography, Container, Box, CircularProgress } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import './styles.css';
 
@@ -6,7 +7,7 @@ function HomePage() {
     const navigate = useNavigate();
 
     const goToProfile = () => {
-        navigate('/profile');
+        navigate('/profile');  // Navigation
     };
 
     const goToLeaderboard = () => {
@@ -15,8 +16,8 @@ function HomePage() {
 
     return (
         <div>
-            <h1>Welcome to the Home Page</h1>
-            <p>This is the homepage of your React app.</p>
+            <h1>Welcome to Woofya</h1>
+            <p>Enhance your dog's life with fun events and rewards!</p>
             <button onClick={goToProfile}>Go to Profile Page</button>
             <button onClick={goToLeaderboard}>Go to Leaderboard</button> {/* leaderboard button */}
         </div>
@@ -24,4 +25,3 @@ function HomePage() {
 }
 
 export default HomePage;
-

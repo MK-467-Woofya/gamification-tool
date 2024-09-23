@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './styles.css';
 
+
 const ProfilePage = () => {
     const [user, setUser] = useState(null);
 
