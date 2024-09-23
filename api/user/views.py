@@ -16,6 +16,12 @@ class CustomUserViewSet(viewsets.ModelViewSet):
     queryset = CustomUser.objects.all().order_by('-username')
     serializer_class = CustomUserSerializer
     
+    @action(detail=False, methods=['get'])
+    def leaderboard(self, request):
+        users = CustomUser.objects.filter(is_admin=False).order_by('-points_accumulated')[:10]  # get top 10 user and without superusers
+        serializer = self.get_serializer(users, many=True)
+        return Response(serializer.data)
+    
     @action(detail=True, methods=['PATCH'], name="Update points")
     def update_points(self, request, *args, **kwargs):
         """Single user points update"""

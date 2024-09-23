@@ -53,6 +53,7 @@ Views simulating minimal versions of main application features are necessary for
     - [Building and running the containers](#building-and-running-the-containers)
     - [Stop the container](#stop-the-container)
   - [Setting up and accessing Web backend and API](#setting-up-and-accessing-web-backend-and-api)
+    - [Script for API testing](#script-for-api-testing)
     - [Test base endpoints](#test-base-endpoints)
     - [Admin access](#admin-access)
     - [User access](#user-access)
@@ -179,6 +180,14 @@ Subsequent changes to the models will require migrations to update the database.
 
 If the migration isn't working due to a major change to a database table structure i.e. changing the user entity to a customised user entity, either drop the database and start with a fresh migration, nuke the docker containers and volumes, or there are hack ways to comment out some auth sections in the code which will aloow the migration to go through you can find on stackoverflow.
 
+### Script for API testing
+
+There's a python script for creating 100 new users with different score:  
+`$ docker-compose exec api python manage.py create_users`
+
+Another script to create points log(if user have no log):  
+`$ docker-compose exec api python manage.py create_pointsLog`
+
 ### Test base endpoints
 
 With the docker containers running try the endpoints in browser:
@@ -219,7 +228,7 @@ All secured endpoints need to include the bearer token authorization using the a
 ![alt text](readme-imgs/api-3.png)  
 
 ## Access react webpage
-Our application frontend can be accessed from http://localhost:3030/
+Our application frontend can be accessed from http://localhost:3000/
 
 ### Authorization
 Web backend users simulating the real application  log in with their credentials. So you may need to make a user in http://localhost:8080/admin/

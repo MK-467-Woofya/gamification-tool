@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import Container from 'react-bootstrap/Container';
 /**
  * User profile showing the Gamification information about user, 
  * and linking to other user API pages
@@ -11,7 +12,7 @@ export const ProfilePage = () => {
     useEffect(() => {
         console.log('Fetching user data...'); // useEffect
 
-        const url = "http://localhost:8000/api/users/username/";
+        const url = "http://localhost:8000/users/users/username/";
         const username = sessionStorage.getItem('username');
 
         const headers = {
@@ -37,7 +38,7 @@ export const ProfilePage = () => {
     }
 
     return (
-        <div>
+        <Container className="justify-content-md-center">
             <h1>{user.username}'s Profile</h1>
 
             <section>
@@ -62,6 +63,6 @@ export const ProfilePage = () => {
                 <h2>Visited Locations and Events</h2>
                 {/* Future Development: Display user's visited locations and events here */}
             </section>
-        </div>
+        </Container>
     );
 }

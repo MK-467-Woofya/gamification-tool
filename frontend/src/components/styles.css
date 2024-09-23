@@ -4,18 +4,18 @@ body {
     background-color: #f0f4f8;
     color: #333;
     margin: 0;
-    padding: 20px;
+    padding: 0px;
 }
 
 h1 {
-    color: #34495e;
+    color: #333;
     text-align: center;
     margin-top: 20px;
     font-size: 24px;
 }
 
 button {
-    background-color: #3498db;
+    background-color: #BDAA96;
     color: white;
     padding: 10px 20px;
     margin: 10px 5px 10px 0;
@@ -26,7 +26,7 @@ button {
 }
 
 button:hover {
-    background-color: #2980b9;
+    background-color: #BDAA96;
 }
 
 .container {
@@ -47,13 +47,14 @@ table {
 
 th, td {
     padding: 12px 15px;
-    text-align: left;
-    border-bottom: 2px solid #3498db;
+    text-align: left !important;
+    border-bottom: 2px solid #333 !important;
 }
 
 th {
-    background-color: #3498db;
+    background-color: #2980b9;
     color: white;
+    text-align: left;
     font-size: 18px;
 }
 
@@ -70,7 +71,7 @@ tr:nth-child(even) {
 select {
     padding: 10px;
     margin-bottom: 20px;
-    border: 2px solid #3498db;
+    border: 2px solid #BDAA96;
     border-radius: 5px;
     font-size: 16px;
     cursor: pointer;
@@ -79,4 +80,18 @@ select {
 
 select:hover {
     border-color: #2980b9;
+}
+
+.navbar-brand {
+      margin-left: 15px;
+}
+
+.nav-link {
+    margin-left: 10px;
+    margin-right: 10px;
+    color: #000 !important;
+}
+
+.container {
+    box-shadow: none;
 }

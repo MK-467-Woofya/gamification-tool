@@ -1,12 +1,16 @@
-from django.db import models
+from django.db import models, transaction
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
+from django.conf import settings
+from django.utils import timezone
+from django.dispatch import receiver
+from django.db.models.signals import post_save
 
 class CustomUserManager(BaseUserManager):
     """
     Custom UserManager model class
     """
-    def create_user(self, username, level=1, title=None, experience_points=0, shop_points=0, password=None):
+    def create_user(self, username, level=1, title=None, experience_points=0, shop_points=0, password=None, location=None):
         """
         Create a user with only their username, and gamification fields 
         """
@@ -19,6 +23,7 @@ class CustomUserManager(BaseUserManager):
             experience_points = experience_points,
             shop_points = shop_points,
             title = title,
+            location = location,
             #titles = titles,
             #milestones = milestones,
             #badges = badges,
@@ -44,6 +49,13 @@ class CustomUser(AbstractBaseUser):
     """
     CustomUser class
     """
+    
+    CITY_CHOICES = [
+        ('Melbourne', 'Melbourne'),
+        ('Sydney', 'Sydney'),
+        # add more locations here
+    ]
+    
     username = models.CharField(
         verbose_name="Username",
         max_length=255,
@@ -57,9 +69,11 @@ class CustomUser(AbstractBaseUser):
             MinValueValidator(1),
         ],
     )
+
     experience_points = models.IntegerField("Experience points", default=0)
     shop_points = models.IntegerField("Shop points", default=0)
     title = models.CharField("User title",max_length=100, blank=True, null=True)
+    location = models.CharField("Location", max_length=100, choices=CITY_CHOICES, blank=True, null=True)  # Optional location field
     #titles = models.ForeignKey(titles, on_delete=models.CASCADE)
     #milestones = models.ForeignKey(milestones, on_delete=models.CASCADE)
     #badges = models.ForeignKey(badges, on_delete=models.CASCADE)
@@ -71,7 +85,7 @@ class CustomUser(AbstractBaseUser):
 
     USERNAME_FIELD = "username"
     REQUIRED_FIELDS = []
-    
+
     def __str__(self):
         return self.username
     
@@ -84,3 +98,55 @@ class CustomUser(AbstractBaseUser):
     @property
     def is_staff(self):
         return self.is_admin
+    
+class FriendList(models.Model): # this is a many to many relation linking with user model
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name="friend_list")
+    friends = models.ManyToManyField(CustomUser, related_name="friends", blank=True)
+
+    def __str__(self):
+        return f"{self.user.username}'s friend list"
+
+
+
+class PointsLog(models.Model):
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    experience_points = models.IntegerField(default=0)
+    shop_points = models.IntegerField(default=0)
+    created_at = models.DateTimeField(default=timezone.now)  # time of changing score
+
+    class Meta:
+        ordering = ['-created_at']  # reverse chronological
+
+    def __str__(self):
+        return f"{self.user.username} - {self.experience_points} - {self.created_at}"
+    
+
+@transaction.atomic
+def update_user_points(user, experience_points_delta, shop_points_delta):
+
+    # check if available
+    if user.shop_points + shop_points_delta < 0:
+        raise ValueError("Insufficient spendable points")
+
+    # update total score
+    user.experience_points += experience_points_delta
+    user.shop_points += shop_points_delta
+    user.save()
+
+    # record score change
+    PointsLog.objects.create(
+        user=user,
+        experience_points=user.experience_points,
+        shop_points=user.shop_points
+    )
+
+@receiver(post_save, sender=CustomUser)
+def create_initial_points_log(sender, instance, created, **kwargs):
+    if created:
+        PointsLog.objects.create(
+            user=instance,
+            experience_points=instance.experience_points,
+            shop_points=instance.shop_points
+        )
+    

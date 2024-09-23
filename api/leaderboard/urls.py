@@ -1,9 +1,5 @@
 from django.urls import path
-from .views import index, leaderboard
-from .views import weekly_leaderboard, monthly_leaderboard, yearly_leaderboard
 
-
-from django.urls import path
 from .views import index, leaderboard, weekly_leaderboard, monthly_leaderboard, yearly_leaderboard
 
 urlpatterns = [

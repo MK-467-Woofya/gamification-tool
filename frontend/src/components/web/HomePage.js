@@ -1,5 +1,6 @@
 import {useEffect, useState} from "react";
 import axios from "axios";
+import Container from "react-bootstrap/Container";
 
 export const HomePage = () => {
     const [message, setMessage] = useState('');
@@ -31,7 +32,7 @@ export const HomePage = () => {
 
     // Post user to API by username. Post fails if already in database (needs better logic!)
     useEffect(() => {
-        const url = "http://localhost:8000/api/users/";
+        const url = "http://localhost:8000/users/users/";
 
         const data = {'username': username}
 
@@ -50,8 +51,12 @@ export const HomePage = () => {
             });
     }, []);
 
-    return <div className="form-signin mt-5 text-center">
-        <h3>Hi {username}</h3>
-        
-    </div>
+    return (
+        <Container className="justify-content-md-center">
+            <div className="form-signin mt-5 text-center">
+                <h1>Hi {username}. Welcome to Woofya.</h1>
+                <p>Enhance your dog's life with fun events and rewards!</p>
+            </div>
+        </Container>
+    )
 }

@@ -1,5 +1,7 @@
 import {Nav, Navbar} from 'react-bootstrap';
 import React, { useState, useEffect} from 'react';
+import '../styles.css';
+
 
 /**
  * Navigation bar component. Includes all main routes
@@ -16,8 +18,8 @@ export const NavigationBar = () => {
 
   //Navbar, Nav, Link all have react-bootstrap styling
   return (
-    <div>
-    <Navbar bg="dark" variant="dark">
+    <div className='mb-5'>
+    <Navbar>
           <Navbar.Brand href="/">Woofya</Navbar.Brand>
           <Nav className="me-auto">
           {isAuth ?

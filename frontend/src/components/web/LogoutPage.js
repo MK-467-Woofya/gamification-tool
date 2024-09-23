@@ -1,5 +1,6 @@
 import {useEffect} from "react";
 import axios from "axios";
+import Container from 'react-bootstrap/Container';
 
 /**
  * Logout view
@@ -34,9 +35,11 @@ export const LogoutPage = () => {
     }, []);
 
     return (
-    <div className="form-signin mt-5 text-center">
-        <h3>You have successfully logged out. You will be redirected to the login page. </h3>
-        
-    </div>
+        <Container className="justify-content-md-center">
+            <div className="form-signin mt-5 text-center">
+                <h3>You have successfully logged out. You will be redirected to the login page. </h3>
+                
+            </div>
+        </Container>
     )
 }

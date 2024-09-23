@@ -5,7 +5,7 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.core.exceptions import ValidationError
 
-from .models import CustomUser
+from .models import CustomUser, FriendList, PointsLog
 
 class UserCreationForm(forms.ModelForm):
     """New user creation form"""
@@ -73,8 +73,19 @@ class UserAdmin(BaseUserAdmin):
     ordering = ["username"]
     filter_horizontal = []
 
+class FriendListInline(admin.TabularInline):
+    model = FriendList.friends.through
+    verbose_name = "friend"
+    verbose_name_plural = "friends"
+
+class CustomUserAdmin(admin.ModelAdmin):
+    inlines = [FriendListInline]
+    list_display = ('username', 'email', 'location', 'points_accumulated', 'points_spendable')
+    search_fields = ('username', 'location')
 
 # Register user types
 admin.site.register(CustomUser, UserAdmin)
 # Unregister groups as they aren't used by the custom types
 admin.site.unregister(Group)
+admin.site.register(FriendList)
+admin.site.register(PointsLog)

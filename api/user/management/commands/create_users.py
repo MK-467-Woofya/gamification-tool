@@ -8,17 +8,14 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         locations = ['Melbourne', 'Sydney']
         for i in range(20, 120):  # id from 20 to 100
-            accumulated_points = random.randint(10, 1000)
-            spendable_points = random.randint(0, accumulated_points)  # make sure spendable will not greater than accumulated
+            user_exp_points = random.randint(10, 1000)
+            user_shop_points = random.randint(0, user_exp_points)  # make sure spendable will not greater than total experience
 
             user = CustomUser.objects.create_user(
                 username=f'testUser{i}',
-                email=f'testUser{i}@example.com',
-                title=f'User Title {i}',  # user title cannot be empty
-                is_superuser=False,  # not super user
                 location=random.choice(locations),
-                points_accumulated=accumulated_points,
-                points_spendable=spendable_points
+                experience_points=user_exp_points,
+                shop_points=user_shop_points
             )
             user.save()
             print(f'Created {user.username}')
