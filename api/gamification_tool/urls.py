@@ -17,7 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 from rest_framework import routers
-from gamification_tool.api import views as user_views
+from user import views as user_views
 
 from django.views.generic import TemplateView
 from django.urls import re_path
@@ -26,7 +26,7 @@ from django.urls import re_path
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("api/", include("gamification_tool.api.urls")),
+    path("api/", include("user.urls")),
 
     
 ]

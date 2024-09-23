@@ -45,9 +45,9 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_api_key',
     'corsheaders',
-    'gamification_tool.api'
+    'user'
 ]
-AUTH_USER_MODEL = 'api.CustomUser'
+AUTH_USER_MODEL = 'user.CustomUser'
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
