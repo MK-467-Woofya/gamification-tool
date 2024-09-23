@@ -32,7 +32,7 @@ urlpatterns = [
     path("check_in/", include("check_in.urls")),
 ]
 
-# 例如，只捕捉以 'frontend/' 开头的路径
+# catch path start with 'frontend/' 
 urlpatterns += [
     re_path(r'^frontend/.*$', TemplateView.as_view(template_name='index.html')),
 ]
