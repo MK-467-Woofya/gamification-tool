@@ -1,13 +1,26 @@
 # Django #
-backend/*.log
-backend/*.pot
-backend/*.pyc
-backend/__pycache__/
-backend/db.sqlite3
-backend/media
+api/*.log
+api/*.pot
+api/*.pyc
+api/__pycache__/
+api/db.sqlite3
+api/media
+web/*.log
+web/*.pot
+web/*.pyc
+web/__pycache__/
+web/db.sqlite3
+web/media
+*/*.log
+*/*.pot
+*/*.pyc
+*/__pycache__/
+*/db.sqlite3
+*/media
 
 # Backup files # 
-backend/*.bak 
+api/*.bak
+web/*.bak
 
 # If you are using PyCharm # 
 # User-specific stuff
@@ -99,6 +112,7 @@ celerybeat-schedule.*
 
 # Environments 
 .env 
+*/*.env
 .venv 
 env/ 
 venv/ 

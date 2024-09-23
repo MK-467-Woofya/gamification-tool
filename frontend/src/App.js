@@ -1,43 +1,38 @@
-// import logo from './logo.svg';
-// import './App.css';
-
-// function App() {
-//   return (
-//     <div className="App">
-//       <header className="App-header">
-//         <img src={logo} className="App-logo" alt="logo" />
-//         <p>
-//           Edit <code>src/App.js</code> and save to reload.
-//         </p>
-//         <a
-//           className="App-link"
-//           href="https://reactjs.org"
-//           target="_blank"
-//           rel="noopener noreferrer"
-//         >
-//           Learn React
-//         </a>
-//       </header>
-//     </div>
-//   );
-// }
-
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import HomePage from './components/HomePage';
-import ProfilePage from './components/ProfilePage';
+import { NavigationBar } from './components/ui/NavigationBar';
+import { HomePage } from './components/web/HomePage';
+import { LoginPage } from './components/web/LoginPage';
+import { LogoutPage } from './components/web/LogoutPage';
+import { LocationsPage } from './components/web/LocationsPage';
+import { EventsPage } from './components/web/EventsPage';
+import { ProfilePage } from './components/api/ProfilePage';
+import { CheckInsPage } from './components/api/CheckInsPage';
+import { QuestsPage } from './components/api/QuestsPage';
+import { LeaderboardPage } from './components/api/LeaderboardPage';
+import { MarketplacePage } from './components/api/MarketplacePage';
 
-import LeaderboardPage from './components/LeaderboardPage';
+
 
 function App() {
     return (
-        <Router>
-            <Routes>
-                <Route path="/" element={<HomePage />} />
-                <Route path="/profile" element={<ProfilePage />} />
-                <Route path="/leaderboard" element={<LeaderboardPage />} />  {/* leaderboard */}
-            </Routes>
-        </Router>
+        <div className="App">
+            <Router>
+                <NavigationBar></NavigationBar>
+                <Routes>
+                    <Route path="/" element={<HomePage />} />
+                    <Route path="/login" element={<LoginPage />} />
+                    <Route path="/user/profile" element={<ProfilePage />} />
+                    <Route path="/locations" element={<LocationsPage />} />
+                    <Route path="/events" element={<EventsPage />} />
+                    <Route path="/user/checkins" element={<CheckInsPage />} />
+                    <Route path="/user/quests" element={<QuestsPage />} />
+                    <Route path="/user/leaderboard/" element={<LeaderboardPage />} />                    
+                    <Route path="/user/marketplace" element={<MarketplacePage />} />
+                    <Route path="/logout" element={<LogoutPage />} />
+                </Routes>
+            </Router>
+        </div>
     );
 }
 
