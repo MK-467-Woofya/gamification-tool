@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button, Typography, Container, Box, CircularProgress } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import './styles.css';
 
 function HomePage() {
     const navigate = useNavigate();
@@ -9,18 +10,17 @@ function HomePage() {
         navigate('/profile');  // Navigation
     };
 
+    const goToLeaderboard = () => {
+        navigate('/leaderboard');
+    };
+
     return (
-        <Container>
-            <Typography variant="h1" gutterBottom>
-                Welcome to Woofya
-            </Typography>
-            <Typography variant="body1" paragraph>
-                Enhance your dog's life with fun events and rewards!
-            </Typography>
-            <Button variant="contained" color="primary" onClick={goToProfile}>
-                Go to Profile Page
-            </Button>
-        </Container>
+        <div>
+            <h1>Welcome to Woofya</h1>
+            <p>Enhance your dog's life with fun events and rewards!</p>
+            <button onClick={goToProfile}>Go to Profile Page</button>
+            <button onClick={goToLeaderboard}>Go to Leaderboard</button> {/* leaderboard button */}
+        </div>
     );
 }
 

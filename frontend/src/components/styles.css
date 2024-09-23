@@ -1,0 +1,82 @@
+/* global */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f0f4f8;
+    color: #333;
+    margin: 0;
+    padding: 20px;
+}
+
+h1 {
+    color: #34495e;
+    text-align: center;
+    margin-top: 20px;
+    font-size: 24px;
+}
+
+button {
+    background-color: #3498db;
+    color: white;
+    padding: 10px 20px;
+    margin: 10px 5px 10px 0;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+button:hover {
+    background-color: #2980b9;
+}
+
+.container {
+    width: 50%; 
+    margin: auto;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    background: white;
+    border-radius: 8px;
+}
+
+/* Table styles */
+table {
+    width: 100%; 
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th, td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 2px solid #3498db;
+}
+
+th {
+    background-color: #3498db;
+    color: white;
+    font-size: 18px;
+}
+
+td {
+    background-color: #ffffff;
+    color: #333;
+    font-size: 16px;
+}
+
+tr:nth-child(even) {
+    background-color: #ecf0f1;
+}
+
+select {
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 2px solid #3498db;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    outline: none;
+}
+
+select:hover {
+    border-color: #2980b9;
+}

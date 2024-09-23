@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Button, Typography, Container, Box, CircularProgress } from '@mui/material';
+import './styles.css';
+
 
 const ProfilePage = () => {
     const [user, setUser] = useState(null);
