@@ -139,7 +139,17 @@ All frontend secrets need to start with `REACT_APP_` to be recognised by React:
 This value should be the API key generated later in the next section.
 
 ### Building and running the containers
-If all went to plan we should be able to build and run the containers.
+If all went to plan we should be able to build and run the containers, albeit without functioning databases yet.  
+
+It may be necessary, and easier, to start fresh with docker containers and volumes at this point.  
+The following commands will delete local containers and volumes:  
+- For containers: `$ docker rm -f $(docker ps -a -q)`  
+- For volumes: `$ docker volume rm $(docker volume ls -q)`  
+
+Devs should delete old migrations too to start with a fresh database schema.  
+
+The above should only be done in a dev environment when there is no data to be lost.  
+
 
 1. Spin up containers:  
 `$ docker-compose up --build`
