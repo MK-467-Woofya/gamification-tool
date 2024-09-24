@@ -10,7 +10,7 @@ class CustomUserManager(BaseUserManager):
     """
     Custom UserManager model class
     """
-    def create_user(self, username, level=1, title=None, experience_points=0, shop_points=0, password=None, location=None):
+    def create_user(self, username, level=1, title=None, experience_points=0, shop_points=0, password=None, location=None, is_admin=False):
         """
         Create a user with only their username, and gamification fields 
         """
@@ -24,6 +24,7 @@ class CustomUserManager(BaseUserManager):
             shop_points = shop_points,
             title = title,
             location = location,
+            is_admin = is_admin,
             #titles = titles,
             #milestones = milestones,
             #badges = badges,

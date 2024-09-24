@@ -15,7 +15,8 @@ class Command(BaseCommand):
                 username=f'testUser{i}',
                 location=random.choice(locations),
                 experience_points=user_exp_points,
-                shop_points=user_shop_points
+                shop_points=user_shop_points,
+                is_admin=False
             )
             user.save()
             print(f'Created {user.username}')

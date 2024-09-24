@@ -1,5 +1,4 @@
 import {useEffect} from "react";
-import axios from "axios";
 import Container from 'react-bootstrap/Container';
 
 /**
@@ -13,24 +12,17 @@ export const LogoutPage = () => {
     useEffect(() => {
         (async () => {
             try {
-                const {data} = await axios.post('http://localhost:8080/users/logout/',{
-                    refresh_token:localStorage.getItem('refresh_token')
-                } ,{headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + localStorage.getItem('access_token'),
-                }}, {withCredentials: true});
+                console.log('Logging user out')
 
-                console.log('Logging user out', data)
-                localStorage.clear();
+                // Clear current user
                 sessionStorage.clear();
-                axios.defaults.headers.common['Authorization'] = null;
 
                 // wait 3 seconds before redirecting
                 await delay(3000);
 
                 window.location.href = '/login'
             } catch (e) {
-                console.log('logout not working')
+        console.log('logout failed')
             }
         })();
     }, []);

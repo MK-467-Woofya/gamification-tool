@@ -12,15 +12,15 @@ export const ProfilePage = () => {
     useEffect(() => {
         console.log('Fetching user data...'); // useEffect
 
-        const url = "http://localhost:8000/users/users/username/";
-        const username = sessionStorage.getItem('username');
+        const url = "http://localhost:8000/users/users/";
+        const uid = sessionStorage.getItem('uid');
 
         const headers = {
             'Content-Type': 'application/json',
             'Gamification-Api-Key': process.env.REACT_APP_API_KEY
         };
 
-        axios.get(url + username + '/', { headers })
+        axios.get(url + uid + '/', { headers })
 
             .then(response => {
                 console.log('User data fetched:', response.data); // data grab

@@ -11,17 +11,6 @@ services:
     networks:
       - api-api_db
 
-  web_db:
-    image: postgres:13
-    volumes:
-      - web_postgres_data:/var/lib/postgresql/data/
-    environment:
-      POSTGRES_DB: mydatabase
-      POSTGRES_USER: myuser
-      POSTGRES_PASSWORD: mypassword
-    networks:
-      - web-web_db
-
   api:
     build: ./api
     command: python manage.py runserver 0.0.0.0:8000
@@ -34,19 +23,6 @@ services:
     networks:
       - frontend-api
       - api-api_db
-
-  web:
-    build: ./web
-    command: python manage.py runserver 0.0.0.0:8080
-    volumes:
-      - ./web/:/usr/src/app
-    ports:
-      - "8080:8080"
-    depends_on:
-      - web_db
-    networks:
-      - frontend-web
-      - web-web_db
   
   frontend:
     build: ./frontend
@@ -59,7 +35,6 @@ services:
   
     depends_on:
       - api
-      - web
 
     networks:
       - frontend-api
@@ -67,11 +42,8 @@ services:
 networks:
   frontend-api:
   api-api_db:
-  frontend-web:
-  web-web_db:
 
 volumes:
   api_postgres_data:
-  web_postgres_data:
   media:
   static:

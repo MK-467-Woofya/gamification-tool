@@ -9,4 +9,4 @@ class CustomUserSerializer(serializers.HyperlinkedModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name="users-detail") # links to the basename used in user.urls.py
     class Meta:
         model = CustomUser
-        fields = ['url', 'id','username', 'level', 'experience_points', 'shop_points', 'title',]
+        fields = ['url', 'id','username', 'level', 'experience_points', 'shop_points', 'title', 'is_admin']
