@@ -13,13 +13,14 @@ export const LogoutPage = () => {
     useEffect(() => {
         (async () => {
             try {
-                const {data} = await axios.post('http://localhost:8080/logout/',{
+                const {data} = await axios.post('http://localhost:8080/users/logout/',{
                     refresh_token:localStorage.getItem('refresh_token')
                 } ,{headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + localStorage.getItem('access_token'),
                 }}, {withCredentials: true});
 
-                console.log('logout', data)
+                console.log('Logging user out', data)
                 localStorage.clear();
                 sessionStorage.clear();
                 axios.defaults.headers.common['Authorization'] = null;

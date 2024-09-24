@@ -20,9 +20,6 @@ export const LoginPage = () => {
             password: password
           };
 
-          // Web backend username stored for API user get request
-          sessionStorage.setItem('username',user.username);
-
         // post username, password
         const {data} = await axios.post('http://localhost:8080/token/', user ,{headers: {
             'Content-Type': 'application/json'
@@ -30,10 +27,16 @@ export const LoginPage = () => {
 
         console.log(data)
         localStorage.clear();
+        sessionStorage.clear();
+        
         // store tokens
         localStorage.setItem('access_token', data.access);
         localStorage.setItem('refresh_token', data.refresh);
         axios.defaults.headers.common['Authorization'] = `Bearer ${data['access']}`;
+
+        // Web backend username stored for API user get request
+        sessionStorage.setItem('username',user.username);
+        
         window.location.href = '/'
 
     }

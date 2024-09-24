@@ -33,7 +33,8 @@ class LogoutView(APIView):
     API endpoint for logging out user and blacklisting access tokens
     """
     permission_classes = [IsAuthenticated]
-    
+    @action(methods=['post'], detail=False,
+            url_path='logout/')
     def post(self, request):
         try:
             refresh_token = request.data["refresh_token"]

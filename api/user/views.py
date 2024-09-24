@@ -58,3 +58,4 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         user = get_object_or_404(CustomUser, username=username)
         data = CustomUserSerializer(user, context={'request': request}).data
         return Response(data, status=status.HTTP_200_OK)
+    

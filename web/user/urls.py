@@ -9,7 +9,7 @@ router.register(r'users', views.UserViewSet,)
 
 urlpatterns = [
     path('logout/', views.LogoutView.as_view(), name = 'logout'),
-    path("", include(router.urls)), # /user
+    path("", include(router.urls)), # /users
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]
 
