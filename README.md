@@ -167,13 +167,13 @@ or CTRL+c if the instance is attached to the terminal.
 Every clean build of the containers will require migrations and creation of a super user.
 
 For the API:  
-1. `$ docker-compose exec api python manage.py migrate`  
-2. `$ docker-compose exec api python manage.py makemigrations`
+1. `$ docker-compose exec api python manage.py makemigrations`
+2. `$ docker-compose exec api python manage.py migrate`  
 3. `$ docker-compose exec api python manage.py createsuperuser` and follow the prompts to make an admin  
 
 For the web backend  
-1. `$ docker-compose exec web python manage.py migrate`  
-2. `$ docker-compose exec web python manage.py makemigrations` 
+1. `$ docker-compose exec web python manage.py makemigrations` 
+2. `$ docker-compose exec web python manage.py migrate`  
 3. `$ docker-compose exec web python manage.py createsuperuser` and follow the prompts again
 
 Subsequent changes to the models will require migrations to update the database.
