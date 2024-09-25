@@ -1,0 +1,30 @@
+{
+    "name": "gamification-tool-frontend",
+    "version": "1.0.0",
+    "description": "Frontend for gamification tool with interactive map and event panel",
+    "main": "index.js",
+    "scripts": {
+      "start": "react-scripts start",
+      "build": "react-scripts build",
+      "test": "react-scripts test",
+      "eject": "react-scripts eject"
+    },
+    "dependencies": {
+      "gamification-tool-frontend": "file:",
+      "leaflet": "^1.7.1",
+      "react": "^17.0.2",
+      "react-dom": "^17.0.2",
+      "react-leaflet": "^3.2.0",
+      "react-scripts": "^5.0.1"
+    },
+    "devDependencies": {
+      "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+      "eslint-config-react-app": "^7.0.1"
+    },
+    "author": "Map",
+    "license": "ISC",
+    "engines": {
+      "node": ">=16.0.0 <18.0.0"
+    }
+  }
+  

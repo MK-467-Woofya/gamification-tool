@@ -1,0 +1,81 @@
+/* Base styles for the body, setting default font and background */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f9f9f9;
+}
+
+/* Style for the main heading */
+h1 {
+    text-align: center;
+    margin: 20px 0;
+    font-size: 2rem;
+    color: #333;
+}
+
+/* Container holding the event list and the map, laid out in a flexbox for side-by-side alignment */
+#container {
+    display: flex;
+    height: 90vh; /* Take 90% of the viewport height */
+}
+
+/* Style for the event list on the left side */
+#event-list {
+    width: 30%;  /* Take 30% of the container width */
+    padding: 20px;
+    background-color: #ffffff;
+    border-right: 2px solid #ccc;  /* Add a right border to separate from the map */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    overflow-y: auto;  /* Allow vertical scrolling */
+}
+
+/* Remove default list styling */
+#events {
+    list-style: none;
+    padding: 0;
+}
+
+/* Each event in the list */
+#events li {
+    padding: 15px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #e0e0e0;
+    cursor: pointer;
+    background-color: #fafafa;
+    transition: background-color 0.3s, transform 0.3s;  /* Add hover effect */
+    border-radius: 8px;
+}
+
+/* Change background and text color on hover, add a slight elevation effect */
+#events li:hover {
+    background-color: #4CAF50;
+    color: white;
+    transform: translateY(-2px);  /* Slightly lift the element on hover */
+}
+
+/* Style for the map, taking up the remaining 70% of the container */
+#map {
+    width: 70%;
+    height: 100%;
+    border-left: 1px solid #ddd;  /* Separate map from the event list */
+    border-radius: 8px;
+    position: relative;
+}
+
+/* Button styling for interactions, e.g., Check-In button */
+button {
+    padding: 8px 16px;
+    margin-top: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+/* Hover effect for buttons */
+button:hover {
+    background-color: #45a049;
+}

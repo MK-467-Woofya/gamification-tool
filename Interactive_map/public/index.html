@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Metadata for character set and responsive design for mobile -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doggy Events Map</title>
+    
+    <!-- Link to external CSS file for custom styles -->
+    <link rel="stylesheet" href="styles.css">
+    
+    <!-- Link to Leaflet CSS for map rendering -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+</head>
+<body>
+    <!-- Main title for the page -->
+    <h1>Doggy Events Map</h1>
+    
+    <!-- Main container to hold both the event list and the map side by side -->
+    <div id="container">
+        <!-- Section for listing events -->
+        <div id="event-list">
+            <h2>Event List</h2>
+            <ul id="events"></ul> <!-- Placeholder for dynamically populated event list -->
+        </div>
+        
+        <!-- Map container, Leaflet will render the map here -->
+        <div id="map"></div>
+    </div>
+
+    <!-- Include Leaflet.js for map functionality -->
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    
+    <!-- Link to custom JavaScript that handles map and event interactions -->
+    <script src="main.js"></script>
+</body>
+</html>
