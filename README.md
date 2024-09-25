@@ -22,7 +22,7 @@ After entering a username, an API user is created if the username doesn't exist 
 
 Users can then access their gamification profile features. The API endpoints only require the username from the main application backend and an application-wide token.  
 
-### 3. A __Reactjs frontend__ for delivering the content. 
+### 2. A __Reactjs frontend__ for delivering the content. 
 The frontend exists to primarily display the user gamification end points and their interactions with the main application. For instance, users will see and interact with their points, have a collection of titles, locations visited, quests active and completed, and have access to a marketplace for spending points.  
 
 Views simulating minimal versions of main application features may be necessary for this project. E.g. Locations to check-in to. However, In the case of integration into the main application, these views would no longer be required, or could possibly be repurposed testing.
