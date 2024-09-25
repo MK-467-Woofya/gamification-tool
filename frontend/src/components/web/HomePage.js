@@ -74,9 +74,12 @@ export const HomePage = () => {
 
     return (
         <Container className="justify-content-md-center">
-            <div className="form-signin mt-5 text-center">
+            <div className="form-signin text-center">
                 <h1>Hi {message}. Welcome to Woofya.</h1>
                 <p>Enhance your dog's life with fun events and rewards!</p>
+            </div>
+            <div className="text-center">
+                <img src="img/homepage-img2.jpg" className="img-fluid" />
             </div>
         </Container>
     )
