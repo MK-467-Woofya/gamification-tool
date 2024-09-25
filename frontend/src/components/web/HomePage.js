@@ -79,7 +79,7 @@ export const HomePage = () => {
                 <p>Enhance your dog's life with fun events and rewards!</p>
             </div>
             <div className="text-center">
-                <img src="img/homepage-img2.jpg" className="img-fluid" />
+                <img src="img/homepage-img.jpg" className="img-fluid" />
             </div>
         </Container>
     )
