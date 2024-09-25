@@ -11,29 +11,21 @@ The API provides extensions to these features through user check-ins, quests, ti
 
 Ultimately, through enhanced interaction, this project seeks to incentivise attending these events and fostering more experiences between dog and owner.
 
-The project is comrised of three main parts:
+The project is comprised of two main parts:  
 
 ### 1. An __API tool__ built on Django Rest Framework
-The main focus of the project. A dedicated API tool which provides extensibility to the main mocked Woofya application described below. 
+The main focus of the project. A dedicated API tool which provides extensibility to the main Woofya application. 
 
 API users are extensions of a Woofya user and only store the user's username along with the gamification aspects provided by the API including points, quests, check-ins by the user, titles, badges, etc.
 
-After users login via the mock woofya site, an API user is created if the username doesn't exist within API database. Currently this is done at the mock homepage, but if used by the real main application, will need to be either integrated into the main application front end somewhere or possbily ran as a batch to connect the database of current users.  
+After entering a username, an API user is created if the username doesn't exist within API database. Currently this is done at the homepage, but if used by the real main application, will need to be either integrated into the main application front end somewhere or possbily ran as a batch to connect the database of current users.  
 
-Users can then access their gamification profile features. The API endpoints only require the username from the main application backend and an application-wide token.
-
-### 2. A __Web backend__ mock Woofya built to simulate the real application, also delivered through a Django REST application.
-This is the part of the project simulating the main Woofya application. For this project's purposes it should contain the main application users, locations, events - any relevant features of the main Woofya application the API needs to interact with.  
-
-Implementations in the web backend need only be minimal. Users only need credentials, for instance. And views for locations to check in to only need to show the API functionality. As such, there is no need to worry about making forms in the front end for creating, updating or deleting these entities. Posting directly to the endpoint, using the admin dashboard, or using some database initialiser is suitable enough.  
-
-Integration into the main application in production would remove the need for this backend, replacing the endpoints with those used by Woofya.
-
+Users can then access their gamification profile features. The API endpoints only require the username from the main application backend and an application-wide token.  
 
 ### 3. A __Reactjs frontend__ for delivering the content. 
 The frontend exists to primarily display the user gamification end points and their interactions with the main application. For instance, users will see and interact with their points, have a collection of titles, locations visited, quests active and completed, and have access to a marketplace for spending points.  
 
-Views simulating minimal versions of main application features are necessary for this project. E.g. Locations to check-in to. However, In the case of integration into the main application, these views would no longer be required, or could possibly be repurposed testing.
+Views simulating minimal versions of main application features may be necessary for this project. E.g. Locations to check-in to. However, In the case of integration into the main application, these views would no longer be required, or could possibly be repurposed testing.
 
 
 ## Table of Contents
@@ -41,25 +33,23 @@ Views simulating minimal versions of main application features are necessary for
 - [gamification-tool](#gamification-tool)
   - [Overview of the Project](#overview-of-the-project)
     - [1. An __API tool__ built on Django Rest Framework](#1-an-api-tool-built-on-django-rest-framework)
-    - [2. A __Web backend__ mock Woofya built to simulate the real application, also delivered through a Django REST application.](#2-a-web-backend-mock-woofya-built-to-simulate-the-real-application-also-delivered-through-a-django-rest-application)
     - [3. A __Reactjs frontend__ for delivering the content.](#3-a-reactjs-frontend-for-delivering-the-content)
   - [Table of Contents](#table-of-contents)
   - [How to run](#how-to-run)
     - [Project setup](#project-setup)
     - [Setting up the development environment](#setting-up-the-development-environment)
     - [Secrets and environment variables](#secrets-and-environment-variables)
-      - [Web and API .env files](#web-and-api-env-files)
+      - [API .env files](#api-env-files)
       - [Frontend .env file](#frontend-env-file)
     - [Building and running the containers](#building-and-running-the-containers)
     - [Stop the container](#stop-the-container)
-  - [Setting up and accessing Web backend and API](#setting-up-and-accessing-web-backend-and-api)
+  - [Setting up and accessing API backend](#setting-up-and-accessing-api-backend)
     - [Script for API testing](#script-for-api-testing)
     - [Test base endpoints](#test-base-endpoints)
     - [Admin access](#admin-access)
     - [User access](#user-access)
     - [Postman](#postman)
       - [For the API](#for-the-api)
-      - [For the Web backend](#for-the-web-backend)
   - [Access react webpage](#access-react-webpage)
     - [Authorization](#authorization)
   - [Extra command line actions](#extra-command-line-actions)
@@ -97,19 +87,19 @@ So how to go about setting up the environment...
 
     - This is either done in the root directory i.e. `/gamification-tool` via command line or the easier way through VS Code - [documentation here](https://code.visualstudio.com/docs/python/environments)
 
-3. With the .venv active we can run the following from the `/web` and `/api` directories to install Django and the other required packages  
+3. With the .venv active we can run the following from the `/api` directory to install Django and the other required packages  
 `$ python pip install pip install --no-cache-dir -r requirements.txt` 
 
-    - Later, when adding new packages to the web backend or api use `$ pip freeze > requirements.txt` from the correct directory to update the file  
+    - Later, when adding new packages to the api use `$ pip freeze > requirements.txt` from the correct directory to update the file  
 
 
-4. Build the frontend application locally. This requires nodejs/npm.  
+1. Build the frontend application locally. This requires nodejs/npm.  
 From the `/frontend` directory run `npm install` to build and `npm start` if you want to run the front end as per the `package.json` file instructions.
 
 With this set up, we should be able to begin developing locally. But we can't run everything yet.
 
 ### Secrets and environment variables
-Each application frontend, web and api have a `.env` file associated with it. It contains the environment variables and secrets to be used during development. They should be in each separate application's root folder (frontend, web, api).  
+Each application frontend and api have a `.env` file associated with them. They contain the environment variables and secrets to be used during development. They should be in each separate application's root folder.  
 
 These files are in `.gitignore` so they aren't version controlled meaning we each need to make them separately at the moment.
 
@@ -118,19 +108,18 @@ Ideally they should be ignored by docker also, but that is more important in the
 The .env files excluded from git in the project structure:    
 ![alt text](readme-imgs/proj-structure-1.png)
 
-#### Web and API .env files
+#### API .env files
 We need to make our own .env files.  
 
 The pip package python-dotenv should already be installed from the `requirements.txt` earlier. If not, install it.
 
-Here's the example for the Django environment variables in the web backend.
+Here's the example for the Django environment variables in the backend.
 ![alt text](readme-imgs/env-1.png)  
-The Django Secret key is added to .env. Check the commented SECRET_KEY variable in settings.py for both API and web to get the values.
+
+The Django Secret key is added to .env. Check the commented SECRET_KEY variable in settings.py to get the values.
 
 At the moment the database environment variables can be found in `docker-compose.yml` in the project root so just copy them over.  
-![alt text](readme-imgs/env-2.png) 
-
-Do the same for the API .env
+![alt text](readme-imgs/env-2.png)  
 
 #### Frontend .env file
 The React .env file is handled by the react-scripts library.  
@@ -154,12 +143,10 @@ The above should only be done in a dev environment when there is no data to be l
 1. Spin up containers:  
 `$ docker-compose up --build`
 
-This builds and runs five containers:
+This builds and runs three containers:
 1. frontend
-2. web
-3. api
-4. web_db
-5. api_db 
+2. api
+3. api_db 
 
 Note: These containers can be referenced in terminal by their name.
 
@@ -172,7 +159,7 @@ Also note: Depending on the version of docker compose installation, the general 
 `$ docker-compose down`  
 or CTRL+c if the instance is attached to the terminal.
 
-## Setting up and accessing Web backend and API
+## Setting up and accessing API backend
 
 Every clean build of the containers will require migrations and creation of a super user.
 
@@ -180,11 +167,6 @@ For the API:
 1. `$ docker-compose exec api python manage.py makemigrations`
 2. `$ docker-compose exec api python manage.py migrate`  
 3. `$ docker-compose exec api python manage.py createsuperuser` and follow the prompts to make an admin  
-
-For the web backend  
-1. `$ docker-compose exec web python manage.py makemigrations` 
-2. `$ docker-compose exec web python manage.py migrate`  
-3. `$ docker-compose exec web python manage.py createsuperuser` and follow the prompts again
 
 Subsequent changes to the models will require migrations to update the database.
 
@@ -202,16 +184,15 @@ Another script to create points log(if user have no log):
 
 With the docker containers running try the endpoints in browser:
 
-- Web: http://localhost:8080/ - should render but doesn't have a registered endpoint
 - API: http://localhost:8000/ - should render but doesn't have a registered endpoint
 - Frontend - http://localhost:3000/ - should display login page
 
 ### Admin access
 
-Admin endpoints can be reached at http://localhost:8000/admin/ and http://localhost:8080/admin/ respectively
+Admin endpoints can be reached at http://localhost:8000/admin/
 
 ### User access
-The endpoints are accessible by users but not authorized from the browser due to the JWT authorization in the web backend application (localhost:8080) and the API Key in the API application (localhost:8000).  
+The endpoints are accessible by users but not authorized from the browser due to the API Key needed in request headers in the API application (localhost:8000).  
 
 ### Postman
 So that leaves Postman for testing endpoints. 
@@ -228,26 +209,15 @@ This is generated in the admin dashboard as below.
 And can be saved only once at the time of creation.
 ![alt text](readme-imgs/admin-2.png)  
 
-#### For the Web backend  
-Users are authenticated with JWT tokens.
-The post token endpoint generates tokens for a user given their username and password in the request body.  
-
-![alt text](readme-imgs/api-2.png)  
-
-All secured endpoints need to include the bearer token authorization using the access token.
-![alt text](readme-imgs/api-3.png)  
-
 ## Access react webpage
 Our application frontend can be accessed from http://localhost:3000/
 
 ### Authorization
-Web backend users simulating the real application  log in with their credentials. So you may need to make a user in http://localhost:8080/admin/
 
-Axios handles the access tokens, and refresh tokens of users through an interceptor after login.
+API users are created or retrieved after entering username in the 'login' page.  
 
 The API Key needs to be included in headers for any authorized API request.
-
-This is done through the use of reactscripts native .env file for secrets.
+This is done through the use of reactscripts native .env file for secrets.  
 
 ## Extra command line actions
 
@@ -265,13 +235,13 @@ Once in:
 
 ### How to open a python shell within the docker container:
 
-1. Run bash inside the web container:  
-`$docker-compose exec web sh`
+1. Run bash inside the api container:  
+`$docker-compose exec api sh`
 
 2. Open python shell:  
 `$python manage.py shell`  
 - Or in a one liner:  
-`$ docker-compose exec web python manage.py shell`
+`$ docker-compose exec api python manage.py shell`
 
 3. Import class and models from modules, save to db, etc.:
 ```
