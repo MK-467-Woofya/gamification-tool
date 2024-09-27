@@ -13,7 +13,8 @@ export const LeaderboardPage = () => {
         axios.get(`http://localhost:8000/leaderboard/${timeframe}/`, {
             headers: {
             'Content-Type': 'application/json',
-            'Gamification-Api-Key': process.env.REACT_APP_API_KEY
+            'Gamification-Api-Key': process.env.REACT_APP_API_KEY,
+            'Authorization': `UserID ${sessionStorage.getItem('uid')}`  // send UserID to backend
             }
           }  
         )

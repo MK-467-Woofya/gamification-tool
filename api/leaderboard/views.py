@@ -11,6 +11,12 @@ from user.models import CustomUser
 from user.models import PointsLog
 
 
+def get_user_id_from_request(request):
+    # get user id
+    user_id = request.headers.get('Authorization', '').split()[-1]
+    return user_id
+
+
 # get leaderboard by time
 def get_leaderboard_by_time_period(start_time):
     logs = PointsLog.objects.filter(created_at__gte=start_time, user__is_admin=False) \
