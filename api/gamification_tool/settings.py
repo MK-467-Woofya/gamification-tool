@@ -42,11 +42,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_extensions',
     'rest_framework',
     'rest_framework_api_key',
     'corsheaders',
     'user',
     'leaderboard',
+    'marketplace',
 ]
 AUTH_USER_MODEL = 'user.CustomUser'
 
@@ -145,8 +147,11 @@ STATIC_URL = 'static/'
 
 
 STATICFILES_DIRS = [
-    BASE_DIR,  # direct to react static files
+    BASE_DIR,
 ]
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
 
 # Default primary key field type

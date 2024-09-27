@@ -4,13 +4,15 @@ import { NavigationBar } from './components/ui/NavigationBar';
 import { HomePage } from './components/web/HomePage';
 import { LoginPage } from './components/web/LoginPage';
 import { LogoutPage } from './components/web/LogoutPage';
-import { LocationsPage } from './components/web/LocationsPage';
-import { EventsPage } from './components/web/EventsPage';
+import { LocationsPage } from './components/api/LocationsPage';
+import { EventsPage } from './components/api/EventsPage';
 import { ProfilePage } from './components/api/ProfilePage';
 import { CheckInsPage } from './components/api/CheckInsPage';
 import { QuestsPage } from './components/api/QuestsPage';
 import { LeaderboardPage } from './components/api/LeaderboardPage';
-import { MarketplacePage } from './components/api/MarketplacePage';
+import { MarketplaceHomePage } from './components/api/marketplace/MarketplaceHomePage';
+import { AvatarsPage } from './components/api/marketplace/AvatarsPage';
+import { TitlesPage } from './components/api/marketplace/TitlesPage';
 
 
 
@@ -27,8 +29,10 @@ function App() {
                     <Route path="/events" element={<EventsPage />} />
                     <Route path="/user/checkins" element={<CheckInsPage />} />
                     <Route path="/user/quests" element={<QuestsPage />} />
-                    <Route path="/user/leaderboard/" element={<LeaderboardPage />} />                    
-                    <Route path="/user/marketplace" element={<MarketplacePage />} />
+                    <Route path="/leaderboard/" element={<LeaderboardPage />} />                    
+                    <Route path="/marketplace" element={<MarketplaceHomePage />} />
+                    <Route path="/marketplace/avatars" element={<AvatarsPage />} />
+                    <Route path="/marketplace/titles" element={<TitlesPage />} />
                     <Route path="/logout" element={<LogoutPage />} />
                 </Routes>
             </Router>
