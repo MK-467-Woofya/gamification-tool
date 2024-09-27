@@ -13,16 +13,20 @@ from user.models import PointsLog
 
 # get leaderboard by time
 def get_leaderboard_by_time_period(start_time):
-    logs = PointsLog.objects.filter(created_at__gte=start_time).select_related('user').order_by('-experience_points')
+    logs = PointsLog.objects.filter(created_at__gte=start_time, user__is_admin=False) \
+                            .select_related('user') \
+                            .order_by('-experience_points')[:10]
     
     user_scores = {}
     for log in logs:
-        if log.user.id not in user_scores:  # user id is key
-            user_scores[log.user.id] = {
+        user_id = log.user.id
+        if user_id not in user_scores or user_scores[user_id]['experience_points'] < log.experience_points:
+            user_scores[user_id] = {
                 'username': log.user.username,
                 'experience_points': log.experience_points,
                 'shop_points': log.shop_points,
             }
+
     return sorted(user_scores.values(), key=lambda x: x['experience_points'], reverse=True)
 
 
