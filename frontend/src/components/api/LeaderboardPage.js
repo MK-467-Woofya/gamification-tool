@@ -3,21 +3,20 @@ import axios from 'axios';
 import '../styles.css';
 import Container from 'react-bootstrap/Container';
 
-
 export const LeaderboardPage = () => {
     const [users, setUsers] = useState([]);
     const [timeframe, setTimeframe] = useState('weekly');  // weekly by default
+    const currentUserId = sessionStorage.getItem('uid');  // Get current user id
 
     useEffect(() => {
         // request data by time period
         axios.get(`http://localhost:8000/leaderboard/${timeframe}/`, {
             headers: {
-            'Content-Type': 'application/json',
-            'Gamification-Api-Key': process.env.REACT_APP_API_KEY,
-            'Authorization': `UserID ${sessionStorage.getItem('uid')}`  // send UserID to backend
+                'Content-Type': 'application/json',
+                'Gamification-Api-Key': process.env.REACT_APP_API_KEY,
+                'Authorization': `UserID ${currentUserId}`  // send UserID to backend
             }
-          }  
-        )
+        })
             .then(response => {
                 console.log(response.data);
                 setUsers(response.data);
@@ -25,10 +24,10 @@ export const LeaderboardPage = () => {
             .catch(error => {
                 console.error('Error fetching leaderboard data:', error);
             });
-    }, [timeframe]);
+    }, [timeframe, currentUserId]);
 
     return (
-        <Container className="justify-content-md-center">
+        <Container className="justify-content-md-center leaderboard-container">
             <div>
                 <h1>{timeframe.charAt(0).toUpperCase() + timeframe.slice(1)} Leaderboard</h1>
             </div>
@@ -51,7 +50,7 @@ export const LeaderboardPage = () => {
                     </thead>
                     <tbody>
                         {Array.isArray(users) && users.map((user, index) => (
-                            <tr key={index}>
+                            <tr key={index} className={String(user.id) === currentUserId ? 'highlight' : ''}>
                                 <td>{user.username}</td>
                                 <td>{user.experience_points}</td>
                                 <td>{user.shop_points}</td>
@@ -63,4 +62,3 @@ export const LeaderboardPage = () => {
         </Container>
     );
 }
-
