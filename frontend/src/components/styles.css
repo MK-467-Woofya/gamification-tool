@@ -11,11 +11,13 @@ h1 {
     color: #333;
     text-align: center;
     margin-top: 20px;
-    font-size: 24px;
+    font-size: 28px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
 }
 
 button {
-    background-color: #BDAA96;
+    background-color: #1c1c1c;
     color: white;
     padding: 10px 20px;
     margin: 10px 5px 10px 0;
@@ -26,14 +28,14 @@ button {
 }
 
 button:hover {
-    background-color: #BDAA96;
+    background-color: #2d2d2d;
 }
 
 .container {
     width: 50%; 
     margin: auto;
     padding: 20px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     background: white;
     border-radius: 8px;
 }
@@ -48,14 +50,16 @@ table {
 th, td {
     padding: 12px 15px;
     text-align: left !important;
-    border-bottom: 2px solid #333 !important;
+    border-bottom: 2px solid #ddd !important;
 }
 
 th {
-    background-color: #2980b9;
+    background-color: #1c1c1c;
     color: white;
     text-align: left;
     font-size: 18px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
 }
 
 td {
@@ -65,25 +69,32 @@ td {
 }
 
 tr:nth-child(even) {
-    background-color: #ecf0f1;
+    background-color: #f2f2f2;
+}
+
+tr.highlight {
+    background-color: #000;
+    color: #fff;
+    font-weight: bold;
 }
 
 select {
     padding: 10px;
     margin-bottom: 20px;
-    border: 2px solid #BDAA96;
+    border: 2px solid #1c1c1c;
     border-radius: 5px;
     font-size: 16px;
     cursor: pointer;
     outline: none;
+    background-color: white;
 }
 
 select:hover {
-    border-color: #2980b9;
+    border-color: #2d2d2d;
 }
 
 .navbar-brand {
-      margin-left: 15px;
+    margin-left: 15px;
 }
 
 .nav-link {
@@ -92,6 +103,10 @@ select:hover {
     color: #000 !important;
 }
 
-.container {
+.leaderboard-container {
     box-shadow: none;
+    padding: 40px;
+    border: 1px solid #ccc;
+    background-color: #fafafa;
+    border-radius: 10px;
 }
