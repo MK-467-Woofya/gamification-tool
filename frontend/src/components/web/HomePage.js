@@ -17,8 +17,8 @@ export const HomePage = () => {
             }
             })
             .then(response => {
-                console.log(response.data.results);
-                setUsers(response.data.results);
+                console.log(response.data);
+                setUsers(response.data);
             })
             .catch(error => {
                 console.error('Error fetching users data:', error);
@@ -49,7 +49,7 @@ export const HomePage = () => {
         if(users.length > 0){
             var userExists = false;
             users.forEach(user => {
-                if(user.username.includes(sessionStorage.getItem('username'))){
+                if(user.username == sessionStorage.getItem('username')){
                     userExists = true;
                 }
 

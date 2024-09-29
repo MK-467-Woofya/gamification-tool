@@ -15,6 +15,7 @@ class CustomUserViewSet(viewsets.ModelViewSet):
     """
     queryset = CustomUser.objects.all().order_by('-username')
     serializer_class = CustomUserSerializer
+    pagination_class = None
     
     @action(detail=False, methods=['get'])
     def leaderboard(self, request):
