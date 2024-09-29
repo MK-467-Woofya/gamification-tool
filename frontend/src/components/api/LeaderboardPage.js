@@ -5,16 +5,21 @@ import Container from 'react-bootstrap/Container';
 
 export const LeaderboardPage = () => {
     const [users, setUsers] = useState([]);
-    const [timeframe, setTimeframe] = useState('weekly');  // weekly by default
-    const currentUserId = sessionStorage.getItem('uid');  // Get current user id
+    const [timeframe, setTimeframe] = useState('weekly');  // default
+    const [isFriends, setIsFriends] = useState(false);  // global
+    const currentUsername = sessionStorage.getItem('username');  // current user name
 
     useEffect(() => {
-        // request data by time period
-        axios.get(`http://localhost:8000/leaderboard/${timeframe}/`, {
+        // friend or global
+        const apiEndpoint = isFriends
+            ? 'http://localhost:8000/leaderboard/friends/'  // friend API
+            : `http://localhost:8000/leaderboard/${timeframe}/`;  // global API
+
+        axios.get(apiEndpoint, {
             headers: {
                 'Content-Type': 'application/json',
                 'Gamification-Api-Key': process.env.REACT_APP_API_KEY,
-                'Authorization': `UserID ${currentUserId}`  // send UserID to backend
+                'Authorization': `Username ${currentUsername}`  // send user name
             }
         })
             .then(response => {
@@ -24,33 +29,37 @@ export const LeaderboardPage = () => {
             .catch(error => {
                 console.error('Error fetching leaderboard data:', error);
             });
-    }, [timeframe, currentUserId]);
+    }, [timeframe, isFriends, currentUsername]);
 
     return (
         <Container className="justify-content-md-center leaderboard-container">
             <div>
-                <h1>{timeframe.charAt(0).toUpperCase() + timeframe.slice(1)} Leaderboard</h1>
+                <h1>{isFriends ? 'Friends' : timeframe.charAt(0).toUpperCase() + timeframe.slice(1)} Leaderboard</h1>
             </div>
             <div className='mt-4'>
-                <select onChange={(e) => setTimeframe(e.target.value)}>
-                    <option value="weekly">Weekly</option>
-                    <option value="monthly">Monthly</option>
-                    <option value="yearly">Yearly</option>
-                    <option value="alltime">All Time</option>
-                </select>
+                <button onClick={() => setIsFriends(false)} className={!isFriends ? 'active' : ''}>global</button>
+                <button onClick={() => setIsFriends(true)} className={isFriends ? 'active' : ''}>friends</button>
+                {!isFriends && (
+                    <select onChange={(e) => setTimeframe(e.target.value)}>
+                        <option value="weekly">Weekly</option>
+                        <option value="monthly">Monthly</option>
+                        <option value="yearly">Yearly</option>
+                        <option value="alltime">All Time</option>
+                    </select>
+                )}
             </div>
             <div>
                 <table>
                     <thead>
                         <tr>
-                            <th>Username</th>
-                            <th>Experience Points</th>
-                            <th>Shop Points</th>
+                            <th>name</th>
+                            <th>experience</th>
+                            <th>available points</th>
                         </tr>
                     </thead>
                     <tbody>
                         {Array.isArray(users) && users.map((user, index) => (
-                            <tr key={index} className={String(user.id) === currentUserId ? 'highlight' : ''}>
+                            <tr key={index} className={user.is_current_user ? 'highlight' : ''}>
                                 <td>{user.username}</td>
                                 <td>{user.experience_points}</td>
                                 <td>{user.shop_points}</td>
@@ -62,3 +71,5 @@ export const LeaderboardPage = () => {
         </Container>
     );
 }
+
+export default LeaderboardPage;
