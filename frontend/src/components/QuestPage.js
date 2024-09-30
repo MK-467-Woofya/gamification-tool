@@ -8,7 +8,7 @@ const QuestPage = () => {
   setLoggedInUser('user3');
 
   useEffect(() => {
-    const loggedInUser = localStorage.getItem('loggedInUser');
+    const loggedInUser = getLoggedInUser();
     const userQuests = mockData.users.find(user => user.username === loggedInUser)?.quests;
     if (userQuests) {
       setQuests(userQuests);
