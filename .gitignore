@@ -111,7 +111,8 @@ celerybeat-schedule.*
 *.sage.py 
 
 # Environments 
-.env 
+.env
+.env.*
 */*.env
 .venv 
 env/ 
@@ -163,6 +164,7 @@ GitHub.sublime-settings
 /frontend/build
 
 # misc
+# */*.DS_Store
 /frontend/.DS_Store
 /frontend/.env.local
 /frontend/.env.development.local
