@@ -10,6 +10,3 @@ urlpatterns = [
     path('alltime/', leaderboard, name='leaderboard'),  # total
 
 ]
-
-
-

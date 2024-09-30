@@ -33,7 +33,7 @@ Views simulating minimal versions of main application features may be necessary 
 - [gamification-tool](#gamification-tool)
   - [Overview of the Project](#overview-of-the-project)
     - [1. An __API tool__ built on Django Rest Framework](#1-an-api-tool-built-on-django-rest-framework)
-    - [3. A __Reactjs frontend__ for delivering the content.](#3-a-reactjs-frontend-for-delivering-the-content)
+    - [2. A __Reactjs frontend__ for delivering the content.](#2-a-reactjs-frontend-for-delivering-the-content)
   - [Table of Contents](#table-of-contents)
   - [How to run](#how-to-run)
     - [Project setup](#project-setup)
@@ -61,6 +61,12 @@ Views simulating minimal versions of main application features may be necessary 
   - [2. Check-in:](#2-check-in)
   - [3. Leaderboard](#3-leaderboard)
   - [4. Marketplace](#4-marketplace)
+- [Production setup](#production-setup)
+  - [Two settings and environment variables](#two-settings-and-environment-variables)
+  - [Nginx for reverse proxy and serving static content](#nginx-for-reverse-proxy-and-serving-static-content)
+  - [Running the production build](#running-the-production-build)
+  - [What's different in production](#whats-different-in-production)
+  - [To do remaining for production](#to-do-remaining-for-production)
 
 
 ## How to run
@@ -109,6 +115,8 @@ The .env files excluded from git in the project structure:
 ![alt text](readme-imgs/proj-structure-1.png)
 
 #### API .env files
+__Important: The .env strategy here is deprecated, and the new strategy is temporarily detailed in the production section of the README.__  
+
 We need to make our own .env files.  
 
 The pip package python-dotenv should already be installed from the `requirements.txt` earlier. If not, install it.
@@ -306,3 +314,76 @@ Contains:
     - Titles
     - Milestones (_unsure if this should be here or in the user app_)
     - Any other cosmetics
+
+# Production setup
+
+For splitting the project into develop and production applications, we need to utilise separate settings for the application, as well as use tools to serve the application in a production environment.  
+
+Our production set up follows [this tutorial](https://testdriven.io/blog/dockerizing-django-with-postgres-gunicorn-and-nginx) which utilizes gunicorn as the WGSI server, and Nginx for reverse proxy. 
+
+This setup is for the API and database. It is uncertain if the frontend should be hosted with the API or should be ran from the dev machines to mimic the actual functionality of the API. The seond option would alos mean less hosting costs.
+
+## Two settings and environment variables
+
+Essentially, we now have two docker-compose.yml files:  
+- `docker-compose.yml` - for building our local development environment
+- `docker-compose.prod.yml` - for building our production environment
+
+Settings in the Django project which require differences between environments are stored in .env files in the project root and are imported into the docker-compose.yml's and Django. The files are:  
+- .env.dev - for develop environment  
+![alt text](readme-imgs/env-dev-1.png)  
+
+- .env.prod  
+![alt text](readme-imgs/env-prod-1.png)  
+
+- .env.prod.db  
+![alt text](readme-imgs/env-prod-db-1.png)  
+
+(Note: These are placehoder env values)
+
+## Nginx for reverse proxy and serving static content
+Nginx contains both a config file, and a Dockerfile as it is part of the production docker-compose build.  
+
+![alt text](readme-imgs/nginx-1.png)  
+
+At this point, Nginx is providing a reverse proxy service to the API, where requests are sent to Nginx at port 1337, which it forwards to the actual application.
+
+The static from the Django project are served in the locations specified by the config file which corresponds to volumes created in `docker-compose.prod.yml`.
+
+## Running the production build
+The following tasks need to be run whenever the production container is being built:  
+1. Building and running in a detached instance:  
+`$ docker-compose -f docker-compose.prod.yml up -d --build`  
+
+2. Migrating the models to the database:  
+`$ docker-compose -f docker-compose.prod.yml exec web python manage.py migrate --noinput`  
+
+3. Collecting static for the project, including media:  
+`$ docker-compose -f docker-compose.prod.yml exec web python manage.py collectstatic --no-input --clear`  
+
+4. Creating the superuser as before:  
+`$ docker-compose -f docker-compose.prod.yml exec api python manage.py createsuperuser`  
+
+5. Generate a new API-Key for the frontend:  
+Admin dashboard is accessible at http://localhost:1337/admin/  
+
+6. Add the API-Key to the frontend .env files as before
+7. Build and run the front end dockerfile on the usual port. 
+
+8. Spinning down the container:  
+`$ docker-compose -f docker-compose.prod.yml down -v`  
+
+
+Note: When spinning down the develop and production containers (prior to actualy production) it is important to include the `-v` tag because both use the same database port. This won't be a problem when it goes to hosted production.
+
+## What's different in production
+1. We are no longer using `manage.py run server`. Production uses the Gunicorn command.
+2. The production Dockerfile `Dockerfile.prod` is multistage and contains a Python linter. So when we build the application, it will raise errors and stop the build process for un-conventioned python code. Build again after fixing the code.
+3. All requests are directed to the Nginx proxy server, currently at http://localhost:1337.
+
+## To do remaining for production
+
+- Implement SSL for secure https protocol of our application
+- Choose web host for the production environment
+- Upload and build a staging environment for testing and showing the client
+- Determine and implement how the front end will be served, whether on local machines or also uploaded to the hosting site

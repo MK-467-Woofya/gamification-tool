@@ -6,34 +6,35 @@ from django.utils import timezone
 from django.dispatch import receiver
 from django.db.models.signals import post_save
 
+
 class CustomUserManager(BaseUserManager):
     """
     Custom UserManager model class
     """
     def create_user(self, username, level=1, title=None, experience_points=0, shop_points=0, password=None, location=None, is_admin=False):
         """
-        Create a user with only their username, and gamification fields 
+        Create a user with only their username, and gamification fields
         """
         if not username:
             raise ValueError("User must have username")
-        
+
         user = self.model(
             username=username,
-            level = level,
-            experience_points = experience_points,
-            shop_points = shop_points,
-            title = title,
-            location = location,
-            is_admin = is_admin,
-            #titles = titles,
-            #milestones = milestones,
-            #badges = badges,
+            level=level,
+            experience_points=experience_points,
+            shop_points=shop_points,
+            title=title,
+            location=location,
+            is_admin=is_admin,
+            # titles = titles,
+            # milestones = milestones,
+            # badges = badges,
         )
-        
+
         user.set_password(password)
         user.save(using=self._db)
         return user
-    
+
     def create_superuser(self, username, password):
         """
         Create custom superuser for admin
@@ -44,19 +45,20 @@ class CustomUserManager(BaseUserManager):
         )
         user.is_admin = True
         user.save(using=self.db)
-        return user   
+        return user
+
 
 class CustomUser(AbstractBaseUser):
     """
     CustomUser class
     """
-    
+
     CITY_CHOICES = [
         ('Melbourne', 'Melbourne'),
         ('Sydney', 'Sydney'),
         # add more locations here
     ]
-    
+
     username = models.CharField(
         verbose_name="Username",
         max_length=255,
@@ -73,15 +75,15 @@ class CustomUser(AbstractBaseUser):
 
     experience_points = models.IntegerField("Experience points", default=0)
     shop_points = models.IntegerField("Shop points", default=0)
-    title = models.CharField("User title",max_length=100, blank=True, null=True)
+    title = models.CharField("User title", max_length=100, blank=True, null=True)
     location = models.CharField("Location", max_length=100, choices=CITY_CHOICES, blank=True, null=True)  # Optional location field
-    #titles = models.ForeignKey(titles, on_delete=models.CASCADE)
-    #milestones = models.ForeignKey(milestones, on_delete=models.CASCADE)
-    #badges = models.ForeignKey(badges, on_delete=models.CASCADE)
+    # titles = models.ForeignKey(titles, on_delete=models.CASCADE)
+    # milestones = models.ForeignKey(milestones, on_delete=models.CASCADE)
+    # badges = models.ForeignKey(badges, on_delete=models.CASCADE)
 
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
-    
+
     objects = CustomUserManager()
 
     USERNAME_FIELD = "username"
@@ -89,7 +91,7 @@ class CustomUser(AbstractBaseUser):
 
     def __str__(self):
         return self.username
-    
+
     def has_perm(self, perm, obj=None):
         return True
 
@@ -99,14 +101,14 @@ class CustomUser(AbstractBaseUser):
     @property
     def is_staff(self):
         return self.is_admin
-    
-class FriendList(models.Model): # this is a many to many relation linking with user model
+
+
+class FriendList(models.Model):  # this is a many to many relation linking with user model
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name="friend_list")
     friends = models.ManyToManyField(CustomUser, related_name="friends", blank=True)
 
     def __str__(self):
         return f"{self.user.username}'s friend list"
-
 
 
 class PointsLog(models.Model):
@@ -121,7 +123,7 @@ class PointsLog(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.experience_points} - {self.created_at}"
-    
+
 
 @transaction.atomic
 def update_user_points(user, experience_points_delta, shop_points_delta):
@@ -142,6 +144,7 @@ def update_user_points(user, experience_points_delta, shop_points_delta):
         shop_points=user.shop_points
     )
 
+
 @receiver(post_save, sender=CustomUser)
 def create_initial_points_log(sender, instance, created, **kwargs):
     if created:
@@ -150,4 +153,3 @@ def create_initial_points_log(sender, instance, created, **kwargs):
             experience_points=instance.experience_points,
             shop_points=instance.shop_points
         )
-    

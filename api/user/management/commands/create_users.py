@@ -2,6 +2,7 @@ from django.core.management.base import BaseCommand
 from user.models import CustomUser
 import random
 
+
 class Command(BaseCommand):
     help = 'Generates test users for the application'
 

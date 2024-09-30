@@ -12,12 +12,13 @@ def get_user_id_from_request(request):
     user_id = request.headers.get('Authorization', '').split()[-1]
     return user_id
 
+
 # get leaderboard by time, limit to top 10
 def get_leaderboard_by_time_period(start_time):
     logs = PointsLog.objects.filter(created_at__gte=start_time, user__is_admin=False) \
                             .select_related('user') \
                             .order_by('-experience_points')[:10]  # top 10
-    
+
     user_scores = {}
     for log in logs:
         user_id = log.user.id
@@ -36,7 +37,7 @@ def get_leaderboard_by_time_frame(time_delta, request):
     start_time = timezone.now() - time_delta
     leaderboard = get_leaderboard_by_time_period(start_time)  # top 10
     current_user_id = get_user_id_from_request(request)
-    
+
     # if not in top 10
     current_user_in_top_10 = any(user['id'] == current_user_id for user in leaderboard)
 
@@ -60,21 +61,24 @@ def weekly_leaderboard(request):
     leaderboard = get_leaderboard_by_time_frame(timedelta(weeks=1), request)
     return Response(leaderboard)
 
+
 @api_view(['GET'])
 def monthly_leaderboard(request):
     leaderboard = get_leaderboard_by_time_frame(timedelta(days=30), request)
     return Response(leaderboard)
+
 
 @api_view(['GET'])
 def yearly_leaderboard(request):
     leaderboard = get_leaderboard_by_time_frame(timedelta(days=365), request)
     return Response(leaderboard)
 
+
 @api_view(['GET'])
 def leaderboard(request):
     users = CustomUser.objects.filter(is_admin=False).order_by('-experience_points')[:10]  # top 10
     current_user_id = get_user_id_from_request(request)
-    
+
     serializer = CustomUserSerializer(users, many=True, context={'request': request})
     users_data = serializer.data
 
@@ -88,6 +92,7 @@ def leaderboard(request):
         users_data.append(current_user_data)  # put user to the tail
 
     return Response(users_data)
+
 
 def index(request):
     return HttpResponse("Leaderboard index page.")

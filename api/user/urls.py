@@ -8,7 +8,7 @@ router = DefaultRouter()
 router.register(r'users', views.CustomUserViewSet, basename='users')
 
 urlpatterns = [
-    path("", include(router.urls)), # /user
+    path("", include(router.urls)),  # /user
 ]
 
 # leaderboard - no need this part because @action in views.py/CustomerUserViewSet will create path for it
