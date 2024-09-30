@@ -110,3 +110,12 @@ select:hover {
     background-color: #fafafa;
     border-radius: 10px;
 }
+
+.active {
+    background-color: #3498db;
+    color: white;
+}
+
+.highlight {
+    background-color: yellow;
+}
