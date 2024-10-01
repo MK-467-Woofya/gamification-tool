@@ -15,6 +15,7 @@ class CustomUserViewSet(viewsets.ModelViewSet):
     """
     queryset = CustomUser.objects.all().order_by('-username')
     serializer_class = CustomUserSerializer
+    pagination_class = None
     
     @action(detail=False, methods=['get'])
     def leaderboard(self, request):
@@ -52,7 +53,8 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         self.perform_update(serializer)
         
         return Response(serializer.data)
-    
+
+ 
     @action(methods=['GET'], detail=False, url_path='username/(?P<username>\w+)')
     def getByUsername(self, request, username):
         user = get_object_or_404(CustomUser, username=username)

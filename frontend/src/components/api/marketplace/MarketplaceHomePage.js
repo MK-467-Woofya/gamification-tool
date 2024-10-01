@@ -13,12 +13,12 @@ export const MarketplaceHomePage = () => {
             <h1>Marketplace items</h1>
             <section>
                 <h2>Titles</h2>
-                <a href="/marketplace/titles">Got to Titles</a>
+                <a href="/marketplace/titles">Go to Titles</a>
             </section>
 
             <section>
                 <h2>Avatars</h2>
-                <a href="/marketplace/avatars">Got to Avatars</a>
+                <a href="/marketplace/avatars">Go to Avatars</a>
             </section>
         </Container>
     );

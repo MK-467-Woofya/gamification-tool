@@ -48,7 +48,10 @@ export const TitlesPage = () => {
                         <tr>
                             <th>Title name</th>
                             <th>Title text</th>
+                            <th>Title description</th>
+                            <th>Item collaborator</th>
                             <th>Cost</th>
+                            <th>Purchase if listed</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -56,7 +59,14 @@ export const TitlesPage = () => {
                             <tr key={index}>
                                 <td>{title.name}</td>
                                 <td>{title.text}</td>
+                                <td>{title.description}</td>
+                                <td>{title.partner}</td>
                                 <td>{title.cost}</td>
+                                <td>
+                                    {title.is_listed ?
+                                        <button>Buy</button>
+                                        : <p>Not listed</p>}
+                                </td>
                             </tr>
                         ))}
                     </tbody>

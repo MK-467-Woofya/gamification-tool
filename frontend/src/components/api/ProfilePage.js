@@ -8,6 +8,8 @@ import Container from 'react-bootstrap/Container';
  */
 export const ProfilePage = () => {
     const [user, setUser] = useState(null);
+    const [titles, setTitles] = useState([]);
+    const [avatars, setAvatars] = useState([]);
 
     useEffect(() => {
         console.log('Fetching user data...'); // useEffect
@@ -30,8 +32,7 @@ export const ProfilePage = () => {
                 console.error('Error fetching user data:', error);
             });
     }, []);
-    
-    
+
 
     if (!user) { // return this while loading
         return <div>Loading...</div>;
@@ -54,10 +55,57 @@ export const ProfilePage = () => {
                 <p>Shop Points: {user.shop_points}</p>
             </section>
 
-            <section>
-                <h2>Achievements and Titles</h2>
-                <p>Title: {user.title}</p>
-            </section>
+            <Container className="justify-content-md-center">
+            <div>
+                <h1>Titles</h1>
+            </div>
+            <div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Title name</th>
+                            <th>Title text</th>
+                            <th>Cost</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {Array.isArray(user.titles) && user.titles.map((title, index) => (
+                            <tr key={index}>
+                                <td>{title.name}</td>
+                                <td>{title.text}</td>
+                                <td>{title.cost}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+            </Container>
+
+            <Container className="justify-content-md-center">
+            <div>
+                <h1>Avatars</h1>
+            </div>
+            <div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Avatar name</th>
+                            <th>Avatar</th>
+                            <th>Cost</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {Array.isArray(user.avatars) && user.avatars.map((avatar, index) => (
+                            <tr key={index}>
+                                <td>{avatar.name}</td>
+                                <td><img src={avatar.img_url} alt={avatar.name} width={60} height={60}/></td>
+                                <td>{avatar.cost}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+            </Container>
 
             <section>
                 <h2>Visited Locations and Events</h2>
