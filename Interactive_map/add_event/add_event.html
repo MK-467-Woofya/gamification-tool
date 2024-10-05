@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"> <!-- Character encoding set to UTF-8 for wide language support -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Ensures responsiveness on different screen sizes -->
+    <title>Doggy Events</title> <!-- Page title that appears on the browser tab -->
+    
+    <!-- Link to the external stylesheet for custom styles -->
+    <link rel="stylesheet" href="styles.css">  <!-- Custom CSS styles for the page -->
+
+    <!-- Link to Leaflet's CSS file for map styling -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+</head>
+<body>
+
+    <!-- Navigation bar at the top for easy navigation between Add and Remove event pages -->
+    <div class="nav-bar">
+        <!-- Link to add event page, currently active -->
+        <a href="add_event.html" class="active">Add Event</a>
+        <!-- Link to remove event page -->
+        <a href="remove_event.html">Remove Event</a>
+    </div>
+    
+    <!-- Main heading for the page -->
+    <h1>Add New Doggy Event</h1>
+
+    <!-- Flex container to hold the form and the map side by side -->
+    <div class="container">
+        <!-- Form section for adding event details -->
+        <div id="event-form-section">
+            <!-- Event form for inputting event details -->
+            <form id="event-form">
+                <!-- Input field for the event name -->
+                <label for="name">Event Name:</label>
+                <input type="text" id="name" required><br> <!-- Event name is required -->
+
+                <!-- Input field for selecting the event date -->
+                <label for="date">Event Date:</label>
+                <input type="date" id="date" required><br> <!-- Date picker for selecting date -->
+
+                <!-- Input field for selecting the event time -->
+                <label for="time">Event Time:</label>
+                <input type="time" id="time" required><br> <!-- Time picker for selecting time -->
+
+                <!-- Textarea for entering the event description -->
+                <label for="description">Event Description:</label>
+                <textarea id="description" required></textarea><br> <!-- Text area for the description, required -->
+
+                <!-- Dropdown selection for choosing the event genre/type -->
+                <label for="genre">Event Genre:</label>
+                <select id="genre" required> <!-- Event genre dropdown, required field -->
+                    <option value="dog_walk_meetup">Dog Walk Meetup</option>
+                    <option value="dog_training_session">Dog Training Session</option>
+                    <option value="dog_agility_competition">Dog Agility Competition</option>
+                    <option value="dog_adoption_event">Dog Adoption Event</option>
+                    <option value="puppy_playdate">Puppy Playdate</option>
+                    <option value="special_location">Special Location</option>
+                </select><br>
+
+                <!-- Input field for entering the 5-digit check-in code -->
+                <label for="code">Check-In Code (5-Digits):</label>
+                <input type="text" id="code" pattern="[0-9]{5}" required><br> <!-- Regex pattern to enforce 5-digit numeric code -->
+
+                <!-- Placeholder for displaying the selected event location -->
+                <p id="event-location">Click on the map to set the event location</p>
+                
+                <!-- Submit button for adding the event -->
+                <button type="submit">Add Event</button>
+            </form>
+        </div>
+
+        <!-- Container for displaying the map (powered by Leaflet.js) -->
+        <div id="map"></div> <!-- The map will take up this space -->
+    </div>
+
+    <!-- Link to the Leaflet.js library to enable map functionality -->
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+
+    <!-- Link to the custom JavaScript file for handling event addition and map interaction -->
+    <script src="add_event.js"></script>
+</body>
+</html>
