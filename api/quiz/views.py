@@ -8,6 +8,7 @@ from user.models import CustomUser
 from .models import Quiz, QuizQuestion, UserQuizScore
 
 import logging
+import random  # Import random module to enable random selection
 
 logger = logging.getLogger(__name__)
 
@@ -15,14 +16,16 @@ logger = logging.getLogger(__name__)
 @permission_classes([AllowAny])
 def get_quiz_questions(request, quiz_id):
     quiz = get_object_or_404(Quiz, id=quiz_id)
-    questions = quiz.questions.all()
+    # Randomly select 3 questions from the quiz
+    all_questions = list(quiz.questions.all())
+    selected_questions = random.sample(all_questions, k=3)  # randomly choose 3 quiz(can change k value here)
     question_list = [
         {
             'id': q.id,
             'question_text': q.question_text,
             'choices': [{'id': c.id, 'text': c.text} for c in q.choices.all()],
             'points': q.points,
-        } for q in questions
+        } for q in selected_questions
     ]
     return Response({'quiz_name': quiz.name, 'questions': question_list})
 
@@ -81,5 +84,3 @@ def finalize_quiz_score(request, quiz_id):
     update_user_points(user, total_score, 0)
 
     return Response({'message': 'User score updated successfully'})
-
-
