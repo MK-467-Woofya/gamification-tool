@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Metadata for character set and responsive design for mobile -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doggy Events Map</title>
+    
+    <!-- Link to external CSS file for custom styles -->
+    <link rel="stylesheet" href="styles.css">
+    
+    <!-- Link to Leaflet CSS for map rendering -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+</head>
+<body>
+    <!-- Header section that includes filters and sorting options -->
+    <header class="navbar">
+        <h1>Doggy Events Map</h1>
+        <!-- Filter and sorting input elements for user interaction -->
+        <div class="filter-sort-bar">
+            <input type="text" id="searchBar" placeholder="Search for events..."> <!-- Search bar -->
+            <select id="categoryFilter"> <!-- Dropdown to filter by event category -->
+                <option value="all">All Categories</option>
+                <option value="dog_walk_meetup">Dog Walk Meetup</option>
+                <option value="dog_training_session">Dog Training Session</option>
+                <option value="dog_agility_competition">Dog Agility Competition</option>
+                <option value="dog_adoption_event">Dog Adoption Event</option>
+                <option value="puppy_playdate">Puppy Playdate</option>
+                <option value="special_location">Special Location</option>
+            </select>
+            <select id="sortBy"> <!-- Dropdown to select sorting criteria -->
+                <option value="most-reviewed">Most Commented</option>
+                <option value="most-viewed">Most Viewed</option>
+                <option value="highest-rated">Highest Rated</option>
+            </select>
+        </div>
+    </header>
+
+    <!-- Main container to hold both the event list and the map side by side -->
+    <div id="container">
+        <!-- Section for listing events -->
+        <div id="event-list">
+            <h2>Event List</h2>
+            <ul id="events"></ul> <!-- Placeholder for dynamically populated event list -->
+        </div>
+        
+        <!-- Map container where Leaflet will render the map -->
+        <div id="map"></div>
+    </div>
+
+    <!-- Include Leaflet.js for map functionality -->
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    
+    <!-- Link to custom JavaScript that handles map and event interactions -->
+    <script src="main.js"></script>
+</body>
+</html>
