@@ -26,9 +26,9 @@ export const Quiz = () => {
             });
     }, []);
 
-    // submit logic
-    const handleSubmitAnswer = useCallback(() => {
-        if (!selectedAnswer) {
+    // Logic to handle answer submission
+    const handleSubmitAnswer = useCallback((isTimeout = false) => {
+        if (!selectedAnswer && !isTimeout) {
             setFeedback('Please select an answer before submitting.');
             return;
         }
@@ -39,7 +39,7 @@ export const Quiz = () => {
 
         // submit
         axios.post(`http://localhost:8000/quiz/${quizId}/submit/`, {
-            answers: { [questionId]: selectedAnswer }
+            answers: { [questionId]: selectedAnswer || '' }
         }, {
             headers: {
                 'Content-Type': 'application/json',
@@ -50,8 +50,10 @@ export const Quiz = () => {
             const { message } = response.data;
             const questionPoints = questions[currentQuestion].points || 0;
 
-            // update score
-            if (message === 'Correct') {
+            // Update feedback based on timeout
+            if (isTimeout) {
+                setFeedback('Time out!');
+            } else if (message === 'Correct') {
                 setFeedback('Correct!');
                 newTotalScore += questionPoints;
             } else {
@@ -105,8 +107,7 @@ export const Quiz = () => {
             const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
             return () => clearTimeout(timer);
         } else if (quizStarted && timeLeft === 0) {
-            setFeedback('Time\'s up!');
-            handleSubmitAnswer();
+            handleSubmitAnswer(true); // Pass true to indicate timeout
         }
     }, [quizStarted, timeLeft, quizFinished, handleSubmitAnswer]);
 
@@ -136,7 +137,7 @@ export const Quiz = () => {
                         ))}
                     </div>
                     <div className="submit-button-container">
-                        <button onClick={handleSubmitAnswer} className="submit-button">Submit</button>
+                        <button onClick={() => handleSubmitAnswer()} className="submit-button">Submit</button>
                     </div>
                     {feedback && <div className="feedback">{feedback}</div>}
                 </>
