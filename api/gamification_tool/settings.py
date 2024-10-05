@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'user',
     'leaderboard',
+    'quiz',
 ]
 AUTH_USER_MODEL = 'user.CustomUser'
 

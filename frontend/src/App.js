@@ -12,6 +12,8 @@ import { QuestsPage } from './components/api/QuestsPage';
 import { LeaderboardPage } from './components/api/LeaderboardPage';
 import { MarketplacePage } from './components/api/MarketplacePage';
 
+import { Quiz } from './components/api/Quiz';
+
 
 
 function App() {
@@ -30,6 +32,8 @@ function App() {
                     <Route path="/user/leaderboard/" element={<LeaderboardPage />} />                    
                     <Route path="/user/marketplace" element={<MarketplacePage />} />
                     <Route path="/logout" element={<LogoutPage />} />
+
+                    <Route path="/quiz" element={<Quiz />} />
                 </Routes>
             </Router>
         </div>
