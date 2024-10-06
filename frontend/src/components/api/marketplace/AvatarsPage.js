@@ -9,7 +9,7 @@ import Container from 'react-bootstrap/Container';
 export const AvatarsPage = () => {
     
     const [avatars, setAvatars] = useState(null);
-    const [user, setUser] = useState(null)
+    const [user, setUser] = useState(null);
 
     const uid = sessionStorage.getItem('uid');
 
@@ -45,52 +45,11 @@ export const AvatarsPage = () => {
             .catch(error => {
                 console.error('Error fetching user data:', error);
             });
-    }, []);
-
-    /*useEffect(() => {
-        const url = "http://localhost:8000/users/users/";
-            const data = {
-                'username': sessionStorage.getItem('username'),
-                'avatars': []
-            };
-            const headers = {
-                'Content-Type': 'application/json',
-                'Gamification-Api-Key': process.env.REACT_APP_API_KEY
-            }
         
-            axios.put(url, data, { headers })
-                .then(response => {
-                    console.log('User data posted:', response.data);    
-                })
-                .catch(error => {
-                    console.error('Error posting user data:', error);
-                });
+        console.log(avatars);
 
-        
-    }, []); */
+        }, []);
 
-    // If avatar is_listed and user doesn't already own
-    function canBuy(avatar){
-        var canPurchase = "Available";
-        if(!avatar.is_listed){
-            canPurchase = "Avatar is no longer available";
-        }
-
-        if(user.avatars){
-            user.avatars.forEach(user_avatar => {
-                if(user_avatar.id === avatar.id){
-                    canPurchase = "Already owned";
-                }
-            });
-        }
-        
-        console.log("USER Deets: ", user.avatars);
-
-        return canPurchase;
-    }
-
-    
-    
 
     if (!avatars) { // return this while loading
         return <div>Loading...</div>;
@@ -112,7 +71,7 @@ export const AvatarsPage = () => {
                             <th>Description</th>
                             <th>Cost</th>
                             <th>Is Listed?</th>
-                            <th>Purchasable</th>
+                            <th>Already owned</th>
                             <th>Buy</th>
                         </tr>
                     </thead>
@@ -126,12 +85,12 @@ export const AvatarsPage = () => {
                                 <td>{avatar.description}</td>
                                 <td>{avatar.cost}</td>
                                 <td>{avatar.is_listed.toString()}</td>
-                                <td>
-                                    {canBuy(avatar)}
+                                <td>{(avatar.users.includes(parseInt(uid,10))) ? <p>Already owned</p>
+                                    : <p>Not owned</p> }
                                 </td>
                                 <td>
-                                {avatar.is_listed ? <button>Buy</button>
-                                : <p>Not Available</p>}
+                                    {avatar.is_listed ? <button>Buy</button>
+                                    : <p>Not available</p> }
                                 </td>
 
                             </tr>

@@ -8,16 +8,13 @@ import Container from 'react-bootstrap/Container';
  */
 export const ProfilePage = () => {
     const [user, setUser] = useState(null);
-    const [titles, setTitles] = useState([]);
-    const [avatars, setAvatars] = useState([]);
 
     useEffect(() => {
         console.log('Fetching user data...'); // useEffect
 
-        const url = "http://localhost:8000/users/users/";
-        const uid = sessionStorage.getItem('uid');
-
-        const headers = {
+        var url = "http://localhost:8000/users/users/";
+        var uid = sessionStorage.getItem('uid');
+        var headers = {
             'Content-Type': 'application/json',
             'Gamification-Api-Key': process.env.REACT_APP_API_KEY
         };
@@ -32,6 +29,32 @@ export const ProfilePage = () => {
                 console.error('Error fetching user data:', error);
             });
     }, []);
+
+    function handleSubmit(e) {
+        e.preventDefault();
+
+        var url = "http://localhost:8000/users/users/";
+        var uid = sessionStorage.getItem('uid');
+        var headers = {
+            'Content-Type': 'application/json',
+            'Gamification-Api-Key': process.env.REACT_APP_API_KEY
+        };
+
+        const data = {
+            'experience_points': 1000,
+            'shop_points':  1000
+        };
+
+        var update_points_url = url + uid + '/update_points/';
+
+        axios.patch(update_points_url, data, { headers })
+        .then(response => {
+            console.log('Points added:', response.data);
+        })
+        .catch(error => {
+            console.error('Error adding points:', error);
+        });
+    }
 
 
     if (!user) { // return this while loading
@@ -53,6 +76,9 @@ export const ProfilePage = () => {
                 <p>Level: {user.level}</p>
                 <p>Experience: {user.experience_points}</p>
                 <p>Shop Points: {user.shop_points}</p>
+                <form onSubmit={handleSubmit}>
+                    <button type="submit">+1000 points</button>
+                </form>
             </section>
 
             <Container className="justify-content-md-center">

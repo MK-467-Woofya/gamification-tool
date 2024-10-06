@@ -25,7 +25,7 @@ from django.views.generic import TemplateView
 from django.urls import re_path
 
 
-
+# Collection of urls from each application
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("users/", include("user.urls")),
@@ -33,7 +33,7 @@ urlpatterns = [
     path("marketplace/", include("marketplace.urls")),
 
 ]
-
+# Additional auth and Media (img, etc.) urls
 urlpatterns += [
     path('api-auth/', include('rest_framework.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

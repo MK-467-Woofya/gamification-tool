@@ -3,7 +3,7 @@ from django.db import models
 # Create your models here.
 
 class Item(models.Model):
-    name = models.CharField("Name of marketplace item", max_length=50, blank=False, null=False)
+    name = models.CharField("Name of marketplace item", max_length=50, blank=True, null=True)
     cost = models.IntegerField("Price in shop_points", default=0)
     partner = models.CharField("Name of collaborator", max_length=50, blank=True, null=True)
     description = models.CharField("Description of the item", max_length=255, blank=True, null=True)
@@ -19,8 +19,8 @@ class Item(models.Model):
     
 
 class Title(Item):
-    text = models.CharField("Title text", max_length=50)
+    text = models.CharField("Title text", max_length=50, null=True, blank=True)
     
 
 class Avatar(Item):
-    img_url = models.ImageField("URL of image", upload_to='avatars', height_field=None, width_field=None, max_length=None)
+    img_url = models.ImageField("URL of image", upload_to='avatars', height_field=None, width_field=None, max_length=None, null=True, blank=True)
