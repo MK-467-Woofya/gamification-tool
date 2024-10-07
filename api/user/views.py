@@ -141,6 +141,91 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         
         return Response(serializer.data)
     
+    
+    @action(detail=True, methods=['PUT'], name="Update Current Title")
+    def current_title(self, request, *args, **kwargs):
+        """
+        UPDATE CURRENT TITLE
+        
+        Description: Choose one Title owned by the user to be their current title
+        for profile display purposes
+
+        Endpoint: http://localhost:8000/users/users/<id>/current_title/
+        
+        Request JSON structure:
+        {
+            "title_id": <int_value>
+        }
+        
+        200 OK if successful, 400 Bad Request if missing values
+        """
+        # Get User from ID parameter in URL
+        user = self.get_object()
+        # Get Title matching request ID
+        title = get_object_or_404(Title.objects.filter(id=int(request.data.get("title_id"))))
+        
+        if(not user.titles.filter(id = title.id)):
+            data = {"message": "User does not own this Title."}
+            return Response(data, status=status.HTTP_200_OK)
+        
+        
+        # Data to update
+        data = {
+            "current_title": {
+                "id": title.id
+            }
+        }
+        
+        # Parse data and update the User model
+        serializer = self.get_serializer(user, data=data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        
+        return Response(serializer.data)
+    
+    
+    @action(detail=True, methods=['PUT'], name="Update Current Avatar")
+    def current_avatar(self, request, *args, **kwargs):
+        """
+        UPDATE CURRENT AVATAR
+        
+        Description: Choose one Avatar owned by the user to be their current title
+        for profile display purposes
+
+        Endpoint: http://localhost:8000/users/users/<id>/current_avatar/
+        
+        Request JSON structure:
+        {
+            "avatar_id": <int_value>
+        }
+        
+        200 OK if successful, 400 Bad Request if missing values
+        """
+        # Get User from ID parameter in URL
+        user = self.get_object()
+        # Get Title matching request ID
+        avatar = get_object_or_404(Avatar.objects.filter(id=int(request.data.get("avatar_id"))))
+        
+        if(not user.titles.filter(id = avatar.id)):
+            data = {"message": "User does not own this Avatar."}
+            return Response(data, status=status.HTTP_200_OK)
+        
+        
+        # Data to update
+        data = {
+            "current_avatar": {
+                "id": avatar.id
+            }
+        }
+        
+        # Parse data and update the User model
+        serializer = self.get_serializer(user, data=data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        
+        return Response(serializer.data)
+    
+    
     @action(detail=True, methods=['PUT'], name="Buy Avatar")
     def buy_avatar(self, request, *args, **kwargs):
         """
@@ -173,6 +258,10 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         # Check if already owned
         if(user.avatars.filter(id = avatar.id)):
             data = {"message": "User already owns this item."}
+            return Response(data, status=status.HTTP_200_OK)
+        
+        if(not avatar.is_listed):
+            data = {"message": "Title is not available for purchase"}
             return Response(data, status=status.HTTP_200_OK)
         
         # Deduct shop_points and add to user Avatars,
@@ -224,6 +313,10 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         # Check if already owned
         if(user.titles.filter(id = title.id)):
             data = {"message": "User already owns this item."}
+            return Response(data, status=status.HTTP_200_OK)
+        
+        if(not title.is_listed):
+            data = {"message": "Title is not available for purchase"}
             return Response(data, status=status.HTTP_200_OK)
         
         # Deduct shop_points and add to user Titles

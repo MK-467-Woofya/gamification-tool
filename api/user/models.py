@@ -11,7 +11,7 @@ class CustomUserManager(BaseUserManager):
     """
     Custom UserManager model class
     """
-    def create_user(self, username, level=1, experience_points=0, shop_points=0, current_title_id=0, current_avatar_id=0, password=None, location=None, is_admin=False):
+    def create_user(self, username, level=1, experience_points=0, shop_points=0, password=None, location=None, is_admin=False):
         """
         Create a user with only their username, and gamification fields 
         """
@@ -23,8 +23,6 @@ class CustomUserManager(BaseUserManager):
             level = level,
             experience_points = experience_points,
             shop_points = shop_points,
-            current_title_id = current_title_id,
-            current_avatar_id = current_avatar_id,
             location = location,
             is_admin = is_admin,
         )
@@ -76,8 +74,8 @@ class CustomUser(AbstractBaseUser):
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
     
-    current_title_id = models.IntegerField("Id of current Title user is displaying", default=0)
-    current_avatar_id = models.IntegerField("Id of current Title user is displaying", default=0)
+    current_title = models.ForeignKey(Title, null=True, blank=True, on_delete=models.CASCADE)
+    current_avatar = models.ForeignKey(Avatar, null=True, blank=True, on_delete=models.CASCADE)
 
     titles = models.ManyToManyField(Title, related_name='users', blank=True, default=list)
     avatars = models.ManyToManyField(Avatar, related_name='users', blank=True, default=list)
