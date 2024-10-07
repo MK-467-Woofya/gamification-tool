@@ -29,7 +29,11 @@ export const HomePage = () => {
     useEffect(() => {
         function postApiUser() {
             const url = "http://localhost:8000/users/users/";
-            const data = {'username': sessionStorage.getItem('username')};
+            const data = {
+                'username': sessionStorage.getItem('username'),
+                'titles': [],
+                'avatars': []
+            };
             const headers = {
                 'Content-Type': 'application/json',
                 'Gamification-Api-Key': process.env.REACT_APP_API_KEY
@@ -49,7 +53,7 @@ export const HomePage = () => {
         if(users.length > 0){
             var userExists = false;
             users.forEach(user => {
-                if(user.username == sessionStorage.getItem('username')){
+                if(user.username === sessionStorage.getItem('username')){
                     userExists = true;
                 }
 
@@ -79,7 +83,7 @@ export const HomePage = () => {
                 <p>Enhance your dog's life with fun events and rewards!</p>
             </div>
             <div className="text-center">
-                <img src="img/homepage-img.jpg" className="img-fluid" />
+                <img src="img/homepage-img.jpg" alt="dog-and-owner-hero" className="img-fluid" />
             </div>
         </Container>
     )

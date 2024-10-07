@@ -55,14 +55,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_extensions',
     'rest_framework',
     'rest_framework_api_key',
     'corsheaders',
     'user',
     'leaderboard',
+    'marketplace',
 ]
-AUTH_USER_MODEL = 'user.CustomUser'
-
+# Plugins of processes that run in requests/responses
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -77,13 +78,17 @@ MIDDLEWARE = [
 CORS_ALLOWED_ORIGINS = os.environ.get("CORS_ALLOWED_ORIGINS").split(",")
 
 
+# Allow any CORS headers
 CORS_ALLOW_HEADERS = '*'
 
+# Where all API url's are collected
 ROOT_URLCONF = 'gamification_tool.urls'
 
+# Templates for full-stack Django applications, as well as for editing the Admin page
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [BASE_DIR / "templates"],
         'DIRS': [BASE_DIR / "templates"],
         'APP_DIRS': True,
         'OPTIONS':
@@ -99,6 +104,7 @@ TEMPLATES = [
     },
 ]
 
+# Name of the application for Gunicorn
 WSGI_APPLICATION = 'gamification_tool.wsgi.application'
 
 # Specified in .env.dev and .env.prod/.env.prod.db.
@@ -116,7 +122,6 @@ DATABASES = {
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -136,11 +141,8 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_TZ = True
 
 
@@ -151,7 +153,7 @@ STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 STATICFILES_DIRS = [
-    BASE_DIR,  # direct to react static files
+    BASE_DIR,
 ]
 
 MEDIA_URL = "/media/"
@@ -162,13 +164,16 @@ MEDIA_ROOT = BASE_DIR / "mediafiles"
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# Settings specific to Django Rest Framework
 REST_FRAMEWORK = {
-    # permissions that apply for whole project - alternative is per view
+    # All endpoints require the API key
     'DEFAULT_PERMISSION_CLASSES': [
         "rest_framework_api_key.permissions.HasAPIKey",
     ],
+    # Pagination for applicable endpoints. Some have explicitly stated pagination_class = None in views.
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10
 }
 
+# Custom API Key header: Gamification-Api-Key: <key>
 API_KEY_CUSTOM_HEADER = "HTTP_GAMIFICATION_API_KEY"

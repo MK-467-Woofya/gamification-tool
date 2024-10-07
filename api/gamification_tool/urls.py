@@ -19,6 +19,8 @@ from django.urls import include, path
 from rest_framework import routers
 from user import views as user_views
 
+from django.conf.urls.static import static
+from django.conf import settings
 from django.views.generic import TemplateView
 from django.urls import re_path
 from django.conf import settings
@@ -28,8 +30,10 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path("users/", include("user.urls")),
     path("leaderboard/", include("leaderboard.urls")),
-]
+    path("marketplace/", include("marketplace.urls")),
 
+]
+# Additional auth and Media (img, etc.) urls
 urlpatterns += [
     path('api-auth/', include('rest_framework.urls')),
 ]

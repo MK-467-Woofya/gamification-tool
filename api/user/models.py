@@ -5,13 +5,13 @@ from django.conf import settings
 from django.utils import timezone
 from django.dispatch import receiver
 from django.db.models.signals import post_save
-
+from marketplace.models import Title, Avatar
 
 class CustomUserManager(BaseUserManager):
     """
     Custom UserManager model class
     """
-    def create_user(self, username, level=1, title=None, experience_points=0, shop_points=0, password=None, location=None, is_admin=False):
+    def create_user(self, username, level=1, experience_points=0, shop_points=0, password=None, location=None, is_admin=False):
         """
         Create a user with only their username, and gamification fields
         """
@@ -20,15 +20,11 @@ class CustomUserManager(BaseUserManager):
 
         user = self.model(
             username=username,
-            level=level,
-            experience_points=experience_points,
-            shop_points=shop_points,
-            title=title,
-            location=location,
-            is_admin=is_admin,
-            # titles = titles,
-            # milestones = milestones,
-            # badges = badges,
+            level = level,
+            experience_points = experience_points,
+            shop_points = shop_points,
+            location = location,
+            is_admin = is_admin,
         )
 
         user.set_password(password)
@@ -56,7 +52,6 @@ class CustomUser(AbstractBaseUser):
     CITY_CHOICES = [
         ('Melbourne', 'Melbourne'),
         ('Sydney', 'Sydney'),
-        # add more locations here
     ]
 
     username = models.CharField(
@@ -75,15 +70,17 @@ class CustomUser(AbstractBaseUser):
 
     experience_points = models.IntegerField("Experience points", default=0)
     shop_points = models.IntegerField("Shop points", default=0)
-    title = models.CharField("User title", max_length=100, blank=True, null=True)
     location = models.CharField("Location", max_length=100, choices=CITY_CHOICES, blank=True, null=True)  # Optional location field
-    # titles = models.ForeignKey(titles, on_delete=models.CASCADE)
-    # milestones = models.ForeignKey(milestones, on_delete=models.CASCADE)
-    # badges = models.ForeignKey(badges, on_delete=models.CASCADE)
-
+    
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
+    
+    current_title = models.ForeignKey(Title, null=True, blank=True, on_delete=models.CASCADE)
+    current_avatar = models.ForeignKey(Avatar, null=True, blank=True, on_delete=models.CASCADE)
 
+    titles = models.ManyToManyField(Title, related_name='users', blank=True, default=list)
+    avatars = models.ManyToManyField(Avatar, related_name='users', blank=True, default=list)
+    
     objects = CustomUserManager()
 
     USERNAME_FIELD = "username"
