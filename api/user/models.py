@@ -7,6 +7,7 @@ from django.dispatch import receiver
 from django.db.models.signals import post_save
 from marketplace.models import Title, Avatar
 
+
 class CustomUserManager(BaseUserManager):
     """
     Custom UserManager model class
@@ -20,11 +21,11 @@ class CustomUserManager(BaseUserManager):
 
         user = self.model(
             username=username,
-            level = level,
-            experience_points = experience_points,
-            shop_points = shop_points,
-            location = location,
-            is_admin = is_admin,
+            level=level,
+            experience_points=experience_points,
+            shop_points=shop_points,
+            location=location,
+            is_admin=is_admin,
         )
 
         user.set_password(password)
@@ -71,16 +72,16 @@ class CustomUser(AbstractBaseUser):
     experience_points = models.IntegerField("Experience points", default=0)
     shop_points = models.IntegerField("Shop points", default=0)
     location = models.CharField("Location", max_length=100, choices=CITY_CHOICES, blank=True, null=True)  # Optional location field
-    
+
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
-    
+
     current_title = models.ForeignKey(Title, null=True, blank=True, on_delete=models.CASCADE)
     current_avatar = models.ForeignKey(Avatar, null=True, blank=True, on_delete=models.CASCADE)
 
     titles = models.ManyToManyField(Title, related_name='users', blank=True, default=list)
     avatars = models.ManyToManyField(Avatar, related_name='users', blank=True, default=list)
-    
+
     objects = CustomUserManager()
 
     USERNAME_FIELD = "username"

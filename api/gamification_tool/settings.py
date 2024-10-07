@@ -89,7 +89,6 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [BASE_DIR / "templates"],
-        'DIRS': [BASE_DIR / "templates"],
         'APP_DIRS': True,
         'OPTIONS':
             {
@@ -180,4 +179,3 @@ REST_FRAMEWORK = {
 
 # Custom API Key header: Gamification-Api-Key: <key>
 API_KEY_CUSTOM_HEADER = "HTTP_GAMIFICATION_API_KEY"
-
