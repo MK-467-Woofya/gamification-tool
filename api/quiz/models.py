@@ -38,6 +38,7 @@ class UserQuizScore(models.Model):
     quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE)  # The quiz taken by the user
     score = models.IntegerField(default=0)  # The score the user achieved on the quiz
     completed_at = models.DateTimeField(auto_now_add=True)  # When the quiz was completed
+    correct_answers = models.IntegerField(default=0) # number of correct answer
 
     def __str__(self):
         return f"{self.user.username} - {self.quiz.name} - {self.score}"

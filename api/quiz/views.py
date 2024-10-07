@@ -7,6 +7,8 @@ from django.shortcuts import get_object_or_404
 from user.models import CustomUser
 from .models import Quiz, QuizQuestion, UserQuizScore
 
+from django.db.models import Sum
+
 import logging
 import random  # Import random module to enable random selection
 from datetime import datetime, timedelta, timezone
@@ -114,9 +116,10 @@ def finalize_quiz_score(request, quiz_id):
 
     username = request.data.get('username')
     total_score = request.data.get('total_score')
+    total_correct = request.data.get('total_correct')
 
-    if not username or total_score is None:
-        return Response({'error': 'Username and total score are required'}, status=400)
+    if not username or total_score is None or total_correct is None:
+        return Response({'error': 'Username, total score, and total correct answers are required'}, status=400)
 
     try:
         user = CustomUser.objects.get(username=username)
@@ -136,12 +139,32 @@ def finalize_quiz_score(request, quiz_id):
             # Award points and update last completion time
             update_user_points(user, total_score, 0)
             # Record the quiz completion
-            UserQuizScore.objects.create(user=user, quiz_id=quiz_id, score=total_score)
+            UserQuizScore.objects.create(user=user, quiz_id=quiz_id, score=total_score, correct_answers=total_correct)
             return Response({'message': 'Quiz completed. Your score has been recorded.'})
     else:
         # First time taking the quiz, award points
         update_user_points(user, total_score, 0)
         # Record the quiz completion
-        UserQuizScore.objects.create(user=user, quiz_id=quiz_id, score=total_score)
+        UserQuizScore.objects.create(user=user, quiz_id=quiz_id, score=total_score, correct_answers=total_correct)
         return Response({'message': 'Quiz completed. Your score has been recorded.'})
 
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def quiz_leaderboard(request, quiz_id):
+    quiz = get_object_or_404(Quiz, id=quiz_id)
+    user_scores = UserQuizScore.objects.filter(quiz=quiz, score__gt=0)
+
+    # correct_answers to gather information
+    leaderboard_data = user_scores.values('user__username').annotate(
+        total_correct=Sum('correct_answers')
+    ).order_by('-total_correct')
+
+    leaderboard = [
+        {
+            'username': entry['user__username'],
+            'total_correct': entry['total_correct']
+        }
+        for entry in leaderboard_data
+    ]
+
+    return Response(leaderboard)

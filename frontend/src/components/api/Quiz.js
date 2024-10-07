@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 import '../styles.css';
 import Container from 'react-bootstrap/Container';
+import QuizLeaderboard from './QuizLeaderboard';  // Import the QuizLeaderboard component
 
 export const Quiz = () => {
     const [questions, setQuestions] = useState([]);
@@ -14,10 +15,11 @@ export const Quiz = () => {
     const [quizStarted, setQuizStarted] = useState(false); // Used to track whether the quiz has started
     const [canEarnPoints, setCanEarnPoints] = useState(true); // Used to track if the user can earn points
     const currentUsername = sessionStorage.getItem('username'); // Get the current user
+    const quizId = 1;  // Define quizId here for reuse
+    const [totalCorrectAnswers, setTotalCorrectAnswers] = useState(0);
 
     useEffect(() => {
         // Get quiz questions (backend now returns 3 random questions)
-        const quizId = 1;
         axios.get(`http://localhost:8000/quiz/${quizId}/questions/`)
             .then(response => {
                 setQuestions(response.data.questions);
@@ -25,12 +27,10 @@ export const Quiz = () => {
             .catch(error => {
                 console.error('Error fetching quiz questions:', error);
             });
-    }, []);
+    }, [quizId]);
 
     // Function to check quiz eligibility
     const handleStartQuiz = () => {
-        const quizId = 1;
-
         axios.get(`http://localhost:8000/quiz/${quizId}/eligibility/`, {
             headers: {
                 'Content-Type': 'application/json',
@@ -62,7 +62,6 @@ export const Quiz = () => {
             return;
         }
 
-        const quizId = 1;
         const questionId = questions[currentQuestion].id;
         let newTotalScore = totalScore;
 
@@ -85,6 +84,7 @@ export const Quiz = () => {
             } else if (message === 'Correct') {
                 setFeedback('Correct!');
                 newTotalScore += questionPoints;
+                setTotalCorrectAnswers(prev => prev + 1);  // num of corrected quiz
             } else {
                 setFeedback('Incorrect!');
             }
@@ -114,7 +114,8 @@ export const Quiz = () => {
                     // Upload total score
                     axios.post(`http://localhost:8000/quiz/${quizId}/finalize/`, {
                         username: currentUsername,
-                        total_score: newTotalScore  // New total score
+                        total_score: newTotalScore,  // New total score
+                        total_correct: totalCorrectAnswers
                     }).then((response) => {
                         console.log("User score updated successfully.");
                         if (response.data.message) {
@@ -133,13 +134,14 @@ export const Quiz = () => {
                     setFeedback('');                // Clear feedback
                     setQuizFinished(false);         // Reset finished state
                     setCanEarnPoints(true);         // Reset canEarnPoints
+                    setTotalCorrectAnswers(0);      // Reset TotalCorrectAnswers
                 }
             }, 2000); // 2 seconds before proceeding to the next step
         })
         .catch(error => {
             console.error('Error submitting quiz answer:', error);
         });
-    }, [selectedAnswer, currentQuestion, questions, currentUsername, totalScore, canEarnPoints]);
+    }, [selectedAnswer, currentQuestion, questions, currentUsername, totalScore, canEarnPoints, quizId]);
 
     // Countdown logic
     useEffect(() => {
@@ -160,7 +162,11 @@ export const Quiz = () => {
     return (
         <Container className="quiz-container quiz-box">
             {!quizStarted ? (
-                <button onClick={handleStartQuiz} className="start-quiz-button">Start Quiz</button>
+                <>
+                    <button onClick={handleStartQuiz} className="start-quiz-button">Start Quiz</button>
+                    {/* Embed the QuizLeaderboard component */}
+                    <QuizLeaderboard quizId={quizId} />
+                </>
             ) : (
                 <>
                     <h2 className="quiz-question">{questions[currentQuestion].question_text}</h2>
