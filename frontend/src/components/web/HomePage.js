@@ -32,7 +32,7 @@ export const HomePage = () => {
             const data = {
                 'username': sessionStorage.getItem('username'),
                 'titles': [],
-                'avatars': []
+                'avatars': [],
             };
             const headers = {
                 'Content-Type': 'application/json',

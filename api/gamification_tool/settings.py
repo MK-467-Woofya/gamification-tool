@@ -120,6 +120,9 @@ DATABASES = {
     }
 }
 
+AUTH_USER_MODEL = 'user.CustomUser'
+
+
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 AUTH_PASSWORD_VALIDATORS = [
@@ -177,3 +180,4 @@ REST_FRAMEWORK = {
 
 # Custom API Key header: Gamification-Api-Key: <key>
 API_KEY_CUSTOM_HEADER = "HTTP_GAMIFICATION_API_KEY"
+

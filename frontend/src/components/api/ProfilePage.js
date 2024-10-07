@@ -45,7 +45,7 @@ export const ProfilePage = () => {
             'shop_points':  1000
         };
 
-        var update_points_url = url + uid + '/update_points/';
+        var update_points_url = url + uid + '/add_points/';
 
         axios.patch(update_points_url, data, { headers })
         .then(response => {

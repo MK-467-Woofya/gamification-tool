@@ -17,6 +17,7 @@ web/media
 */__pycache__/
 */db.sqlite3
 */media
+api/mediafiles/*
 
 # Backup files # 
 api/*.bak
