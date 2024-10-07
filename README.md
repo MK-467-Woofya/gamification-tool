@@ -360,10 +360,10 @@ The following tasks need to be run whenever the production container is being bu
 `$ docker-compose -f docker-compose.prod.yml up -d --build`  
 
 2. Migrating the models to the database:  
-`$ docker-compose -f docker-compose.prod.yml exec web python manage.py migrate --noinput`  
+`$ docker-compose -f docker-compose.prod.yml exec api python manage.py migrate --noinput`  
 
 3. Collecting static for the project, including media:  
-`$ docker-compose -f docker-compose.prod.yml exec web python manage.py collectstatic --no-input --clear`  
+`$ docker-compose -f docker-compose.prod.yml exec api python manage.py collectstatic --no-input --clear`  
 
 4. Creating the superuser as before:  
 `$ docker-compose -f docker-compose.prod.yml exec api python manage.py createsuperuser`  
