@@ -244,17 +244,18 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         # Get avatar matching
         avatar = get_object_or_404(Avatar.objects.filter(id=int(request.data.get("avatar_id"))))
 
-        # Check for available funds
-        if (avatar.cost > user.shop_points):
-            data = {"message": "User does not have enough points to buy this item"}
-            return Response(data, status=status.HTTP_200_OK)
         # Check if already owned
         if (user.avatars.filter(id=avatar.id)):
             data = {"message": "User already owns this item."}
             return Response(data, status=status.HTTP_200_OK)
 
+        # Check for available funds
+        if (avatar.cost > user.shop_points):
+            data = {"message": "User does not have enough points to buy this item"}
+            return Response(data, status=status.HTTP_200_OK)
+
         if (not avatar.is_listed):
-            data = {"message": "Title is not available for purchase"}
+            data = {"message": "Avatar is not available for purchase"}
             return Response(data, status=status.HTTP_200_OK)
 
         # Deduct shop_points and add to user Avatars,
@@ -299,13 +300,14 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         # Get Title matching request ID
         title = get_object_or_404(Title.objects.filter(id=int(request.data.get("title_id"))))
 
-        # Check for available funds
-        if (title.cost > user.shop_points):
-            data = {"message": "User does not have enough points to buy this item"}
-            return Response(data, status=status.HTTP_200_OK)
         # Check if already owned
         if (user.titles.filter(id=title.id)):
             data = {"message": "User already owns this item."}
+            return Response(data, status=status.HTTP_200_OK)
+
+        # Check for available funds
+        if (title.cost > user.shop_points):
+            data = {"message": "User does not have enough points to buy this item"}
             return Response(data, status=status.HTTP_200_OK)
 
         if (not title.is_listed):
