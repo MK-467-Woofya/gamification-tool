@@ -8,11 +8,12 @@ from rest_framework.views import APIView
 from .serializers import CustomUserSerializer
 from .models import CustomUser
 from marketplace.models import Avatar, Title
+from marketplace.serializers import AvatarSerializer, TitleSerializer
 
 
 class CustomUserViewSet(viewsets.ModelViewSet):
     """
-    Set of API endpoints that allows users to be viewed or edited.
+    Set of CRUD API endpoints for the User entity.
     
     Note: All requests require the Custom API Key header
     Gamification-Api-Key: <key> 
@@ -84,8 +85,12 @@ class CustomUserViewSet(viewsets.ModelViewSet):
     serializer_class = CustomUserSerializer
     pagination_class = None
     
+    
     @action(detail=False, methods=['get'])
     def leaderboard(self, request):
+        """
+        LEADERBOARD
+        """
         users = CustomUser.objects.filter(is_admin=False).order_by('-points_accumulated')[:10]  # get top 10 user and without superusers
         serializer = self.get_serializer(users, many=True)
         return Response(serializer.data)

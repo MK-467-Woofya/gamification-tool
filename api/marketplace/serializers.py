@@ -12,7 +12,7 @@ class TitleSerializer(serializers.HyperlinkedModelSerializer):
     
     class Meta:
         model = Title
-        fields = ['url', 'id','name', 'text', 'partner', 'cost', 'description', 'is_listed', 'date_time_added', 'date_time_unlisted', 'users']
+        fields = ['url', 'id','name', 'text', 'partner', 'cost', 'description', 'is_listed', 'date_time_added', 'date_time_listed', 'date_time_unlisted', 'users']
 
 
 class AvatarSerializer(serializers.HyperlinkedModelSerializer):
@@ -24,4 +24,4 @@ class AvatarSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Avatar
-        fields = ['url', 'id','name', 'img_url', 'partner', 'cost', 'description', 'is_listed', 'date_time_added', 'date_time_unlisted', 'users']
+        fields = ['url', 'id','name', 'img_url', 'partner', 'cost', 'description', 'is_listed', 'date_time_added', 'date_time_listed', 'date_time_unlisted', 'users']

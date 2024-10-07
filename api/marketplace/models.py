@@ -3,13 +3,14 @@ from django.db import models
 # Create your models here.
 
 class Item(models.Model):
-    name = models.CharField("Name of marketplace item", max_length=50, blank=True, null=True)
+    name = models.CharField("Name of marketplace item", max_length=50, unique=True)
     cost = models.IntegerField("Price in shop_points", default=0)
     partner = models.CharField("Name of collaborator", max_length=50, blank=True, null=True)
     description = models.CharField("Description of the item", max_length=255, blank=True, null=True)
     date_time_added = models.DateTimeField("When ttem was added to the marketplace", auto_now_add=True)
     is_listed = models.BooleanField("Is item purchaseable?", default=False)
-    date_time_unlisted = models.DateTimeField("Last time when item became unlisted/purchaseable", blank=True, null=True)
+    date_time_listed = models.DateTimeField("Datetime when item was listed", blank=True, null=True)
+    date_time_unlisted = models.DateTimeField("Datetime when item became unlisted", blank=True, null=True)
     
     def __str__(self):
         return self.name
