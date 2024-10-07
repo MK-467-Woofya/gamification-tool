@@ -12,10 +12,11 @@ export const Quiz = () => {
     const [totalScore, setTotalScore] = useState(0);  // Used to track the total score during the quiz
     const [quizFinished, setQuizFinished] = useState(false); // Used to track whether the quiz has finished
     const [quizStarted, setQuizStarted] = useState(false); // Used to track whether the quiz has started
+    const [canEarnPoints, setCanEarnPoints] = useState(true); // Used to track if the user can earn points
     const currentUsername = sessionStorage.getItem('username'); // Get the current user
 
     useEffect(() => {
-        // get quiz
+        // Get quiz questions (backend now returns 3 random questions)
         const quizId = 1;
         axios.get(`http://localhost:8000/quiz/${quizId}/questions/`)
             .then(response => {
@@ -25,6 +26,34 @@ export const Quiz = () => {
                 console.error('Error fetching quiz questions:', error);
             });
     }, []);
+
+    // Function to check quiz eligibility
+    const handleStartQuiz = () => {
+        const quizId = 1;
+
+        axios.get(`http://localhost:8000/quiz/${quizId}/eligibility/`, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Username ${currentUsername}`
+            }
+        })
+        .then(response => {
+            if (response.data.can_earn_points) {
+                setCanEarnPoints(true);
+                setQuizStarted(true);
+            } else {
+                const { hours, minutes, seconds } = response.data.remaining_time;
+                const proceed = window.confirm(`You have ${hours} hours, ${minutes} minutes, and ${seconds} seconds remaining before you can earn points again. Do you still want to proceed with the quiz?`);
+                if (proceed) {
+                    setCanEarnPoints(false);
+                    setQuizStarted(true);
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error checking quiz eligibility:', error);
+        });
+    };
 
     // Logic to handle answer submission
     const handleSubmitAnswer = useCallback((isTimeout = false) => {
@@ -37,13 +66,13 @@ export const Quiz = () => {
         const questionId = questions[currentQuestion].id;
         let newTotalScore = totalScore;
 
-        // submit
+        // Submit the answer to the backend
         axios.post(`http://localhost:8000/quiz/${quizId}/submit/`, {
             answers: { [questionId]: selectedAnswer || '' }
         }, {
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Username ${currentUsername}`  // authenticate
+                'Authorization': `Username ${currentUsername}`  // Authenticate the user
             }
         })
         .then(response => {
@@ -72,36 +101,47 @@ export const Quiz = () => {
                 if (currentQuestion + 1 < questions.length) {
                     setCurrentQuestion(currentQuestion + 1);
                 } else {
-                    // show total score and send to backend
+                    // Show total score and send to backend
                     setQuizFinished(true);
-                    alert(`Quiz finished! Your total score is: ${newTotalScore}`);
 
-                    // upload total score
+                    // If the user cannot earn points, show a different message
+                    if (canEarnPoints) {
+                        alert(`Quiz finished! Your total score is: ${newTotalScore}`);
+                    } else {
+                        alert('Quiz completed.');
+                    }
+
+                    // Upload total score
                     axios.post(`http://localhost:8000/quiz/${quizId}/finalize/`, {
                         username: currentUsername,
-                        total_score: newTotalScore  // new total score
-                    }).then(() => {
+                        total_score: newTotalScore  // New total score
+                    }).then((response) => {
                         console.log("User score updated successfully.");
+                        if (response.data.message) {
+                            alert(response.data.message);
+                        }
                     }).catch(err => {
                         console.error("Error updating user score:", err);
                     });
 
-                    setQuizStarted(false);          // back to 'start quiz'
-                    setCurrentQuestion(0);          // reset question index
-                    setTotalScore(0);               // reset total score
-                    setTimeLeft(15);                // reset time count down
-                    setSelectedAnswer('');          // clear answer
-                    setFeedback('');                // clear feedback
-                    setQuizFinished(false);         // reset finished state
+                    // Reset quiz state
+                    setQuizStarted(false);          // Back to 'start quiz'
+                    setCurrentQuestion(0);          // Reset question index
+                    setTotalScore(0);               // Reset total score
+                    setTimeLeft(15);                // Reset time countdown
+                    setSelectedAnswer('');          // Clear selected answer
+                    setFeedback('');                // Clear feedback
+                    setQuizFinished(false);         // Reset finished state
+                    setCanEarnPoints(true);         // Reset canEarnPoints
                 }
             }, 2000); // 2 seconds before proceeding to the next step
         })
         .catch(error => {
             console.error('Error submitting quiz answer:', error);
         });
-    }, [selectedAnswer, currentQuestion, questions, currentUsername, totalScore]);
+    }, [selectedAnswer, currentQuestion, questions, currentUsername, totalScore, canEarnPoints]);
 
-    // count down
+    // Countdown logic
     useEffect(() => {
         if (quizStarted && timeLeft > 0 && !quizFinished) {
             const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
@@ -120,7 +160,7 @@ export const Quiz = () => {
     return (
         <Container className="quiz-container quiz-box">
             {!quizStarted ? (
-                <button onClick={() => setQuizStarted(true)} className="start-quiz-button">Start Quiz</button>
+                <button onClick={handleStartQuiz} className="start-quiz-button">Start Quiz</button>
             ) : (
                 <>
                     <h2 className="quiz-question">{questions[currentQuestion].question_text}</h2>
