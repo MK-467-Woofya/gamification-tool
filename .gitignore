@@ -164,6 +164,7 @@ GitHub.sublime-settings
 /frontend/build
 
 # misc
+# */*.DS_Store
 /frontend/.DS_Store
 /frontend/.env.local
 /frontend/.env.development.local

@@ -188,6 +188,10 @@ There's a python script for creating 100 new users with different score:
 Another script to create points log(if user have no log):  
 `$ docker-compose exec api python manage.py create_pointsLog`
 
+Another script to edit friend lists:  
+`$ docker-compose exec api python manage.py create_friendlist`
+
+
 ### Test base endpoints
 
 With the docker containers running try the endpoints in browser:
