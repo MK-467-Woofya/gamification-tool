@@ -65,7 +65,6 @@ export const AvatarsPage = () => {
                     <thead>
                         <tr>
                             <th>Avatar name</th>
-                            <th>Avatar URL</th>
                             <th>Avatar image</th>
                             <th>Collaborator</th>
                             <th>Description</th>
@@ -79,7 +78,6 @@ export const AvatarsPage = () => {
                         {Array.isArray(avatars) && avatars.map((avatar, index) => (
                             <tr key={index}>
                                 <td>{avatar.name}</td>
-                                <td>{avatar.img_url}</td>
                                 <td><img src={avatar.img_url} alt={avatar.name} width={192} height={192}/></td>
                                 <td>{avatar.partner}</td>
                                 <td>{avatar.description}</td>
