@@ -78,6 +78,7 @@ class CustomUser(AbstractBaseUser):
     #titles = models.ForeignKey(titles, on_delete=models.CASCADE)
     #milestones = models.ForeignKey(milestones, on_delete=models.CASCADE)
     #badges = models.ForeignKey(badges, on_delete=models.CASCADE)
+    # FIXME add time for last quiz & num of correct quiz
 
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)

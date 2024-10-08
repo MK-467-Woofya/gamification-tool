@@ -34,6 +34,10 @@ export const NavigationBar = () => {
             {isAuth ?
                 <Nav.Link href="/user/leaderboard">Leaderboard</Nav.Link>
                 : null}
+
+            {isAuth ?
+                <Nav.Link href="/quiz">Quiz</Nav.Link>
+                : null}
             </Nav>
             <Nav>
             {isAuth ?
