@@ -19,10 +19,8 @@ app.use(cors());  // Allow Cross-Origin Resource Sharing, enabling the frontend 
 // Define the path to the events data file.
 const EVENTS_FILE = path.join(__dirname, 'events.json');  // Path to the events.json file where event data is stored.
 
-// Serve static files from 'add_event' and 'remove_event' folders
-// This allows serving HTML, CSS, and JS files from these directories
-app.use(express.static(path.join(__dirname, '../add_event')));  // Serve static files (HTML, CSS, JS) from 'add_event' directory.
-app.use(express.static(path.join(__dirname, '../remove_event')));  // Serve static files (HTML, CSS, JS) from 'remove_event' directory.
+// Serve static files from the 'public' directory
+app.use(express.static(path.join(__dirname, '../public')));  // Serve static files from the public directory.
 
 // Route to fetch all events
 app.get('/events', (req, res) => {
@@ -97,9 +95,9 @@ app.delete('/events/:code', (req, res) => {
     });
 });
 
-// Serve the main index.html file from the 'add_event' directory for the root route ('/')
+// Serve the main index.html file for the root route ('/')
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '../add_event', 'add_event.html'));  // Serve the add_event.html file when visiting the root URL.
+    res.sendFile(path.join(__dirname, '../public', 'index.html'));  // Serve the index.html file when visiting the root URL.
 });
 
 // Start the server and listen on port 3000

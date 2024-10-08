@@ -1,0 +1,223 @@
+/* Reset default browser styles for consistent appearance across browsers */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;  /* Ensures padding and borders are included in the element's total width and height */
+}
+
+/* Base styles for the body, setting default font and background */
+body {
+    font-family: Arial, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;  /* Set the primary font family for the document */
+    background-color: #f5f5f5;  /* Light gray background for a clean look */
+    color: #333;  /* Set default text color to a dark shade */
+}
+
+/* Main header styling */
+.main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background-color: #4CAF50;  /* Green background color */
+    color: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.main-header h1 {
+    font-size: 1.8rem; /* Slightly larger to make it stand out */
+    padding: 20px;
+    margin: 0;
+}
+
+/* Styling for navigation buttons beside the title */
+.nav-buttons {
+    display: flex;
+    gap: 15px;
+}
+
+.nav-link {
+    padding: 8px 15px;
+    background-color: #45a049;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    transition: background-color 0.3s;
+}
+
+.nav-link:hover {
+    background-color: #3e8e41; /* Slightly darker shade on hover */
+}
+
+/* Navigation bar styling */
+.nav-bar {
+    display: flex;  /* Use flexbox for the nav bar */
+    justify-content: center;  /* Center the navigation items */
+    background-color: #4CAF50;  /* Set background color to green */
+    padding: 10px 0;  /* Add padding inside the nav bar */
+    margin-bottom: 20px;  /* Add space below the nav bar */
+}
+
+/* Styling for nav bar links */
+.nav-bar a {
+    color: white;  /* Set link text color to white */
+    padding: 14px 20px;  /* Add padding inside each link */
+    text-decoration: none;  /* Remove underline from links */
+    text-align: center;  /* Center the text inside the link */
+    font-size: 1rem;  /* Set link font size */
+}
+
+/* Change background color on hover for nav bar links */
+.nav-bar a:hover {
+    background-color: #45a049;  /* Darker green on hover */
+}
+
+/* Styling for the active link in the nav bar */
+.nav-bar a.active {
+    background-color: #333;  /* Set the active link's background to dark gray */
+}
+
+/* Main container for events and map layout */
+.container, #container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;  /* Distribute space evenly between elements */
+    gap: 20px;  /* Add 20px space between the form and map */
+    padding: 20px;  /* Add padding around the container */
+    align-items: flex-start;  /* Align items at the start of the flex container */
+    height: 85vh;  /* Set height to accommodate content */
+}
+
+/* Styles for the event form section */
+#event-form-section {
+    width: 40%;  /* Set the form section to take 40% of the container's width */
+    background-color: #fff;  /* Set background color to white */
+    padding: 25px;  /* Add padding inside the form section */
+    border-radius: 20px;  /* Round the corners */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);  /* Add a subtle shadow for a lifted effect */
+}
+
+/* Form element styling */
+form {
+    display: flex;  /* Use flexbox to layout the form elements */
+    flex-direction: column;  /* Stack form elements vertically */
+}
+
+form label {
+    margin-top: 10px;  /* Add space above the label */
+    font-size: 1rem;  /* Set label font size */
+    color: #4CAF50;  /* Set label color to green */
+}
+
+/* Input fields, textarea, and select dropdown styling */
+form input,
+form textarea,
+form select {
+    margin-bottom: 15px;  /* Add space below each input */
+    padding: 10px;  /* Add padding inside inputs */
+    font-size: 1rem;  /* Set font size for form fields */
+    border: 2px solid #4CAF50;  /* Green border for form fields */
+    border-radius: 5px;  /* Round the corners of form fields */
+    background-color: #f9f9f9;  /* Set background color of form fields */
+    transition: border-color 0.3s;  /* Smooth transition when border color changes */
+}
+
+/* Change border color when input fields are focused */
+form input:focus,
+form textarea:focus,
+form select:focus {
+    border-color: #45a049;  /* Darker green border when the element is focused */
+}
+
+/* Button styling */
+form button, button {
+    padding: 10px;  /* Add padding to the button */
+    background-color: #4CAF50;  /* Set background color to green */
+    color: white;  /* Set text color to white */
+    border: none;  /* Remove default border */
+    border-radius: 5px;  /* Round the button corners */
+    cursor: pointer;  /* Change the cursor to a pointer on hover */
+    font-size: 1rem;  /* Set font size */
+    transition: background-color 0.3s;  /* Smooth transition when the background color changes */
+    margin-top: 10px;  /* Add margin above buttons */
+}
+
+/* Change button background color on hover */
+form button:hover, button:hover {
+    background-color: #45a049;  /* Darker green background on hover */
+}
+
+/* Styling for buttons on focus */
+button:focus {
+    outline: none;
+    box-shadow: 0 0 5px #4CAF50;
+}
+
+/* Map container styling */
+#map {
+    width: 65%;  /* Set the map container width to 65% */
+    height: 100%;  /* Set height of the map container */
+    border: 2px solid #4CAF50;  /* Green border around the map */
+    border-radius: 8px;  /* Round the map's corners */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Styles for the event list */
+#event-list {
+    width: 50%;
+    padding: 30px;
+    background-color: #ffffff;
+    border-right: 2px solid #ccc;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    overflow-y: auto;
+}
+
+#events, #event-list {
+    list-style-type: none;  /* Remove default list styling */
+    padding: 0;  /* Remove default padding */
+}
+
+#events li, #event-list li {
+    padding: 15px;
+    margin-bottom: 8px;
+    background-color: #fafafa;  /* Set background color for each list item */
+    border-radius: 7px;  /* Round the corners */
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+    border: 3px solid #ddd;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+#events li:hover, #event-list li:hover {
+    background-color: #4CAF50;  /* Green color on hover */
+    color: white;  /* White text color on hover */
+    transform: translateY(-2px);
+}
+
+/* Additional styling for event location text */
+#event-location {
+    color: #555;  /* Gray color for location instructions */
+    font-style: italic;  /* Italicize the text for emphasis */
+    margin-bottom: 15px;  /* Add space below the location text */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    #container, .container {
+        flex-direction: column;
+    }
+
+    #event-list, #map {
+        width: 100%;
+        height: 50vh;
+    }
+
+    .filter-sort-bar {
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    #searchBar, #categoryFilter, #sortBy {
+        width: 100%;
+    }
+}
