@@ -17,6 +17,7 @@ export const Quiz = () => {
     const currentUsername = sessionStorage.getItem('username'); // Get the current user
     const quizId = 1;  // Define quizId here for reuse
     const [totalCorrectAnswers, setTotalCorrectAnswers] = useState(0);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
         // Get quiz questions (backend now returns 3 random questions)
@@ -57,10 +58,15 @@ export const Quiz = () => {
 
     // Logic to handle answer submission
     const handleSubmitAnswer = useCallback((isTimeout = false) => {
+        if (isSubmitting) {
+            return;
+        }
         if (!selectedAnswer && !isTimeout) {
             setFeedback('Please select an answer before submitting.');
             return;
         }
+
+        setIsSubmitting(true);
 
         const questionId = questions[currentQuestion].id;
         let newTotalScore = totalScore;
@@ -100,13 +106,18 @@ export const Quiz = () => {
 
                 if (currentQuestion + 1 < questions.length) {
                     setCurrentQuestion(currentQuestion + 1);
+                    setIsSubmitting(false); // Allow next submission
                 } else {
+                    // Store totalCorrectAnswers and totalScore before resetting
+                    const finalTotalCorrectAnswers = totalCorrectAnswers;
+                    const finalTotalScore = newTotalScore;
+
                     // Show total score and send to backend
                     setQuizFinished(true);
 
                     // If the user cannot earn points, show a different message
                     if (canEarnPoints) {
-                        alert(`Quiz finished! Your total score is: ${newTotalScore}`);
+                        alert(`Quiz finished! Your total score is: ${finalTotalScore}`);
                     } else {
                         alert('Quiz completed.');
                     }
@@ -114,13 +125,14 @@ export const Quiz = () => {
                     // Upload total score
                     axios.post(`http://localhost:8000/quiz/${quizId}/finalize/`, {
                         username: currentUsername,
-                        total_score: newTotalScore,  // New total score
-                        total_correct: totalCorrectAnswers
+                        total_score: finalTotalScore,  // New total score
+                        total_correct: finalTotalCorrectAnswers
                     }).then((response) => {
                         console.log("User score updated successfully.");
-                        if (response.data.message) {
-                            alert(response.data.message);
-                        }
+                        // Optionally, you can log the response message instead of alerting
+                        // if (response.data.message) {
+                        //     alert(response.data.message);
+                        // }
                     }).catch(err => {
                         console.error("Error updating user score:", err);
                     });
@@ -135,13 +147,15 @@ export const Quiz = () => {
                     setQuizFinished(false);         // Reset finished state
                     setCanEarnPoints(true);         // Reset canEarnPoints
                     setTotalCorrectAnswers(0);      // Reset TotalCorrectAnswers
+                    setIsSubmitting(false);         // Reset isSubmitting
                 }
             }, 2000); // 2 seconds before proceeding to the next step
         })
         .catch(error => {
             console.error('Error submitting quiz answer:', error);
+            setIsSubmitting(false);
         });
-    }, [selectedAnswer, currentQuestion, questions, currentUsername, totalScore, canEarnPoints, quizId]);
+    }, [selectedAnswer, currentQuestion, questions, currentUsername, totalScore, canEarnPoints, quizId, totalCorrectAnswers, isSubmitting]);
 
     // Countdown logic
     useEffect(() => {
