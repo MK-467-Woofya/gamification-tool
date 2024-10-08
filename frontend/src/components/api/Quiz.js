@@ -21,7 +21,7 @@ export const Quiz = () => {
 
     useEffect(() => {
         // Get quiz questions (backend now returns 3 random questions)
-        axios.get(`http://localhost:8000/quiz/${quizId}/questions/`)
+        axios.get(process.env.REACT_APP_BASE_URL + `quiz/${quizId}/questions/`)
             .then(response => {
                 setQuestions(response.data.questions);
             })
@@ -32,7 +32,7 @@ export const Quiz = () => {
 
     // Function to check quiz eligibility
     const handleStartQuiz = () => {
-        axios.get(`http://localhost:8000/quiz/${quizId}/eligibility/`, {
+        axios.get(process.env.REACT_APP_BASE_URL + `quiz/${quizId}/eligibility/`, {
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Username ${currentUsername}`
@@ -72,7 +72,7 @@ export const Quiz = () => {
         let newTotalScore = totalScore;
 
         // Submit the answer to the backend
-        axios.post(`http://localhost:8000/quiz/${quizId}/submit/`, {
+        axios.post(process.env.REACT_APP_BASE_URL + `quiz/${quizId}/submit/`, {
             answers: { [questionId]: selectedAnswer || '' }
         }, {
             headers: {
@@ -123,7 +123,7 @@ export const Quiz = () => {
                     }
 
                     // Upload total score
-                    axios.post(`http://localhost:8000/quiz/${quizId}/finalize/`, {
+                    axios.post(process.env.REACT_APP_BASE_URL + `quiz/${quizId}/finalize/`, {
                         username: currentUsername,
                         total_score: finalTotalScore,  // New total score
                         total_correct: finalTotalCorrectAnswers

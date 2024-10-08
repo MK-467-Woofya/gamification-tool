@@ -7,6 +7,7 @@ from django.core.exceptions import ValidationError
 
 from .models import CustomUser, FriendList, PointsLog
 
+
 class UserCreationForm(forms.ModelForm):
     """New user creation form"""
 
@@ -43,7 +44,7 @@ class UserChangeForm(forms.ModelForm):
 
     class Meta:
         model = CustomUser
-        fields = ["username", "password", "level", "experience_points", "shop_points", "title", "is_active", "is_admin"]
+        fields = ["username", "password", "level", "experience_points", "shop_points", "current_title", "current_avatar", "is_active", "is_admin", "titles", "avatars"]
 
 
 class UserAdmin(BaseUserAdmin):
@@ -52,11 +53,11 @@ class UserAdmin(BaseUserAdmin):
     add_form = UserCreationForm
 
     # UserAdmin displayed fields in admin view
-    list_display = ["username", "id", "level", "experience_points", "shop_points", "title", "is_admin"]
+    list_display = ["username", "id", "level", "experience_points", "shop_points", "current_title", "current_avatar", "is_admin"]
     list_filter = ["is_admin"]
     fieldsets = [
         (None, {"fields": ["username", "password"]}),
-        ("Gamification Info", {"fields": ["level", "experience_points", "shop_points", "title"]}),
+        ("Gamification Info", {"fields": ["level", "experience_points", "shop_points", "current_title", "current_avatar", "titles", "avatars"]}),
         ("Permissions", {"fields": ["is_admin"]}),
     ]
     # Admin fieldsets
@@ -73,15 +74,18 @@ class UserAdmin(BaseUserAdmin):
     ordering = ["username"]
     filter_horizontal = []
 
+
 class FriendListInline(admin.TabularInline):
     model = FriendList.friends.through
     verbose_name = "friend"
     verbose_name_plural = "friends"
 
+
 class CustomUserAdmin(admin.ModelAdmin):
     inlines = [FriendListInline]
     list_display = ('username', 'email', 'location', 'points_accumulated', 'points_spendable')
     search_fields = ('username', 'location')
+
 
 # Register user types
 admin.site.register(CustomUser, UserAdmin)

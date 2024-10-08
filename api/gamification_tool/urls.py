@@ -19,9 +19,10 @@ from django.urls import include, path
 from rest_framework import routers
 from user import views as user_views
 
+from django.conf.urls.static import static
+from django.conf import settings
 from django.views.generic import TemplateView
 from django.urls import re_path
-
 
 
 urlpatterns = [
@@ -29,8 +30,13 @@ urlpatterns = [
     path("users/", include("user.urls")),
     path("leaderboard/", include("leaderboard.urls")),
     path('quiz/', include('quiz.urls')),
-]
+    path("marketplace/", include("marketplace.urls")),
 
+]
+# Additional auth and Media (img, etc.) urls
 urlpatterns += [
     path('api-auth/', include('rest_framework.urls')),
 ]
+
+if bool(settings.DEBUG):
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

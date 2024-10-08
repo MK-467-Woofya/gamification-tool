@@ -12,8 +12,8 @@ export const LeaderboardPage = () => {
     useEffect(() => {
         // friend or global
         const apiEndpoint = isFriends
-            ? 'http://localhost:8000/leaderboard/friends/'  // friend API
-            : `http://localhost:8000/leaderboard/${timeframe}/`;  // global API
+            ? process.env.REACT_APP_BASE_URL + 'leaderboard/friends/'  // friend API
+            : process.env.REACT_APP_BASE_URL + `leaderboard/${timeframe}/`;  // global API
 
         axios.get(apiEndpoint, {
             headers: {
