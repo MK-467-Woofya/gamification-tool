@@ -13,9 +13,7 @@ import { LeaderboardPage } from './components/api/LeaderboardPage';
 import { MarketplaceHomePage } from './components/api/marketplace/MarketplaceHomePage';
 import { AvatarsPage } from './components/api/marketplace/AvatarsPage';
 import { TitlesPage } from './components/api/marketplace/TitlesPage';
-
 import { Quiz } from './components/api/Quiz';
-
 
 
 function App() {
@@ -36,7 +34,6 @@ function App() {
                     <Route path="/marketplace/avatars" element={<AvatarsPage />} />
                     <Route path="/marketplace/titles" element={<TitlesPage />} />
                     <Route path="/logout" element={<LogoutPage />} />
-
                     <Route path="/quiz" element={<Quiz />} />
                 </Routes>
             </Router>
