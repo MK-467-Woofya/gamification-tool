@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Meta tags for character encoding and responsive behavior on mobile devices -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Page title displayed in the browser tab -->
+    <title>Remove Doggy Event</title>
+    
+    <!-- Link to the external stylesheet for custom styling of the page -->
+    <link rel="stylesheet" href="css/styles.css">
+    
+    <!-- Link to the Leaflet CSS library for map display and interactivity -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+</head>
+<body>
+
+    
+    <!-- Navigation bar for switching between Add and Remove event functionalities -->
+    <div class="nav-bar">
+        <a href="index.html">Home</a>
+        <!-- Link to the Add Event page -->
+        <a href="add_event.html">Add Event</a>
+        <!-- Link to the Remove Event page, marked as active since this is the current page -->
+        <a href="remove_event.html" class="active">Remove Event</a>
+    </div>
+
+    <!-- Main heading for the Remove Doggy Event page -->
+    <h1>Remove Doggy Event</h1>
+
+    <div class="container">
+        <!-- Section for displaying event details and controls -->
+        <div id="event-details-section">
+            <h2>Event Details</h2>
+            
+            <!-- Dropdown to select an event to remove -->
+            <label for="event-list">Select an Event:</label>
+            <select id="event-list">
+                <!-- Placeholder option, disabled and selected by default until an event is chosen -->
+                <option value="" disabled selected>Select an event</option>
+            </select>
+
+            <!-- Button to show the location of the selected event on the map, initially disabled -->
+            <button id="show-location-btn" disabled>Show Location</button>
+
+            <!-- Section to display detailed information about the selected event -->
+            <div id="event-info">
+                <p><strong>Name:</strong> <span id="event-name"></span></p>
+                <p><strong>Date:</strong> <span id="event-date"></span></p>
+                <p><strong>Time:</strong> <span id="event-time"></span></p>
+                <p><strong>Description:</strong> <span id="event-description"></span></p>
+                <p><strong>Genre:</strong> <span id="event-genre"></span></p>
+                <p><strong>Check-In Code:</strong> <span id="event-code"></span></p>
+                
+                <!-- Button to remove the selected event, initially disabled until an event is chosen -->
+                <button id="remove-event-btn" disabled>Remove Event</button>
+            </div>
+        </div>
+
+        <!-- Container to display the map using Leaflet.js -->
+        <div id="map"></div>
+    </div>
+
+    <!-- Leaflet.js library for rendering the map and enabling interactivity -->
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    
+    <!-- Custom JavaScript file to handle the logic for removing events and interacting with the map -->
+    <script src="js/remove_event.js"></script>
+</body>
+</html>
