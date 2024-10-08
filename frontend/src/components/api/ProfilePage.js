@@ -8,11 +8,12 @@ import Container from 'react-bootstrap/Container';
  */
 export const ProfilePage = () => {
     const [user, setUser] = useState(null);
+    const [points, setPoints] = useState(null);
 
     useEffect(() => {
         console.log('Fetching user data...'); // useEffect
 
-        var url = "http://localhost:8000/users/users/";
+        var url = process.env.REACT_APP_BASE_URL + "users/users/";
         var uid = sessionStorage.getItem('uid');
         var headers = {
             'Content-Type': 'application/json',
@@ -28,12 +29,12 @@ export const ProfilePage = () => {
             .catch(error => {
                 console.error('Error fetching user data:', error);
             });
-    }, []);
+    }, [points]);
 
     function handleSubmit(e) {
         e.preventDefault();
 
-        var url = "http://localhost:8000/users/users/";
+        var url = process.env.REACT_APP_BASE_URL + "users/users/";
         var uid = sessionStorage.getItem('uid');
         var headers = {
             'Content-Type': 'application/json',
@@ -54,6 +55,13 @@ export const ProfilePage = () => {
         .catch(error => {
             console.error('Error adding points:', error);
         });
+
+        setUser(prevUser => ({
+            ...prevUser,
+            data
+        }));
+
+        setPoints(data);
     }
 
 

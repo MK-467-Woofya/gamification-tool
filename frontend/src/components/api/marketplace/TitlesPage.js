@@ -13,7 +13,7 @@ export const TitlesPage = () => {
     useEffect(() => {
         console.log('Fetching title data...'); // useEffect
 
-        const url = "http://localhost:8000/marketplace/titles/";
+        const url = process.env.REACT_APP_BASE_URL + "marketplace/titles/";
 
         const headers = {
             'Content-Type': 'application/json',

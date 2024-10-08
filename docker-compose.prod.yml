@@ -19,7 +19,6 @@ services:
       - ./.env.prod
     depends_on:
       - api_db
-  
   nginx:
     build: ./nginx
     volumes:

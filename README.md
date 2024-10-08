@@ -371,11 +371,21 @@ The following tasks need to be run whenever the production container is being bu
 5. Generate a new API-Key for the frontend:  
 Admin dashboard is accessible at http://localhost:1337/admin/  
 
-6. Add the API-Key to the frontend .env files as before
-7. Build and run the front end dockerfile on the usual port. 
+6. Add the API-Key to the frontend .env file as before  
 
-8. Spinning down the container:  
+7. Build and run the front end dockerfile on the usual port. Manually is easier since the .env files are processed at build time, we can't use the API key otherwise.  
+
+    From the root directory we build the frontend container and tag it as frontend:  
+   - `docker build -t frontend-image ./frontend`  
+
+    Then we run the docker instructions and expose port 3000:  
+   - `docker run -d -p 3000:3000 --name frontend-container frontend-image`  
+
+8. Spinning down the containers:  
 `$ docker-compose -f docker-compose.prod.yml down -v`  
+
+    And we can stop the frontend container:  
+`$ docker stop frontend-container`
 
 
 Note: When spinning down the develop and production containers (prior to actualy production) it is important to include the `-v` tag because both use the same database port. This won't be a problem when it goes to hosted production.

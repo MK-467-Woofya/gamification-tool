@@ -10,7 +10,7 @@ export const HomePage = () => {
 
     // Get all users from db
     useEffect(() => {
-        axios.get(`http://localhost:8000/users/users/`, {
+        axios.get(process.env.REACT_APP_BASE_URL + 'users/users/', {
             headers: {
                 'Content-Type': 'application/json',
                 'Gamification-Api-Key': process.env.REACT_APP_API_KEY
@@ -28,7 +28,7 @@ export const HomePage = () => {
     // Get or post current user data
     useEffect(() => {
         function postApiUser() {
-            const url = "http://localhost:8000/users/users/";
+            const url = process.env.REACT_APP_BASE_URL + 'users/users/';
             const data = {
                 'username': sessionStorage.getItem('username'),
                 'titles': [],

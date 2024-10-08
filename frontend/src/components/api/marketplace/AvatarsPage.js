@@ -17,7 +17,7 @@ export const AvatarsPage = () => {
     useEffect(() => {
         console.log('Fetching avatars data...'); // useEffect
 
-        const avatars_url = "http://localhost:8000/marketplace/avatars/";
+        const avatars_url = process.env.REACT_APP_BASE_URL + "marketplace/avatars/";
 
         const headers = {
             'Content-Type': 'application/json',
@@ -34,7 +34,7 @@ export const AvatarsPage = () => {
                 console.error('Error fetching avatars data:', error);
             });
         
-        const user_url = "http://localhost:8000/users/users/";
+        const user_url = process.env.REACT_APP_BASE_URL + "users/users/";
 
         axios.get(user_url + uid + '/', { headers })
 
