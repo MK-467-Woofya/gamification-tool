@@ -90,7 +90,7 @@ class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all().order_by('-date_time_added')
     serializer_class = TitleSerializer
 
-    @action(methods=['GET'], detail=False, url_path='name/(?P<name>\\w+)')
+    @action(methods=['GET'], detail=False, url_path='name/(?P<name>[\\w\\s]+)')
     def get_by_title(self, request, name):
         """
         GET BY TITLE NAME
@@ -105,7 +105,7 @@ class TitleViewSet(viewsets.ModelViewSet):
         data = TitleSerializer(title, context={'request': request}).data
         return Response(data, status=status.HTTP_200_OK)
 
-    @action(methods=['GET'], detail=False, url_path='partner/(?P<partner>\\w+)')
+    @action(methods=['GET'], detail=False, url_path='partner/(?P<partner>[\\w\\s]+)')
     def get_by_partner(self, request, partner):
         """
         GET BY PARTNER NAME
@@ -280,7 +280,7 @@ class AvatarViewSet(viewsets.ModelViewSet):
     queryset = Avatar.objects.all().order_by('-date_time_added')
     serializer_class = AvatarSerializer
 
-    @action(methods=['GET'], detail=False, url_path='name/(?P<name>\\w+)')
+    @action(methods=['GET'], detail=False, url_path='name/(?P<name>[\\w\\s]+)')
     def get_by_avatar(self, request, name):
         """
         GET BY AVATAR NAME
@@ -295,7 +295,7 @@ class AvatarViewSet(viewsets.ModelViewSet):
         data = AvatarSerializer(avatar, context={'request': request}).data
         return Response(data, status=status.HTTP_200_OK)
 
-    @action(methods=['GET'], detail=False, url_path='partner/(?P<partner>\\w+)')
+    @action(methods=['GET'], detail=False, url_path='partner/(?P<partner>[\\w\\s]+)')
     def get_by_partner(self, request, partner):
         """
         GET BY PARTRNER NAME

@@ -331,7 +331,7 @@ class CustomUserViewSet(viewsets.ModelViewSet):
 
         return Response(serializer.data)
 
-    @action(methods=['GET'], detail=False, url_path='username/(?P<username>\\w+)')
+    @action(methods=['GET'], detail=False, url_path='username/(?P<username>[\\w\\s]+)')
     def get_by_username(self, request, username):
         """
         GET BY USERNAME
