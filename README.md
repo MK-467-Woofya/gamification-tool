@@ -52,21 +52,21 @@ Views simulating minimal versions of main application features may be necessary 
       - [For the API](#for-the-api)
   - [Access react webpage](#access-react-webpage)
     - [Authorization](#authorization)
+  - [Production setup](#production-setup)
+    - [Two settings and environment variables](#two-settings-and-environment-variables)
+    - [Nginx for reverse proxy and serving static content](#nginx-for-reverse-proxy-and-serving-static-content)
+    - [Running the production build](#running-the-production-build)
+    - [What's different in production](#whats-different-in-production)
+    - [To do remaining for production](#to-do-remaining-for-production)
   - [Extra command line actions](#extra-command-line-actions)
     - [How to access database:](#how-to-access-database)
     - [How to open a python shell within the docker container:](#how-to-open-a-python-shell-within-the-docker-container)
     - [Testing](#testing)
-- [Project applications](#project-applications)
-  - [1. User:](#1-user)
-  - [2. Check-in:](#2-check-in)
-  - [3. Leaderboard](#3-leaderboard)
-  - [4. Marketplace](#4-marketplace)
-- [Production setup](#production-setup)
-  - [Two settings and environment variables](#two-settings-and-environment-variables)
-  - [Nginx for reverse proxy and serving static content](#nginx-for-reverse-proxy-and-serving-static-content)
-  - [Running the production build](#running-the-production-build)
-  - [What's different in production](#whats-different-in-production)
-  - [To do remaining for production](#to-do-remaining-for-production)
+  - [Project applications](#project-applications)
+    - [1. User:](#1-user)
+    - [2. Check-in:](#2-check-in)
+    - [3. Leaderboard](#3-leaderboard)
+    - [4. Marketplace](#4-marketplace)
 
 
 ## How to run
@@ -115,7 +115,7 @@ The .env files excluded from git in the project structure:
 ![alt text](readme-imgs/proj-structure-1.png)
 
 #### API .env files
-__Important: The .env strategy here is deprecated, and the new strategy is temporarily detailed in the production section of the README.__  
+__Important: The .env strategy here is no longer used for builds since merging the deployment build. The new strategy is detailed in the production section of the README. However, this still works for old builds and there is no reason to delete the .env's as they aren't pushed to version control__  
 
 We need to make our own .env files.  
 
@@ -231,7 +231,119 @@ Our application frontend can be accessed from http://localhost:3000/
 API users are created or retrieved after entering username in the 'login' page.  
 
 The API Key needs to be included in headers for any authorized API request.
-This is done through the use of reactscripts native .env file for secrets.  
+This is done through the use of reactscripts native .env file for secrets. 
+
+## Production setup
+
+For splitting the project into develop and production applications, we need to utilise separate settings for the application, as well as use tools to serve the application in a production environment.  
+
+Our production set up follows [this tutorial](https://testdriven.io/blog/dockerizing-django-with-postgres-gunicorn-and-nginx) which utilizes gunicorn as the WGSI server, and Nginx for reverse proxy. 
+
+Currently the setup has the API and database in the production docker-compose with the front-end having to be built separately.
+
+So let's get into the details.  
+
+### Two settings and environment variables
+
+We now have two docker-compose.yml files:  
+- `docker-compose.yml` - for building our local development environment
+- `docker-compose.prod.yml` - for building our production environment
+
+Settings in the Django project which require differences between environments are stored in .env files in the project root and are imported into the docker-compose.yml's and Django. The files are:  
+- .env.dev - for develop environment  
+![alt text](readme-imgs/env-dev-1.png)  
+
+- .env.prod  
+![alt text](readme-imgs/env-prod-1.png)  
+
+- .env.prod.db  
+![alt text](readme-imgs/env-prod-db-1.png)  
+
+- .env in /frontend (the same one)
+![alt text](readme-imgs/env-frontend-1.png)  
+This file contains a new value `REACT_APP_BASE_URL` which replaces the hard-coded domain to allow for dev and production builds.  
+__For development we set it as:__ `http://localhost:8000/`  
+__For testing production locally we set it as:__ `http://localhost/`  
+Actual production uses a different value.  
+ 
+Here's a couple of examples of how to use it in the frontend JS files: 
+- `process.env.REACT_APP_BASE_URL + "users/users/";`  
+- `axios.get(process.env.REACT_APP_BASE_URL + 'quiz/${quizId}/leaderboard/'`    
+
+
+(Note: The above are placehoder env values)
+
+### Nginx for reverse proxy and serving static content
+Nginx contains both a config file, and a Dockerfile as it is part of the production docker-compose build.  
+
+![alt text](readme-imgs/nginx-1.png)  
+
+At this point, Nginx is providing a reverse proxy service to the API, where requests are sent to Nginx at port 1337, which it forwards to the actual application.
+
+The static from the Django project are served in the locations specified by the config file which corresponds to volumes created in `docker-compose.prod.yml`.
+
+### Running the production build
+The following tasks need to be run whenever the production container is being built:  
+1. Building and running in a detached instance:  
+`$ docker compose -f docker-compose.prod.yml up -d --build`  
+
+2. Migrating the models to the database:  
+`$ docker compose -f docker-compose.prod.yml exec api python manage.py migrate --noinput`  
+
+3. Collecting static for the project, including media:  
+`$ docker compose -f docker-compose.prod.yml exec api python manage.py collectstatic --no-input --clear`  
+
+4. Creating the superuser as before:  
+`$ docker compose -f docker-compose.prod.yml exec api python manage.py createsuperuser`  
+
+5. Create dummy users:  
+`$ docker compose -f docker-compose.prod.yml exec api python manage.py create_users`
+
+6. Add Points logs if necessary:  
+`$ docker compose -f docker-compose.prod.yml exec api python manage.py create_pointsLog`
+
+7. Build friendlists:  
+`$ docker compose -f docker-compose.prod.yml exec api python manage.py create_friendlist`
+
+8. Populate quiz database:  
+`$ docker compose -f docker-compose.prod.yml exec api python manage.py create_quiz`
+
+9. Generate a new API-Key for the frontend from the Admin dash:  
+Accessible at http://api.gamificationtool.xyz/admin/  
+
+10. Add the API-Key to the frontend .env file as before  
+
+11. Build and run the front end dockerfile on the usual port. Manually is easier since the .env files are processed at build time, we can't build the ReactJS container until we get the API Key from the API.
+
+    From the root directory we build the frontend container and tag it as frontend:  
+`docker build -t frontend-image ./frontend`  
+
+    Then we run the docker instructions and expose port 3000:  
+`docker run -d -p 3000:3000 --name frontend-container frontend-image`  
+
+1. Spinning down the containers:  
+`$ docker compose -f docker-compose.prod.yml down -v`  
+
+    We can stop the frontend container with:  
+`$ docker stop frontend-container`
+
+    And delete it if need be with:  
+`$ docker rm frontend-container`  
+
+Note: When spinning down the develop and production containers (prior to actualy production) it is important to include the `-v` tag because both use the same database port. This won't be a problem when it goes to hosted production.
+
+### What's different in production
+1. We are no longer using `manage.py run server`. Production uses the Gunicorn command.
+2. We have multiple .env's to separate develop and production builds
+3. The production Dockerfile `Dockerfile.prod` is multistage and contains a Python linter. So when we build the application, it will raise errors and stop the build process for un-conventioned python code. Build again after fixing the code.
+4. The frontend .env has an environment variable to allow for changing URL's based on which build we are going for.
+5. All requests are directed to the Nginx proxy server, currently at http://api.gamificationtool.xyz.
+
+### To do remaining for production
+
+- Implement SSL for secure https protocol of our application
+- Upload and build a staging environment for testing and showing the client
+- Determine and implement how the front end will be served, whether on local machines or also uploaded to the hosting site
 
 ## Extra command line actions
 
@@ -275,8 +387,8 @@ Unit tests are made in each app under tests.py
 View testing requires using the python shell under test environment conditions. Look at Django tutorial part 5 in the documentation: [here](https://docs.djangoproject.com/en/5.1/intro/tutorial05/)
 
 
-# Project applications
-## 1. User: 
+## Project applications
+### 1. User: 
 Custom user implementation built on top of Django users.
 On top of the base implementation each user has:
 - Total points
@@ -296,13 +408,13 @@ On top of the base implementation each user has:
     - locations visited (FK)
     - events visited (FK)
 
-## 2. Check-in: 
+### 2. Check-in: 
 Application for handling location and event check-ins.
 Contains models for:
 - Location
 - Event
 
-## 3. Leaderboard
+### 3. Leaderboard
 Application for handling the user points leaderboard.
 
 Depending on the implementations, leaderboard could be used for:
@@ -310,7 +422,7 @@ Depending on the implementations, leaderboard could be used for:
 - Locations visited
 - Measure related to their pets - e.g. distance walked, for example
 
-## 4. Marketplace
+### 4. Marketplace
 Application for handling points-spending activities. Acts as not only the shop, but also the database to view all available items, purchaseable or not.
 
 Contains:
@@ -320,86 +432,3 @@ Contains:
     - Titles
     - Milestones (_unsure if this should be here or in the user app_)
     - Any other cosmetics
-
-# Production setup
-
-For splitting the project into develop and production applications, we need to utilise separate settings for the application, as well as use tools to serve the application in a production environment.  
-
-Our production set up follows [this tutorial](https://testdriven.io/blog/dockerizing-django-with-postgres-gunicorn-and-nginx) which utilizes gunicorn as the WGSI server, and Nginx for reverse proxy. 
-
-This setup is for the API and database. It is uncertain if the frontend should be hosted with the API or should be ran from the dev machines to mimic the actual functionality of the API. The seond option would alos mean less hosting costs.
-
-## Two settings and environment variables
-
-Essentially, we now have two docker-compose.yml files:  
-- `docker-compose.yml` - for building our local development environment
-- `docker-compose.prod.yml` - for building our production environment
-
-Settings in the Django project which require differences between environments are stored in .env files in the project root and are imported into the docker-compose.yml's and Django. The files are:  
-- .env.dev - for develop environment  
-![alt text](readme-imgs/env-dev-1.png)  
-
-- .env.prod  
-![alt text](readme-imgs/env-prod-1.png)  
-
-- .env.prod.db  
-![alt text](readme-imgs/env-prod-db-1.png)  
-
-(Note: These are placehoder env values)
-
-## Nginx for reverse proxy and serving static content
-Nginx contains both a config file, and a Dockerfile as it is part of the production docker-compose build.  
-
-![alt text](readme-imgs/nginx-1.png)  
-
-At this point, Nginx is providing a reverse proxy service to the API, where requests are sent to Nginx at port 1337, which it forwards to the actual application.
-
-The static from the Django project are served in the locations specified by the config file which corresponds to volumes created in `docker-compose.prod.yml`.
-
-## Running the production build
-The following tasks need to be run whenever the production container is being built:  
-1. Building and running in a detached instance:  
-`$ docker-compose -f docker-compose.prod.yml up -d --build`  
-
-2. Migrating the models to the database:  
-`$ docker-compose -f docker-compose.prod.yml exec api python manage.py migrate --noinput`  
-
-3. Collecting static for the project, including media:  
-`$ docker-compose -f docker-compose.prod.yml exec api python manage.py collectstatic --no-input --clear`  
-
-4. Creating the superuser as before:  
-`$ docker-compose -f docker-compose.prod.yml exec api python manage.py createsuperuser`  
-
-5. Generate a new API-Key for the frontend:  
-Admin dashboard is accessible at http://localhost:1337/admin/  
-
-6. Add the API-Key to the frontend .env file as before  
-
-7. Build and run the front end dockerfile on the usual port. Manually is easier since the .env files are processed at build time, we can't use the API key otherwise.  
-
-    From the root directory we build the frontend container and tag it as frontend:  
-   - `docker build -t frontend-image ./frontend`  
-
-    Then we run the docker instructions and expose port 3000:  
-   - `docker run -d -p 3000:3000 --name frontend-container frontend-image`  
-
-8. Spinning down the containers:  
-`$ docker-compose -f docker-compose.prod.yml down -v`  
-
-    And we can stop the frontend container:  
-`$ docker stop frontend-container`
-
-
-Note: When spinning down the develop and production containers (prior to actualy production) it is important to include the `-v` tag because both use the same database port. This won't be a problem when it goes to hosted production.
-
-## What's different in production
-1. We are no longer using `manage.py run server`. Production uses the Gunicorn command.
-2. The production Dockerfile `Dockerfile.prod` is multistage and contains a Python linter. So when we build the application, it will raise errors and stop the build process for un-conventioned python code. Build again after fixing the code.
-3. All requests are directed to the Nginx proxy server, currently at http://localhost:1337.
-
-## To do remaining for production
-
-- Implement SSL for secure https protocol of our application
-- Choose web host for the production environment
-- Upload and build a staging environment for testing and showing the client
-- Determine and implement how the front end will be served, whether on local machines or also uploaded to the hosting site
