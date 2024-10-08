@@ -60,7 +60,7 @@ export const AvatarsPage = () => {
             <div>
                 <h1>Avatars</h1>
             </div>
-            <div>
+            <div className="table-responsive">
                 <table>
                     <thead>
                         <tr>
