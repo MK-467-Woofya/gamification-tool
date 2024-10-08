@@ -190,6 +190,8 @@ Another script to create points log(if user have no log):
 
 Another script to edit friend lists:  
 `$ docker-compose exec api python manage.py create_friendlist`
+Another script to add quiz:
+`$ docker-compose exec api python manage.py create_quiz`
 
 
 ### Test base endpoints

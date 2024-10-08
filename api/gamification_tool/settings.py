@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'user',
     'leaderboard',
+    'quiz',
     'marketplace',
 ]
 # Plugins of processes that run in requests/responses
