@@ -14,7 +14,7 @@ const QuizLeaderboard = ({ quizId }) => {
 
     useEffect(() => {
         if (showLeaderboard) {
-            axios.get(`http://localhost:8000/quiz/${quizId}/leaderboard/`, {
+            axios.get(process.env.REACT_APP_BASE_URL + `quiz/${quizId}/leaderboard/`, {
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Username ${currentUsername}`
