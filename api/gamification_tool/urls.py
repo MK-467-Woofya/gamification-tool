@@ -29,6 +29,7 @@ urlpatterns = [
     path("users/", include("user.urls")),
     path("leaderboard/", include("leaderboard.urls")),
     path('quiz/', include('quiz.urls')),
+    path('memory-game/', include('memory_game.urls')),
 ]
 
 urlpatterns += [

@@ -1,0 +1,16 @@
+.memory-game {
+    text-align: center;
+}
+
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 100px);
+    gap: 10px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.memory-game button {
+    margin: 10px;
+    padding: 10px 20px;
+}
