@@ -38,6 +38,10 @@ export const NavigationBar = () => {
             {isAuth ?
                 <Nav.Link href="/quiz">Quiz</Nav.Link>
                 : null}
+
+            {isAuth ?
+                <Nav.Link href="/memory-game">Memory Game</Nav.Link>
+                : null}
             </Nav>
             <Nav>
             {isAuth ?

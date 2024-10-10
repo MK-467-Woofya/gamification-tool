@@ -21,5 +21,5 @@ def submit_score(request):
 
     # Update user points, assume each match gives 10 experience points
     total_experience = int(score) * 10
-    update_user_points(user, experience_points=total_experience, shop_points=0)
+    update_user_points(user, total_experience, 0)  # Use positional arguments
     return Response({'message': 'Score submitted successfully'})

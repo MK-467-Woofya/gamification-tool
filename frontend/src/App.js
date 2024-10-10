@@ -13,6 +13,7 @@ import { LeaderboardPage } from './components/api/LeaderboardPage';
 import { MarketplacePage } from './components/api/MarketplacePage';
 
 import { Quiz } from './components/api/Quiz';
+import MemoryGame from './components/api/MemoryGame';
 
 
 
@@ -34,6 +35,8 @@ function App() {
                     <Route path="/logout" element={<LogoutPage />} />
 
                     <Route path="/quiz" element={<Quiz />} />
+                    <Route path="/memory-game" element={<MemoryGame />} />
+
                 </Routes>
             </Router>
         </div>
