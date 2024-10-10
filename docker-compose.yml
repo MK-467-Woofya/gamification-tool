@@ -7,7 +7,7 @@ services:
       POSTGRES_DB: apidatabase
       POSTGRES_USER: apiuser
       POSTGRES_PASSWORD: apipassword
-      PGPORT: 5433
+      PGPORT: 5432
     networks:
       - api-api_db
 
