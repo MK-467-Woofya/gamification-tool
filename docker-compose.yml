@@ -7,7 +7,6 @@ services:
       POSTGRES_DB: apidatabase
       POSTGRES_USER: apiuser
       POSTGRES_PASSWORD: apipassword
-      PGPORT: 5433
     networks:
       - api-api_db
 
@@ -23,6 +22,8 @@ services:
     networks:
       - frontend-api
       - api-api_db
+    env_file:
+      - ./.env.dev
   
   frontend:
     build: ./frontend

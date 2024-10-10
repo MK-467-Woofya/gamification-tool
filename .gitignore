@@ -5,6 +5,7 @@ api/*.pyc
 api/__pycache__/
 api/db.sqlite3
 api/media
+api/mediafiles
 web/*.log
 web/*.pot
 web/*.pyc
@@ -17,6 +18,7 @@ web/media
 */__pycache__/
 */db.sqlite3
 */media
+api/mediafiles/*
 
 # Backup files # 
 api/*.bak
@@ -111,8 +113,7 @@ celerybeat-schedule.*
 *.sage.py 
 
 # Environments 
-.env
-.env.*
+.env.* 
 */*.env
 .venv 
 env/ 
@@ -156,6 +157,7 @@ GitHub.sublime-settings
 /frontend/node_modules
 /frontend/.pnp
 /frontend/.pnp.js
+/Interactive_map/back_end/node_modules
 
 # testing
 /frontend/coverage
