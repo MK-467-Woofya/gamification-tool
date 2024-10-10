@@ -28,7 +28,9 @@ export const NavigationBar = () => {
                     <Nav.Link href="/">Home</Nav.Link>
                     : null}
                 {isAuth ?
-                    <Nav.Link href="/locations">Locations</Nav.Link>
+                    /* <Nav.Link href="/locations">Locations</Nav.Link> 
+                    Change the URL below to the deployed URL for the Locations service */
+                    <Nav.Link href="http://localhost:3000/">Locations</Nav.Link>
                     : null}
                 {isAuth ?
                     <Nav.Link href="/events">Events</Nav.Link>
