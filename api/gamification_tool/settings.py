@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'user',
     'leaderboard',
     'quiz',
+    'memory_game',
 ]
 AUTH_USER_MODEL = 'user.CustomUser'
 

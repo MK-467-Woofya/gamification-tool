@@ -25,7 +25,39 @@ const MemoryGame = () => {
     const [score, setScore] = useState(0);
     const [timeLeft, setTimeLeft] = useState(60); // 60-second countdown
     const [gameStarted, setGameStarted] = useState(false); // if the game has started
+    const [canEarnPoints, setCanEarnPoints] = useState(true); // if the user can earn points
+    const [scoreSubmitted, setScoreSubmitted] = useState(false); // prevent multiple submissions
     const currentUsername = sessionStorage.getItem('username'); // current user
+
+    // Function to check game eligibility
+    const handleStartGame = () => {
+        if (!currentUsername) {
+            alert('Please log in to play the game.');
+            return;
+        }
+        axios.get('http://localhost:8000/memory-game/eligibility/', { // FIXME - need to use .env url in later part
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Username ${currentUsername}`
+            }
+        })
+        .then(response => {
+            if (response.data.can_earn_points) {
+                setCanEarnPoints(true);
+                shuffleCards();
+            } else {
+                const { hours, minutes, seconds } = response.data.remaining_time;
+                const proceed = window.confirm(`You have ${hours} hours, ${minutes} minutes, and ${seconds} seconds remaining before you can earn points again. Do you still want to proceed with the game?`);
+                if (proceed) {
+                    setCanEarnPoints(false);
+                    shuffleCards();
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error checking game eligibility:', error);
+        });
+    };
 
     // Shuffle cards and start a new game
     const shuffleCards = () => {
@@ -39,6 +71,7 @@ const MemoryGame = () => {
         setScore(0);
         setTimeLeft(60);
         setGameStarted(true); // Start the game
+        setScoreSubmitted(false); // Reset scoreSubmitted
     };
 
     // Handle user's card choice
@@ -79,18 +112,26 @@ const MemoryGame = () => {
 
     // Send score to the backend
     const sendScore = useCallback(() => {
-        axios
-            .post('http://localhost:8000/memory-game/submit-score/', {
-                username: currentUsername,
-                score: score,
-            })
-            .then((response) => {
-                console.log('Score submitted successfully.');
-            })
-            .catch((error) => {
-                console.error('Error submitting score:', error);
-            });
-    }, [currentUsername, score]);
+        if (!scoreSubmitted) {
+            axios
+                .post('http://localhost:8000/memory-game/submit-score/', { // FIXME - need to use .env url in later part
+                    username: currentUsername,
+                    score: score,
+                })
+                .then((response) => {
+                    console.log('Score submitted successfully.');
+                    setScoreSubmitted(true); // Set scoreSubmitted to true after submission
+                    if (canEarnPoints) {
+                        alert(`Game finished! Your total score is: ${score}`);
+                    } else {
+                        alert('Game completed.');
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error submitting score:', error);
+                });
+        }
+    }, [currentUsername, score, scoreSubmitted, canEarnPoints]);
 
     // Start the timer
     useEffect(() => {
@@ -99,9 +140,7 @@ const MemoryGame = () => {
             return () => clearTimeout(timer);
         } else if (gameStarted && timeLeft === 0) {
             // Time is up
-            alert('Time is up!');
             sendScore();
-            // Reset the game
             setGameStarted(false);
             setCards([]);
         }
@@ -110,9 +149,7 @@ const MemoryGame = () => {
     // Check if the game is completed
     useEffect(() => {
         if (gameStarted && cards.length > 0 && cards.every((card) => card.matched)) {
-            alert('Congratulations! You completed the game!');
             sendScore();
-            // Reset the game
             setGameStarted(false);
             setCards([]);
         }
@@ -122,7 +159,7 @@ const MemoryGame = () => {
         <div className="memory-game">
             {!gameStarted ? (
                 <>
-                    <button onClick={shuffleCards} className="start-game-button">
+                    <button onClick={handleStartGame} className="start-game-button">
                         Start Game
                     </button>
                 </>
