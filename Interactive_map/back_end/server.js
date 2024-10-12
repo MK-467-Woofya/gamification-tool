@@ -101,6 +101,6 @@ app.get('/', (req, res) => {
 });
 
 // Start the server and listen on port 3000
-app.listen(3000, () => {
-    console.log('Backend running on http://localhost:3000');  // Log a message when the server is successfully running on port 3000.
+app.listen(3001, () => {
+    console.log('Backend running on http://localhost:3001');  // Log a message when the server is successfully running on port 3000.
 });

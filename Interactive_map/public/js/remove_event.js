@@ -11,7 +11,7 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 }).addTo(map);
 
 // Fetch the list of events from the backend and populate the event dropdown
-fetch('http://localhost:3000/events')
+fetch('http://localhost:3001/events')
     .then(response => response.json())  // Convert the response to JSON
     .then(events => {
         const eventList = document.getElementById('event-list');  // Reference the event dropdown
