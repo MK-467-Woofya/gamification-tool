@@ -5,6 +5,8 @@ import './MemoryGame.css';
 import SingleCard from './SingleCard';
 import axios from 'axios';
 
+import MemoryGameLeaderboard from './MemoryGameLeaderboard';
+
 const cardImages = [
     { src: '/img/dog1.jpg', matched: false },
     { src: '/img/dog2.jpg', matched: false },
@@ -28,6 +30,7 @@ const MemoryGame = () => {
     const [canEarnPoints, setCanEarnPoints] = useState(true); // if the user can earn points
     const [scoreSubmitted, setScoreSubmitted] = useState(false); // prevent multiple submissions
     const currentUsername = sessionStorage.getItem('username'); // current user
+    const [showLeaderboard, setShowLeaderboard] = useState(false); // leaderboard
 
     // Function to check game eligibility
     const handleStartGame = () => {
@@ -162,6 +165,10 @@ const MemoryGame = () => {
                     <button onClick={handleStartGame} className="start-game-button">
                         Start Game
                     </button>
+                    <button onClick={() => setShowLeaderboard(!showLeaderboard)} className="leaderboard-button">
+                        {showLeaderboard ? 'Hide Leaderboard' : 'Show Leaderboard'}
+                    </button>
+                    {showLeaderboard && <MemoryGameLeaderboard />}
                 </>
             ) : (
                 <>
