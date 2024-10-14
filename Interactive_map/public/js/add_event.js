@@ -43,7 +43,7 @@ document.getElementById('event-form').addEventListener('submit', function(e) {
     };
 
     // Send the event data to the backend API using the POST method
-    fetch('http://localhost:3000/events', {
+    fetch('http://localhost:3002/events', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'  // Specify that the request body is in JSON format

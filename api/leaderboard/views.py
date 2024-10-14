@@ -96,14 +96,13 @@ def leaderboard(request):
         current_user = CustomUser.objects.filter(username=current_username).first()
         if current_user:
             current_user_data = CustomUserSerializer(current_user, context={'request': request}).data
-            users_data.append(current_user_data) 
+            users_data.append(current_user_data)
 
     return Response(users_data)
 
 
 def index(request):
     return HttpResponse("Leaderboard index page.")
-
 
 
 @api_view(['GET'])
@@ -131,4 +130,3 @@ def friends_leaderboard(request):
         })
 
     return Response(leaderboard)
-

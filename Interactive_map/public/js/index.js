@@ -11,7 +11,7 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 let eventsData = [];  // Global variable to store all event data
 
 // Fetch events from the backend and populate the map and list
-fetch('http://localhost:3000/events')
+fetch('http://localhost:3002/events')
     .then(response => response.json())  // Parse the response as JSON
     .then(events => {
         eventsData = events;  // Store events globally for filtering/sorting
