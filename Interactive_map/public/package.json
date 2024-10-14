@@ -1,0 +1,16 @@
+{
+    "name": "interactive-map-frontend",
+    "version": "1.0.0",
+    "description": "Frontend for the interactive map.",
+    "main": "index.html",
+    "scripts": {
+        "start": "http-server -p 3001 -c-1 .",
+        "build": "echo 'No build step specified.'"
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "http-server": "^14.1.1",
+        "interactive-map-frontend": "file:"
+    }
+}

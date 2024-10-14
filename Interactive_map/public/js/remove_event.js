@@ -11,7 +11,7 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 }).addTo(map);
 
 // Fetch the list of events from the backend and populate the event dropdown
-fetch('http://localhost:3001/events')
+fetch('http://localhost:3002/events')
     .then(response => response.json())  // Convert the response to JSON
     .then(events => {
         const eventList = document.getElementById('event-list');  // Reference the event dropdown
@@ -72,7 +72,7 @@ fetch('http://localhost:3001/events')
 // Function to delete the selected event by its check-in code
 function deleteEvent(eventCode) {
     // Send a DELETE request to the backend to remove the event by its check-in code
-    fetch(`http://localhost:3000/events/${eventCode}`, {
+    fetch(`http://localhost:3002/events/${eventCode}`, {
         method: 'DELETE',
     })
     .then(response => {

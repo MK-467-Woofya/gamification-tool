@@ -100,7 +100,7 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '../public', 'index.html'));  // Serve the index.html file when visiting the root URL.
 });
 
-// Start the server and listen on port 3000
-app.listen(3001, () => {
-    console.log('Backend running on http://localhost:3001');  // Log a message when the server is successfully running on port 3000.
+// Start the server and listen on port 3002
+app.listen(3002, () => {
+    console.log('Backend running on http://localhost:3002');  // Log a message when the server is successfully running on port 3002.
 });
