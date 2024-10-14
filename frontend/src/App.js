@@ -14,6 +14,7 @@ import { MarketplaceHomePage } from './components/api/marketplace/MarketplaceHom
 import { AvatarsPage } from './components/api/marketplace/AvatarsPage';
 import { TitlesPage } from './components/api/marketplace/TitlesPage';
 import { Quiz } from './components/api/Quiz';
+import MemoryGame from './components/api/MemoryGame';
 
 
 function App() {
@@ -35,6 +36,8 @@ function App() {
                     <Route path="/marketplace/titles" element={<TitlesPage />} />
                     <Route path="/logout" element={<LogoutPage />} />
                     <Route path="/quiz" element={<Quiz />} />
+                    <Route path="/memory-game" element={<MemoryGame />} />
+
                 </Routes>
             </Router>
         </div>

@@ -62,6 +62,7 @@ INSTALLED_APPS = [
     'user',
     'leaderboard',
     'quiz',
+    'memory_game',
     'marketplace',
 ]
 # Plugins of processes that run in requests/responses
