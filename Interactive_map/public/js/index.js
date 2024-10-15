@@ -49,24 +49,50 @@ function addEventToMap(event) {
         .bindPopup(`<b>${event.name}</b><br>${event.description}<br>${event.date} at ${event.time}`);
 }
 
-// Function to handle check-in by comparing the event code with user input
 window.checkIn = function(eventCode) {
     const userCode = prompt("Enter the check-in code:");
 
     if (userCode === eventCode) {
         alert("You have successfully checked in!");
+
+        // After successful check-in, update points for the user
+        const uid = sessionStorage.getItem('uid'); // Get the logged-in user's ID
+        if (uid) {
+            const addPointsUrl = `http://localhost:8000/users/users/${uid}/add_points/`;
+            const headers = {
+                'Content-Type': 'application/json',
+                'Gamification-Api-Key': process.env.REACT_APP_API_KEY
+            };
+
+            // Data for updating user points (500 points each for shop and experience)
+            const data = {
+                'experience_points': 500,
+                'shop_points': 500
+            };
+
+            // Make the PATCH request to update the user's points
+            fetch(addPointsUrl, {
+                method: 'PATCH',
+                headers: headers,
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(responseData => {
+                console.log('Points added:', responseData);
+                alert("You have been rewarded with 500 experience points and 500 shop points!");
+            })
+            .catch(error => {
+                console.error('Error adding points:', error);
+                alert("An error occurred while adding points. Please try again later.");
+            });
+        } else {
+            console.error('User ID not found in session storage');
+            alert("Unable to update points. User not found.");
+        }
     } else {
         alert("Incorrect code! Please try again.");
     }
 };
-
-function navigateToAddEventPage() {
-    window.location.href = '/add-event'; // Directly navigate using backend route
-}
-
-function navigateToRemoveEventPage() {
-    window.location.href = '/remove-event'; // Directly navigate using backend route
-}
 
 // Filtering and Sorting Functions
 function filterAndSortEvents() {
