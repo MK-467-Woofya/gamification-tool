@@ -37,12 +37,14 @@ class CustomUserManager(BaseUserManager):
         Create custom superuser for admin
         """
         user = self.create_user(
-            username,
+            username=username,
             password=password,
+            is_admin=True,
+            is_superuser=True,  # set is_superuser=True
         )
-        user.is_admin = True
-        user.save(using=self.db)
+        user.save(using=self._db)  # fix self.db to self._db
         return user
+
 
 
 class CustomUser(AbstractBaseUser):
@@ -75,6 +77,7 @@ class CustomUser(AbstractBaseUser):
 
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
+    is_superuser = models.BooleanField(default=False) # added
 
     current_title = models.ForeignKey(Title, null=True, blank=True, on_delete=models.CASCADE)
     current_avatar = models.ForeignKey(Avatar, null=True, blank=True, on_delete=models.CASCADE)
@@ -91,10 +94,10 @@ class CustomUser(AbstractBaseUser):
         return self.username
 
     def has_perm(self, perm, obj=None):
-        return True
+        return self.is_admin or self.is_superuser
 
     def has_module_perms(self, app_label):
-        return True
+        return self.is_admin or self.is_superuser
 
     @property
     def is_staff(self):
@@ -114,7 +117,8 @@ class PointsLog(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     experience_points = models.IntegerField(default=0)
     shop_points = models.IntegerField(default=0)
-    created_at = models.DateTimeField(default=timezone.now)  # time of changing score
+    # created_at = models.DateTimeField(default=timezone.now)  # time of changing score
+    created_at = models.DateTimeField(default=timezone.now, editable=True)
 
     class Meta:
         ordering = ['-created_at']  # reverse chronological

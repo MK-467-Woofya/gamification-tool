@@ -5,9 +5,14 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from user.models import CustomUser, PointsLog
 
+from rest_framework.decorators import permission_classes
+from rest_framework.permissions import AllowAny
+
+
 def get_username_from_request(request):
     # Get user name from request
-    auth_header = request.headers.get('Authorization', '')
+    # auth_header = request.headers.get('Authorization', '')
+    auth_header = request.META.get('HTTP_AUTHORIZATION', '')
     if auth_header.startswith('Username '):
         username = auth_header[len('Username '):]
         return username
@@ -19,11 +24,11 @@ def get_leaderboard_by_time_frame(time_delta, request):
     if time_delta is not None:
         start_time = timezone.now() - time_delta
         logs = PointsLog.objects.filter(
-            created_at__gte=start_time, user__is_admin=False
-        ).select_related('user')
+            created_at__gte=start_time
+        ).exclude(user__is_superuser=True).select_related('user')
     else:
-        logs = PointsLog.objects.filter(
-            user__is_admin=False
+        logs = PointsLog.objects.all().exclude(
+            user__is_superuser=True
         ).select_related('user')
 
     user_scores = {}
@@ -70,30 +75,36 @@ def get_leaderboard_by_time_frame(time_delta, request):
     return top_10_leaderboard  # Return top 10 users and current user's data
 
 @api_view(['GET'])
+@permission_classes([AllowAny])
 def weekly_leaderboard(request):
     leaderboard = get_leaderboard_by_time_frame(timedelta(weeks=1), request)
     return Response(leaderboard)
 
 @api_view(['GET'])
+@permission_classes([AllowAny])
 def monthly_leaderboard(request):
     leaderboard = get_leaderboard_by_time_frame(timedelta(days=30), request)
     return Response(leaderboard)
 
 @api_view(['GET'])
+@permission_classes([AllowAny])
 def yearly_leaderboard(request):
     leaderboard = get_leaderboard_by_time_frame(timedelta(days=365), request)
     return Response(leaderboard)
 
 @api_view(['GET'])
+@permission_classes([AllowAny])
 def leaderboard(request):
     # For all-time leaderboard, pass time_delta as None
     leaderboard = get_leaderboard_by_time_frame(None, request)
     return Response(leaderboard)
 
+@permission_classes([AllowAny])
 def index(request):
     return HttpResponse("Leaderboard index page.")
 
 @api_view(['GET'])
+@permission_classes([AllowAny])
 def friends_leaderboard(request):
     # current user
     current_username = get_username_from_request(request)
