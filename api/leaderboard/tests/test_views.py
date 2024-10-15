@@ -39,7 +39,7 @@ class LeaderboardTests(APITestCase):
         now = timezone.now()
         PointsLog.objects.create(user=self.user1, experience_points=100, shop_points=50, created_at=now - timedelta(days=5))
         PointsLog.objects.create(user=self.user2, experience_points=200, shop_points=80, created_at=now - timedelta(days=6))
-        PointsLog.objects.create(user=self.user3, experience_points=150, shop_points=60, created_at=now - timedelta(days=8))  # 超过一周
+        PointsLog.objects.create(user=self.user3, experience_points=150, shop_points=60, created_at=now - timedelta(days=8))  # over a week
 
         # moke login
         self.client.credentials(HTTP_AUTHORIZATION='Username ' + self.user1.username)
