@@ -3,14 +3,10 @@ from django.utils import timezone
 from datetime import timedelta
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from user.serializers import CustomUserSerializer
 from user.models import CustomUser, PointsLog
 
-from rest_framework.exceptions import NotAuthenticated
-
-
 def get_username_from_request(request):
-    # get user name from request
+    # Get user name from request
     auth_header = request.headers.get('Authorization', '')
     if auth_header.startswith('Username '):
         username = auth_header[len('Username '):]
@@ -18,92 +14,84 @@ def get_username_from_request(request):
     else:
         return None
 
-
-# leaderboard in time period(top 10)
-def get_leaderboard_by_time_period(start_time):
-    logs = PointsLog.objects.filter(created_at__gte=start_time, user__is_admin=False) \
-                            .select_related('user') \
-                            .order_by('-experience_points')[:10]  # top 10
+def get_leaderboard_by_time_frame(time_delta, request):
+    # If time_delta is None, calculate leaderboard for all time
+    if time_delta is not None:
+        start_time = timezone.now() - time_delta
+        logs = PointsLog.objects.filter(
+            created_at__gte=start_time, user__is_admin=False
+        ).select_related('user')
+    else:
+        logs = PointsLog.objects.filter(
+            user__is_admin=False
+        ).select_related('user')
 
     user_scores = {}
     for log in logs:
         user_id = log.user.id
-        if user_id not in user_scores or user_scores[user_id]['experience_points'] < log.experience_points:
+        if user_id not in user_scores:
             user_scores[user_id] = {
                 'id': user_id,  # user id
                 'username': log.user.username,
                 'experience_points': log.experience_points,
                 'shop_points': log.shop_points,
             }
+        else:
+            # Accumulate experience_points and shop_points
+            user_scores[user_id]['experience_points'] += log.experience_points
+            user_scores[user_id]['shop_points'] += log.shop_points
 
-    return sorted(user_scores.values(), key=lambda x: x['experience_points'], reverse=True)
+    # Sort the leaderboard
+    leaderboard_list = sorted(user_scores.values(), key=lambda x: x['experience_points'], reverse=True)
 
-
-def get_leaderboard_by_time_frame(time_delta, request):
-    start_time = timezone.now() - time_delta
-    leaderboard = get_leaderboard_by_time_period(start_time)  # top 10
     current_username = get_username_from_request(request)
 
-    # if current user in top 10
-    current_user_in_top_10 = any(user['username'] == current_username for user in leaderboard)
+    # Add rank and is_current_user fields
+    for index, user_data in enumerate(leaderboard_list):
+        user_data['rank'] = index + 1  # Rank starts from 1
+        user_data['is_current_user'] = (user_data['username'] == current_username)
 
-    # if not, add it into tail
+    # Get top 10 users
+    top_10_leaderboard = leaderboard_list[:10]
+
+    # Check if current user is in the top 10
+    current_user_in_top_10 = any(
+        user['username'] == current_username for user in top_10_leaderboard
+    )
+
+    # If current user is not in top 10 and is logged in, add them to the leaderboard
     if not current_user_in_top_10 and current_username:
-        current_user = CustomUser.objects.filter(username=current_username).first()
-        if current_user:
-            current_user_data = {
-                'id': current_user.id,
-                'username': current_user.username,
-                'experience_points': current_user.experience_points,
-                'shop_points': current_user.shop_points,
-            }
-            leaderboard.append(current_user_data)
+        current_user_data = next(
+            (user for user in leaderboard_list if user['username'] == current_username), None
+        )
+        if current_user_data:
+            top_10_leaderboard.append(current_user_data)
 
-    return leaderboard
-
+    return top_10_leaderboard  # Return top 10 users and current user's data
 
 @api_view(['GET'])
 def weekly_leaderboard(request):
     leaderboard = get_leaderboard_by_time_frame(timedelta(weeks=1), request)
     return Response(leaderboard)
 
-
 @api_view(['GET'])
 def monthly_leaderboard(request):
     leaderboard = get_leaderboard_by_time_frame(timedelta(days=30), request)
     return Response(leaderboard)
-
 
 @api_view(['GET'])
 def yearly_leaderboard(request):
     leaderboard = get_leaderboard_by_time_frame(timedelta(days=365), request)
     return Response(leaderboard)
 
-
 @api_view(['GET'])
 def leaderboard(request):
-    users = CustomUser.objects.filter(is_admin=False).order_by('-experience_points')[:10]
-    current_username = get_username_from_request(request)
-
-    serializer = CustomUserSerializer(users, many=True, context={'request': request})
-    users_data = serializer.data
-
-    # if current user in top 10
-    current_user_in_top_10 = any(user['username'] == current_username for user in users_data)
-
-    # if not
-    if not current_user_in_top_10 and current_username:
-        current_user = CustomUser.objects.filter(username=current_username).first()
-        if current_user:
-            current_user_data = CustomUserSerializer(current_user, context={'request': request}).data
-            users_data.append(current_user_data)
-
-    return Response(users_data)
-
+    # For all-time leaderboard, pass time_delta as None
+    leaderboard = get_leaderboard_by_time_frame(None, request)
+    return Response(leaderboard)
 
 def index(request):
     return HttpResponse("Leaderboard index page.")
-
 
 @api_view(['GET'])
 def friends_leaderboard(request):
@@ -117,16 +105,33 @@ def friends_leaderboard(request):
     # friend list
     friends = current_user.friend_list.friends.all()
 
-    # friend and current user
-    friends_and_self_logs = PointsLog.objects.filter(user__in=[*friends, current_user]).select_related('user').order_by('-experience_points')
+    # logs for friends and current user
+    friends_and_self_logs = PointsLog.objects.filter(
+        user__in=[*friends, current_user]
+    ).select_related('user')
 
-    leaderboard = []
+    user_scores = {}
     for log in friends_and_self_logs:
-        leaderboard.append({
-            'username': log.user.username,
-            'experience_points': log.experience_points,
-            'shop_points': log.shop_points,
-            'is_current_user': log.user == current_user
-        })
+        user_id = log.user.id
+        if user_id not in user_scores:
+            user_scores[user_id] = {
+                'username': log.user.username,
+                'experience_points': log.experience_points,
+                'shop_points': log.shop_points,
+                'is_current_user': (log.user.username == current_username)
+            }
+        else:
+            # Accumulate experience_points and shop_points
+            user_scores[user_id]['experience_points'] += log.experience_points
+            user_scores[user_id]['shop_points'] += log.shop_points
 
-    return Response(leaderboard)
+    # Sort leaderboard
+    leaderboard_list = sorted(
+        user_scores.values(), key=lambda x: x['experience_points'], reverse=True
+    )
+
+    # Add rank
+    for index, user_data in enumerate(leaderboard_list):
+        user_data['rank'] = index + 1  # Rank starts from 1
+
+    return Response(leaderboard_list)
