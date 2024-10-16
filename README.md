@@ -387,7 +387,20 @@ Unit tests are made in each app under tests.py
 View testing requires using the python shell under test environment conditions. Look at Django tutorial part 5 in the documentation: [here](https://docs.djangoproject.com/en/5.1/intro/tutorial05/)
 
 ### 1. leaderboard testing: 
-docker-compose run api python manage.py test leaderboard.tests
+
+# before start:
+docker-compose down --volumes --remove-orphans
+
+# run by default runner:
+docker-compose run api python manage.py test leaderboard.tests --noinput -v 2
+
+# test with custom runner:
+
+docker-compose run api python manage.py test leaderboard.tests --testrunner=custom_test_runner.CustomTestRunner --noinput -v 2
+
+# test with one go(combined command, you can directly run this line):
+docker-compose down --volumes --remove-orphans; Start-Sleep -Seconds 5; docker-compose run api python manage.py test leaderboard.tests --noinput -v 2
+
 
 
 ## Project applications
