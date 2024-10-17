@@ -23,6 +23,7 @@ def get_leaderboard_by_time_frame(time_delta, request):
     # If time_delta is None, calculate leaderboard for all time
     if time_delta is not None:
         start_time = timezone.now() - time_delta
+        print(f"Calculating leaderboard with start_time >= {start_time}")
         logs = PointsLog.objects.filter(
             created_at__gte=start_time
         ).exclude(user__is_superuser=True).select_related('user')
@@ -30,6 +31,8 @@ def get_leaderboard_by_time_frame(time_delta, request):
         logs = PointsLog.objects.all().exclude(
             user__is_superuser=True
         ).select_related('user')
+
+    print(f"Found {logs.count()} PointsLog entries")
 
     user_scores = {}
     for log in logs:
@@ -50,11 +53,19 @@ def get_leaderboard_by_time_frame(time_delta, request):
     leaderboard_list = sorted(user_scores.values(), key=lambda x: x['experience_points'], reverse=True)
 
     current_username = get_username_from_request(request)
+    print(f"Current user: {current_username}")
 
-    # Add rank and is_current_user fields
-    for index, user_data in enumerate(leaderboard_list):
-        user_data['rank'] = index + 1  # Rank starts from 1
+    # Add rank and is_current_user fields with handling ties
+    leaderboard = []
+    previous_score = None
+    rank = 0
+    for i, user_data in enumerate(leaderboard_list):
+        if user_data['experience_points'] != previous_score:
+            rank = i + 1
+            previous_score = user_data['experience_points']
+        user_data['rank'] = rank
         user_data['is_current_user'] = (user_data['username'] == current_username)
+        leaderboard.append(user_data)
 
     # Get top 10 users
     top_10_leaderboard = leaderboard_list[:10]
@@ -71,6 +82,8 @@ def get_leaderboard_by_time_frame(time_delta, request):
         )
         if current_user_data:
             top_10_leaderboard.append(current_user_data)
+
+    print(f"Top 10 leaderboard: {top_10_leaderboard}")
 
     return top_10_leaderboard  # Return top 10 users and current user's data
 
