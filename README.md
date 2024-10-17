@@ -401,7 +401,23 @@ docker-compose run api python manage.py test leaderboard.tests --testrunner=cust
 # test with one go(combined command, you can directly run this line):
 docker-compose down --volumes --remove-orphans; Start-Sleep -Seconds 5; docker-compose run api python manage.py test leaderboard.tests --noinput -v 2
 
+# test with one script(there might be permission issue, run the line below first):
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 
+# by default: 
+
+.\run_tests.ps1
+
+# or you may wanna run specific test? 
+
+.\run_tests.ps1 -TestPath "leaderboard.tests.test_edge_cases"
+
+# or specific class? 
+
+.\run_tests.ps1 -TestPath "leaderboard.tests.test_edge_cases.LeaderboardEdgeCasesTests"
+
+# or specific function? 
+.\run_tests.ps1 -TestPath "leaderboard.tests.test_edge_cases.LeaderboardEdgeCasesTests.test_leaderboard_with_boundary_dates"
 
 ## Project applications
 ### 1. User: 
