@@ -1,8 +1,7 @@
 from rest_framework.routers import DefaultRouter
-from .views import QuestViewSet, UserQuestProgressViewSet
+from .views import QuestViewSet
 
 router = DefaultRouter()
-router.register(r'quests', QuestViewSet)
-router.register(r'user-progress', UserQuestProgressViewSet, basename='userquestprogress')
+router.register(r'quests', QuestViewSet, basename='quest')
 
 urlpatterns = router.urls
