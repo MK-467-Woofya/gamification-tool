@@ -1,6 +1,7 @@
 from django.db import models
 from user.models import CustomUser
 from django.db import transaction
+from django.utils import timezone
 
 
 # Quiz Model - Stores information about the quiz itself
@@ -37,7 +38,7 @@ class UserQuizScore(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)  # The user who took the quiz
     quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE)  # The quiz taken by the user
     score = models.IntegerField(default=0)  # The score the user achieved on the quiz
-    completed_at = models.DateTimeField(auto_now_add=True)  # When the quiz was completed
+    completed_at = models.DateTimeField(default=timezone.now)  # When the quiz was completed
     correct_answers = models.IntegerField(default=0) # number of correct answer
 
     def __str__(self):

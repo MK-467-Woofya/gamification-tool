@@ -3,11 +3,12 @@
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
-from user.models import CustomUser, PointsLog
+from user.models import CustomUser, PointsLog, update_user_points
 from quiz.models import Quiz, QuizQuestion, QuizChoice, UserQuizScore
 from django.utils import timezone
 from datetime import timedelta
 from django.db.models import Sum
+
 
 class QuizAPITests(APITestCase):
 
@@ -19,7 +20,7 @@ class QuizAPITests(APITestCase):
         # create quiz
         self.quiz = Quiz.objects.create(name='General Knowledge Quiz')
 
-        # create question
+        # create questions and choices
         self.question1 = QuizQuestion.objects.create(
             quiz=self.quiz,
             question_text='What is the capital of France?',
@@ -80,6 +81,19 @@ class QuizAPITests(APITestCase):
         # mock user authorization
         self.client.credentials(HTTP_AUTHORIZATION='Username ' + self.user.username)
 
+    def create_user_quiz_score(self, user, quiz, score, correct_answers, completed_at):
+        """
+        create UserQuizScore and update experience_points and PointsLog
+        """
+        UserQuizScore.objects.create(
+            user=user,
+            quiz=quiz,
+            score=score,
+            correct_answers=correct_answers,
+            completed_at=completed_at
+        )
+        update_user_points(user, score, 0)
+
     def test_get_quiz_questions_success(self):
         url = reverse('get_quiz_questions', args=[self.quiz.id])
         response = self.client.get(url)
@@ -106,7 +120,7 @@ class QuizAPITests(APITestCase):
 
     def test_check_quiz_eligibility_within_cooldown(self):
         # create UserQuizScore，set completed at today
-        UserQuizScore.objects.create(
+        self.create_user_quiz_score(
             user=self.user,
             quiz=self.quiz,
             score=20,
@@ -126,8 +140,8 @@ class QuizAPITests(APITestCase):
         self.assertIn('seconds', response.data['remaining_time'])
 
     def test_check_quiz_eligibility_after_cooldown(self):
-        # create UserQuizScore，set completed before 4 days
-        UserQuizScore.objects.create(
+        # create UserQuizScore，set completed at 4 days ago (after cooldown)
+        self.create_user_quiz_score(
             user=self.user,
             quiz=self.quiz,
             score=20,
@@ -140,7 +154,8 @@ class QuizAPITests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertTrue(response.data['eligible'])
-        self.assertTrue(response.data['can_earn_points'])
+        self.assertTrue(response.data['can_earn_points'])  # should earn score
+        self.assertNotIn('remaining_time', response.data)  # no time left
 
     def test_check_quiz_eligibility_unauthorized(self):
         # no authorization
@@ -257,12 +272,16 @@ class QuizAPITests(APITestCase):
         self.assertTrue(UserQuizScore.objects.filter(user=self.user, quiz=self.quiz).exists())
 
         # if user point updated
+        user = CustomUser.objects.get(username='testuser')
+        self.assertEqual(user.experience_points, 25)
+
+        # PointsLog should have one entry with experience_points=25
         points_log = PointsLog.objects.filter(user=self.user).aggregate(Sum('experience_points'))
         self.assertEqual(points_log['experience_points__sum'], 25)
 
     def test_finalize_quiz_score_within_cooldown(self):
-        # create UserQuizScore，set completed at today
-        UserQuizScore.objects.create(
+        # create UserQuizScore，set completed at today (in cooldown)
+        self.create_user_quiz_score(
             user=self.user,
             quiz=self.quiz,
             score=20,
@@ -270,14 +289,7 @@ class QuizAPITests(APITestCase):
             completed_at=timezone.now()
         )
 
-        # no need to create PointsLog，because views will use update_user_points
-        # PointsLog.objects.create(
-        #     user=self.user,
-        #     experience_points=20,
-        #     shop_points=0,
-        #     timestamp=timezone.now()
-        # )
-
+        # upload new Quiz
         url = reverse('finalize_quiz_score', args=[self.quiz.id])
         data = {
             'username': self.user.username,
@@ -289,17 +301,17 @@ class QuizAPITests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['message'], 'Quiz completed. You did not earn points this time.')
 
-        # if UserQuizScore create new record
+        # if UserQuizScore updated
         scores = UserQuizScore.objects.filter(user=self.user, quiz=self.quiz)
         self.assertEqual(scores.count(), 1)
 
-        # if user points updated
-        points_log = PointsLog.objects.filter(user=self.user).aggregate(Sum('experience_points'))
-        self.assertEqual(points_log['experience_points__sum'], 20)
+        # if experience_points updated
+        user = CustomUser.objects.get(username='testuser')
+        self.assertEqual(user.experience_points, 20)
 
     def test_finalize_quiz_score_after_cooldown(self):
-        # create UserQuizScore，set completed before 4 days
-        UserQuizScore.objects.create(
+        # create UserQuizScore，set completed at 4 days ago (after cooldown)
+        self.create_user_quiz_score(
             user=self.user,
             quiz=self.quiz,
             score=20,
@@ -307,6 +319,7 @@ class QuizAPITests(APITestCase):
             completed_at=timezone.now() - timedelta(days=4)
         )
 
+        # upload new Quiz
         url = reverse('finalize_quiz_score', args=[self.quiz.id])
         data = {
             'username': self.user.username,
@@ -318,12 +331,13 @@ class QuizAPITests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['message'], 'Quiz completed. Your score has been recorded.')
 
-        # if UserQuizScore created
-        self.assertEqual(UserQuizScore.objects.filter(user=self.user, quiz=self.quiz).count(), 2)
+        # if UserQuizScore updated
+        scores = UserQuizScore.objects.filter(user=self.user, quiz=self.quiz)
+        self.assertEqual(scores.count(), 2)
 
-        # if user score updated
-        points_log = PointsLog.objects.filter(user=self.user).aggregate(Sum('experience_points'))
-        self.assertEqual(points_log['experience_points__sum'], 35)  # 20 + 15
+        # if experience_points updated
+        user = CustomUser.objects.get(username='testuser')
+        self.assertEqual(user.experience_points, 35)  # 20 + 15
 
     def test_finalize_quiz_score_missing_data(self):
         url = reverse('finalize_quiz_score', args=[self.quiz.id])
@@ -350,8 +364,20 @@ class QuizAPITests(APITestCase):
 
     def test_quiz_leaderboard_success(self):
         # create UserQuizScore
-        UserQuizScore.objects.create(user=self.user, quiz=self.quiz, score=20, correct_answers=2, completed_at=timezone.now())
-        UserQuizScore.objects.create(user=self.user2, quiz=self.quiz, score=15, correct_answers=1, completed_at=timezone.now())
+        self.create_user_quiz_score(
+            user=self.user,
+            quiz=self.quiz,
+            score=20,
+            correct_answers=2,
+            completed_at=timezone.now()
+        )
+        self.create_user_quiz_score(
+            user=self.user2,
+            quiz=self.quiz,
+            score=15,
+            correct_answers=1,
+            completed_at=timezone.now()
+        )
 
         url = reverse('quiz_leaderboard', args=[self.quiz.id])
         response = self.client.get(url)
