@@ -11,7 +11,9 @@ from django.db.models import Sum
 
 import logging
 import random  # Import random module to enable random selection
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
+
+from django.utils import timezone
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +34,6 @@ def get_quiz_questions(request, quiz_id):
     ]
     return Response({'quiz_name': quiz.name, 'questions': question_list})
 
-from datetime import datetime, timedelta, timezone
 
 @api_view(['GET'])
 @permission_classes([AllowAny])
@@ -52,7 +53,7 @@ def check_quiz_eligibility(request, quiz_id):
     last_score = UserQuizScore.objects.filter(user=user, quiz_id=quiz_id).order_by('-completed_at').first()
 
     if last_score:
-        time_since_last_completion = datetime.now(timezone.utc) - last_score.completed_at
+        time_since_last_completion = timezone.now() - last_score.completed_at
         if time_since_last_completion < timedelta(days=3):
             # Calculate remaining time
             remaining_time = timedelta(days=3) - time_since_last_completion
@@ -130,7 +131,7 @@ def finalize_quiz_score(request, quiz_id):
     last_score = UserQuizScore.objects.filter(user=user, quiz_id=quiz_id).order_by('-completed_at').first()
 
     if last_score:
-        time_since_last_completion = datetime.now(timezone.utc) - last_score.completed_at
+        time_since_last_completion = timezone.now() - last_score.completed_at
         if time_since_last_completion < timedelta(days=3):
             # Do not award points or update last completion time
             message = "Quiz completed. You did not earn points this time."

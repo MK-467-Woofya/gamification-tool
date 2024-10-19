@@ -4,6 +4,9 @@
 # or you may wanna run specific test? .\run_tests.ps1 -TestPath "leaderboard.tests.test_edge_cases"
 # or specific class? .\run_tests.ps1 -TestPath "leaderboard.tests.test_edge_cases.LeaderboardEdgeCasesTests"
 # or specific function? .\run_tests.ps1 -TestPath "leaderboard.tests.test_edge_cases.LeaderboardEdgeCasesTests.test_leaderboard_with_boundary_dates"
+# or run quiz tests? .\run_tests.ps1 -TestPath "quiz.tests.test_quiz"
+# or specific quiz test class? .\run_tests.ps1 -TestPath "quiz.tests.test_quiz.QuizAPITests"
+# or specific quiz test method? .\run_tests.ps1 -TestPath "quiz.tests.test_quiz.QuizAPITests.test_get_quiz_questions_success"
 
 
 param(
@@ -21,6 +24,9 @@ if ($TestPath -eq "-h" -or $TestPath -eq "--help") {
     Write-Host "                 leaderboard.tests.test_edge_cases"
     Write-Host "                 leaderboard.tests.test_edge_cases.LeaderboardEdgeCasesTests"
     Write-Host "                 leaderboard.tests.test_edge_cases.LeaderboardEdgeCasesTests.test_method"
+    Write-Host "                 quiz.tests.test_quiz"
+    Write-Host "                 quiz.tests.test_quiz.QuizAPITests"
+    Write-Host "                 quiz.tests.test_quiz.QuizAPITests.test_get_quiz_questions_success"
     exit
 }
 
@@ -31,4 +37,4 @@ docker-compose down --volumes --remove-orphans
 Start-Sleep -Seconds 5
 
 # run test
-docker-compose run api python manage.py test $TestPath --noinput -v 2
+docker-compose run api python manage.py test $TestPath --noinput -v 2 --keepdb

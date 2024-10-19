@@ -19,6 +19,8 @@ def get_username_from_request(request):
     else:
         return None
 
+from django.db.models import Max
+
 def get_leaderboard_by_time_frame(time_delta, request):
     # If time_delta is None, calculate leaderboard for all time
     if time_delta is not None:
@@ -26,31 +28,25 @@ def get_leaderboard_by_time_frame(time_delta, request):
         print(f"Calculating leaderboard with start_time >= {start_time}")
         logs = PointsLog.objects.filter(
             created_at__gte=start_time
-        ).exclude(user__is_superuser=True).select_related('user')
+        ).exclude(user__is_superuser=True).select_related('user').order_by('user', '-created_at').distinct('user')
     else:
         logs = PointsLog.objects.all().exclude(
             user__is_superuser=True
-        ).select_related('user')
+        ).select_related('user').order_by('user', '-created_at').distinct('user')
 
     print(f"Found {logs.count()} PointsLog entries")
 
-    user_scores = {}
-    for log in logs:
-        user_id = log.user.id
-        if user_id not in user_scores:
-            user_scores[user_id] = {
-                'id': user_id,  # user id
-                'username': log.user.username,
-                'experience_points': log.experience_points,
-                'shop_points': log.shop_points,
-            }
-        else:
-            # Accumulate experience_points and shop_points
-            user_scores[user_id]['experience_points'] += log.experience_points
-            user_scores[user_id]['shop_points'] += log.shop_points
+    user_scores = [
+        {
+            'id': log.user.id,
+            'username': log.user.username,
+            'experience_points': log.experience_points,
+            'shop_points': log.shop_points,
+        } for log in logs
+    ]
 
     # Sort the leaderboard
-    leaderboard_list = sorted(user_scores.values(), key=lambda x: x['experience_points'], reverse=True)
+    leaderboard_list = sorted(user_scores, key=lambda x: x['experience_points'], reverse=True)
 
     current_username = get_username_from_request(request)
     print(f"Current user: {current_username}")
@@ -68,7 +64,7 @@ def get_leaderboard_by_time_frame(time_delta, request):
         leaderboard.append(user_data)
 
     # Get top 10 users
-    top_10_leaderboard = leaderboard_list[:10]
+    top_10_leaderboard = leaderboard[:10]
 
     # Check if current user is in the top 10
     current_user_in_top_10 = any(
@@ -78,7 +74,7 @@ def get_leaderboard_by_time_frame(time_delta, request):
     # If current user is not in top 10 and is logged in, add them to the leaderboard
     if not current_user_in_top_10 and current_username:
         current_user_data = next(
-            (user for user in leaderboard_list if user['username'] == current_username), None
+            (user for user in leaderboard if user['username'] == current_username), None
         )
         if current_user_data:
             top_10_leaderboard.append(current_user_data)
@@ -86,6 +82,8 @@ def get_leaderboard_by_time_frame(time_delta, request):
     print(f"Top 10 leaderboard: {top_10_leaderboard}")
 
     return top_10_leaderboard  # Return top 10 users and current user's data
+
+
 
 @api_view(['GET'])
 @permission_classes([AllowAny])
