@@ -1,6 +1,6 @@
 from django.db import models, transaction
 from django.core.validators import MaxValueValidator, MinValueValidator
-from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
+from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin
 from django.conf import settings
 from django.utils import timezone
 from django.dispatch import receiver
@@ -12,7 +12,7 @@ class CustomUserManager(BaseUserManager):
     """
     Custom UserManager model class
     """
-    def create_user(self, username, level=1, experience_points=0, shop_points=0, password=None, location=None, is_admin=False):
+    def create_user(self, username, level=1, experience_points=0, shop_points=0, password=None, location=None, is_admin=False, **extra_fields):
         """
         Create a user with only their username, and gamification fields
         """
@@ -26,6 +26,7 @@ class CustomUserManager(BaseUserManager):
             shop_points=shop_points,
             location=location,
             is_admin=is_admin,
+            **extra_fields,
         )
 
         user.set_password(password)
@@ -47,7 +48,7 @@ class CustomUserManager(BaseUserManager):
 
 
 
-class CustomUser(AbstractBaseUser):
+class CustomUser(AbstractBaseUser, PermissionsMixin):
     """
     CustomUser class
     """
@@ -77,7 +78,8 @@ class CustomUser(AbstractBaseUser):
 
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
-    is_superuser = models.BooleanField(default=False) # added
+    # is_superuser is now handled by PermissionsMixin
+    # is_superuser = models.BooleanField(default=False)
 
     current_title = models.ForeignKey(Title, null=True, blank=True, on_delete=models.CASCADE)
     current_avatar = models.ForeignKey(Avatar, null=True, blank=True, on_delete=models.CASCADE)
