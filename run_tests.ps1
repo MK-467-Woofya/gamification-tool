@@ -37,4 +37,4 @@ docker-compose down --volumes --remove-orphans
 Start-Sleep -Seconds 5
 
 # run test
-docker-compose run api python manage.py test $TestPath --noinput -v 2
+docker-compose run api python manage.py test $TestPath --noinput -v 2 --keepdb
