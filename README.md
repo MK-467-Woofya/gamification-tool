@@ -419,6 +419,14 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 # or specific function? 
 .\run_tests.ps1 -TestPath "leaderboard.tests.test_edge_cases.LeaderboardEdgeCasesTests.test_leaderboard_with_boundary_dates"
 
+
+# quiz tests:
+.\run_tests.ps1 -TestPath "quiz.tests.test_quiz"
+
+# memory game tests:
+.\run_tests.ps1 -TestPath "memory_game.tests.gameTests"
+
+
 ## Project applications
 ### 1. User: 
 Custom user implementation built on top of Django users.
