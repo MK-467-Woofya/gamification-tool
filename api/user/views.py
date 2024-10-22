@@ -7,6 +7,7 @@ from rest_framework.views import APIView
 
 from .serializers import CustomUserSerializer
 from .models import CustomUser
+from user.models import update_user_points
 from marketplace.models import Avatar, Title
 from marketplace.serializers import AvatarSerializer, TitleSerializer
 
@@ -100,7 +101,7 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         PATCH USER POINTS
 
         Description: Add experience_points and shop_points to user entity.
-        Can also be used to deduct points, but can not go into negative values
+        Int values must be >= 0
 
         Endpoint: http://localhost:8000/users/users/<id>/add_points/
 
@@ -119,23 +120,24 @@ class CustomUserViewSet(viewsets.ModelViewSet):
             data = {"message": "Missing points values"}
             return Response(data, status=status.HTTP_400_BAD_REQUEST)
 
-        # Add, or deduct if negative, points to current values
-        new_experience_points = user.experience_points + int(request.data.get("experience_points"))
-        new_shop_points = user.shop_points + int(request.data.get("shop_points"))
+        #if attempting to deduct points
+        if request.data.get("experience_points") < 0 or request.data.get("shop_points") < 0:
+            data = {"message": "Can not add negative points"}
+            return Response(data, status=status.HTTP_400_BAD_REQUEST)
 
-        # Minimum = 0
-        if new_experience_points < 0:
-            new_experience_points = 0
+        # Points values to add
+        new_experience_points = int(request.data.get("experience_points"))
+        new_shop_points = int(request.data.get("shop_points"))               
 
-        if new_shop_points < 0:
-            new_shop_points = 0
+        # Create points log for data, and save points to user
+        update_user_points(user, new_experience_points, new_shop_points)
 
-        # Update entity with updated data
-        data = {"experience_points": new_experience_points, "shop_points": new_shop_points}
+        # Choose updated data to serialize
+        data = {"experience_points": user.experience_points, "shop_points": user.shop_points}
 
         serializer = self.get_serializer(user, data=data, partial=True)
         serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)
+        # self.perform_update(serializer)
 
         return Response(serializer.data)
 
