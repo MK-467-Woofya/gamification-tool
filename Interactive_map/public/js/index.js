@@ -28,31 +28,34 @@ function addEventToList(event) {
     const eventList = document.getElementById('events');
     const eventItem = document.createElement('li');
 
+    // Display event name and date, and add click event to zoom into the map location
     eventItem.innerHTML = `<strong>${event.name}</strong> (${event.date})`;
     eventItem.addEventListener('click', () => {
-        map.setView(event.location, 15);
+        map.setView(event.location, 15);  // Zoom into the event location on the map
         L.popup()
             .setLatLng(event.location)
             .setContent(
                 `<b>${event.name}</b><br>${event.description}<br>${event.date} at ${event.time}
                 <br><button onclick="checkIn('${event.code}')">Check In</button>`
             )
-            .openOn(map);
+            .openOn(map);  // Display a popup with event details and check-in button
     });
 
-    eventList.appendChild(eventItem);
+    eventList.appendChild(eventItem);  // Add the event to the event list in the sidebar
 }
 
 // Function to add event markers to the map
 function addEventToMap(event) {
+    // Add a marker for the event on the map and bind a popup with event details
     L.marker(event.location).addTo(map)
         .bindPopup(`<b>${event.name}</b><br>${event.description}<br>${event.date} at ${event.time}`);
 }
 
+// Function to handle the check-in process for an event
 window.checkIn = function(eventCode) {
-    const userCode = prompt("Enter the check-in code:");
+    const userCode = prompt("Enter the check-in code:");  // Prompt user to enter the check-in code
 
-    if (userCode === eventCode) {
+    if (userCode === eventCode) {  // If the code matches
         alert("You have successfully checked in!");
 
         // After successful check-in, update points for the user
@@ -89,23 +92,26 @@ window.checkIn = function(eventCode) {
             console.error('User ID not found in session storage');
             alert("Unable to update points. User not found.");
         }
-    } else {
+    } else {  // If the code does not match
         alert("Incorrect code! Please try again.");
     }
 };
 
 // Filtering and Sorting Functions
 function filterAndSortEvents() {
+    // Get search term, selected category, and sorting option from the UI
     const searchTerm = document.getElementById('searchBar').value.toLowerCase();
     const selectedCategory = document.getElementById('categoryFilter').value;
     const sortBy = document.getElementById('sortBy').value;
 
+    // Filter events based on search term and category
     let filteredEvents = eventsData.filter(event => {
         const matchesSearch = event.name.toLowerCase().includes(searchTerm);
         const matchesCategory = selectedCategory === 'all' || event.genre === selectedCategory;
         return matchesSearch && matchesCategory;
     });
 
+    // Sort events based on the selected sorting option
     if (sortBy === 'most-reviewed') {
         filteredEvents.sort((a, b) => b.reviews - a.reviews);
     } else if (sortBy === 'most-viewed') {
@@ -114,19 +120,23 @@ function filterAndSortEvents() {
         filteredEvents.sort((a, b) => b.rating - a.rating);
     }
 
+    // Display the filtered and sorted events
     displayFilteredEvents(filteredEvents);
 }
 
+// Function to display filtered events in the list and add them to the map
 function displayFilteredEvents(events) {
     const eventList = document.getElementById('events');
-    eventList.innerHTML = '';
+    eventList.innerHTML = '';  // Clear the current event list
 
+    // Remove all existing markers from the map
     map.eachLayer(layer => {
         if (layer instanceof L.Marker) {
             map.removeLayer(layer);
         }
     });
 
+    // Add filtered events to the list and map
     events.forEach(event => {
         addEventToList(event);
         addEventToMap(event);
