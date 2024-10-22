@@ -21,7 +21,7 @@ class TimeframeLeaderboardTests(APITestCase):
         # delete auto-created PointsLog
         PointsLog.objects.filter(user__in=[self.user1, self.user2, self.user3]).delete()
 
-        # create initial pointsLog 
+        # create initial pointsLog
         now = timezone.now()
         PointsLog.objects.create(user=self.user1, experience_points=100, shop_points=50, created_at=now - timedelta(days=5))
         PointsLog.objects.create(user=self.user2, experience_points=200, shop_points=80, created_at=now - timedelta(days=6))
@@ -30,7 +30,6 @@ class TimeframeLeaderboardTests(APITestCase):
         # mock user login
         self.client.credentials(HTTP_AUTHORIZATION='Username ' + self.user1.username)
 
-    
     def test_weekly_leaderboard(self):
         url = reverse('weekly_leaderboard')
         response = self.client.get(url)
@@ -48,8 +47,6 @@ class TimeframeLeaderboardTests(APITestCase):
         self.assertIn('user1', usernames)
         self.assertIn('user2', usernames)
         self.assertNotIn('user3', usernames)
-
-
 
     def test_monthly_leaderboard(self):
         url = reverse('monthly_leaderboard')
@@ -69,7 +66,6 @@ class TimeframeLeaderboardTests(APITestCase):
         self.assertIn('user1', usernames)
         self.assertIn('user2', usernames)
         self.assertIn('user3', usernames)
-
 
     def test_yearly_leaderboard(self):
         url = reverse('yearly_leaderboard')

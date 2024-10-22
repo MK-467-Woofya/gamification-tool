@@ -47,7 +47,6 @@ class CustomUserManager(BaseUserManager):
         return user
 
 
-
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     """
     CustomUser class
@@ -119,7 +118,7 @@ class PointsLog(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     experience_points = models.IntegerField(default=0)
     shop_points = models.IntegerField(default=0)
-    # created_at = models.DateTimeField(default=timezone.now)  # time of changing score
+    # created_at = models.DateTimeField(default=timezone.now)  time of changing score
     created_at = models.DateTimeField(default=timezone.now, editable=True)
 
     class Meta:

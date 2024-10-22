@@ -4,6 +4,7 @@ from datetime import timedelta
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from user.models import CustomUser, PointsLog
+from django.db.models import Max
 
 from rest_framework.decorators import permission_classes
 from rest_framework.permissions import AllowAny
@@ -19,7 +20,6 @@ def get_username_from_request(request):
     else:
         return None
 
-from django.db.models import Max
 
 def get_leaderboard_by_time_frame(time_delta, request):
     # If time_delta is None, calculate leaderboard for all time
@@ -84,12 +84,12 @@ def get_leaderboard_by_time_frame(time_delta, request):
     return top_10_leaderboard  # Return top 10 users and current user's data
 
 
-
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def weekly_leaderboard(request):
     leaderboard = get_leaderboard_by_time_frame(timedelta(weeks=1), request)
     return Response(leaderboard)
+
 
 @api_view(['GET'])
 @permission_classes([AllowAny])
@@ -97,11 +97,13 @@ def monthly_leaderboard(request):
     leaderboard = get_leaderboard_by_time_frame(timedelta(days=30), request)
     return Response(leaderboard)
 
+
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def yearly_leaderboard(request):
     leaderboard = get_leaderboard_by_time_frame(timedelta(days=365), request)
     return Response(leaderboard)
+
 
 @api_view(['GET'])
 @permission_classes([AllowAny])
@@ -110,9 +112,11 @@ def leaderboard(request):
     leaderboard = get_leaderboard_by_time_frame(None, request)
     return Response(leaderboard)
 
+
 @permission_classes([AllowAny])
 def index(request):
     return HttpResponse("Leaderboard index page.")
+
 
 @api_view(['GET'])
 @permission_classes([AllowAny])
