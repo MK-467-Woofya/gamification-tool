@@ -101,7 +101,7 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         PATCH USER POINTS
 
         Description: Add experience_points and shop_points to user entity.
-        Can also be used to deduct points, but can not go into negative values
+        Int values must be >= 0
 
         Endpoint: http://localhost:8000/users/users/<id>/add_points/
 
@@ -120,13 +120,14 @@ class CustomUserViewSet(viewsets.ModelViewSet):
             data = {"message": "Missing points values"}
             return Response(data, status=status.HTTP_400_BAD_REQUEST)
 
+        #if attempting to deduct points
+        if request.data.get("experience_points") < 0 or request.data.get("shop_points") < 0:
+            data = {"message": "Can not add negative points"}
+            return Response(data, status=status.HTTP_400_BAD_REQUEST)
+
         # Points values to add
         new_experience_points = int(request.data.get("experience_points"))
         new_shop_points = int(request.data.get("shop_points"))               
-
-        # Add, or deduct if negative, points to current values
-        new_total_experience_points = user.experience_points + new_experience_points
-        new_total_shop_points = user.shop_points + new_shop_points
 
         # Create points log for data, and save points to user
         update_user_points(user, new_experience_points, new_shop_points)
