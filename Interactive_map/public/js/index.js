@@ -8,7 +8,7 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 }).addTo(map);
 
-let eventsData = [];  // Global variable to store all event data
+var eventsData = [];  // Global variable to store all event data
 
 // Fetch events from the backend and populate the map and list
 fetch('http://localhost:3002/events')
@@ -25,8 +25,8 @@ fetch('http://localhost:3002/events')
 
 // Function to add events to the event list
 function addEventToList(event) {
-    const eventList = document.getElementById('events');
-    const eventItem = document.createElement('li');
+    var eventList = document.getElementById('events');
+    var eventItem = document.createElement('li');
 
     // Display event name and date, and add click event to zoom into the map location
     eventItem.innerHTML = `<strong>${event.name}</strong> (${event.date})`;
@@ -53,28 +53,30 @@ function addEventToMap(event) {
 
 // Function to handle the check-in process for an event
 window.checkIn = function(eventCode) {
-    const userCode = prompt("Enter the check-in code:");  // Prompt user to enter the check-in code
+    var userCode = prompt("Enter the check-in code:");  // Prompt user to enter the check-in code
 
     if (userCode === eventCode) {  // If the code matches
         alert("You have successfully checked in!");
 
         // After successful check-in, update points for the user
-        const uid = sessionStorage.getItem('uid'); // Get the logged-in user's ID
-        if (uid) {
-            const addPointsUrl = `http://localhost:8000/users/users/${uid}/add_points/`;
-            const headers = {
-                'Content-Type': 'application/json',
-                'Gamification-Api-Key': process.env.REACT_APP_API_KEY
-            };
+        var url = process.env.REACT_APP_BASE_URL + "users/users/";
+        var uid = sessionStorage.getItem('uid');
+        var headers = {
+            'Content-Type': 'application/json',
+            'Gamification-Api-Key': process.env.REACT_APP_API_KEY
+        };
 
-            // Data for updating user points (500 points each for shop and experience)
-            const data = {
-                'experience_points': 500,
-                'shop_points': 500
+        if (uid) {
+            var updatePointsUrl = url + uid + '/add_points/';
+            
+            // Data for updating user points (1000 points each for shop and experience)
+            var data = {
+                'experience_points': 1000,
+                'shop_points': 1000
             };
 
             // Make the PATCH request to update the user's points
-            fetch(addPointsUrl, {
+            fetch(updatePointsUrl, {
                 method: 'PATCH',
                 headers: headers,
                 body: JSON.stringify(data)
@@ -82,7 +84,7 @@ window.checkIn = function(eventCode) {
             .then(response => response.json())
             .then(responseData => {
                 console.log('Points added:', responseData);
-                alert("You have been rewarded with 500 experience points and 500 shop points!");
+                alert("You have been rewarded with 1000 experience points and 1000 shop points!");
             })
             .catch(error => {
                 console.error('Error adding points:', error);
@@ -100,14 +102,14 @@ window.checkIn = function(eventCode) {
 // Filtering and Sorting Functions
 function filterAndSortEvents() {
     // Get search term, selected category, and sorting option from the UI
-    const searchTerm = document.getElementById('searchBar').value.toLowerCase();
-    const selectedCategory = document.getElementById('categoryFilter').value;
-    const sortBy = document.getElementById('sortBy').value;
+    var searchTerm = document.getElementById('searchBar').value.toLowerCase();
+    var selectedCategory = document.getElementById('categoryFilter').value;
+    var sortBy = document.getElementById('sortBy').value;
 
     // Filter events based on search term and category
-    let filteredEvents = eventsData.filter(event => {
-        const matchesSearch = event.name.toLowerCase().includes(searchTerm);
-        const matchesCategory = selectedCategory === 'all' || event.genre === selectedCategory;
+    var filteredEvents = eventsData.filter(event => {
+        var matchesSearch = event.name.toLowerCase().includes(searchTerm);
+        var matchesCategory = selectedCategory === 'all' || event.genre === selectedCategory;
         return matchesSearch && matchesCategory;
     });
 
@@ -126,7 +128,7 @@ function filterAndSortEvents() {
 
 // Function to display filtered events in the list and add them to the map
 function displayFilteredEvents(events) {
-    const eventList = document.getElementById('events');
+    var eventList = document.getElementById('events');
     eventList.innerHTML = '';  // Clear the current event list
 
     // Remove all existing markers from the map
