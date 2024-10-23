@@ -28,4 +28,4 @@ If you don’t have Node.js and npm installed, follow these instructions:
 3. Start the Backend Server
 - npm start
 
-4. The backend will be running on http://localhost:3000
+4. The backend will be running on http://localhost:3002

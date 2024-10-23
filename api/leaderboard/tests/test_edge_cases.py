@@ -20,7 +20,7 @@ class LeaderboardEdgeCasesTests(APITestCase):
         # delete auto-created PointsLog
         PointsLog.objects.filter(user__in=[self.user1, self.user2]).delete()
 
-        # create initial pointsLog 
+        # create initial pointsLog
         now = timezone.now()
         PointsLog.objects.create(user=self.user1, experience_points=100, shop_points=50, created_at=now)
         PointsLog.objects.create(user=self.user2, experience_points=200, shop_points=80, created_at=now)
@@ -28,8 +28,6 @@ class LeaderboardEdgeCasesTests(APITestCase):
         # mock user login
         self.client.credentials(HTTP_AUTHORIZATION='Username ' + self.user1.username)
 
-
-    
     def test_leaderboard_no_pointslog_entries(self):
         # Delete all PointsLog entries
         PointsLog.objects.all().delete()
@@ -43,7 +41,6 @@ class LeaderboardEdgeCasesTests(APITestCase):
         # The leaderboard should be empty
         self.assertEqual(len(data), 0)
 
-    
     def test_leaderboard_with_negative_scores(self):
         # PointsLog with negative score
         PointsLog.objects.create(user=self.user1, experience_points=-50, shop_points=25)
@@ -64,8 +61,6 @@ class LeaderboardEdgeCasesTests(APITestCase):
         self.assertIsNotNone(user1_data)
         expected_total_points = 100 - 50  # initial 100 plus -50
         self.assertEqual(user1_data['experience_points'], expected_total_points)
-
-
 
     def test_leaderboard_with_tie_scores(self):
         # multiple user with same score
@@ -91,7 +86,6 @@ class LeaderboardEdgeCasesTests(APITestCase):
         self.assertIsNotNone(user2_data)
         self.assertEqual(user1_data['rank'], user2_data['rank'])
 
-
     def test_leaderboard_with_boundary_dates(self):
         # create a pointsLog with time 7 days plus 1 second ago
         boundary_date = timezone.now() - timedelta(days=7) + timedelta(seconds=1)
@@ -111,8 +105,6 @@ class LeaderboardEdgeCasesTests(APITestCase):
         # if user in the leaderboard
         usernames = [user['username'] for user in data]
         self.assertIn('user1', usernames)
-
-
 
     def test_leaderboard_with_large_dataset(self):
         # create 300 user and logs
@@ -135,7 +127,3 @@ class LeaderboardEdgeCasesTests(APITestCase):
 
         # check leaderboard includes top 10 and currfent user
         self.assertEqual(len(data), 11)
-
-
-
-
