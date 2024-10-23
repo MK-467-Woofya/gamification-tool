@@ -120,14 +120,14 @@ class CustomUserViewSet(viewsets.ModelViewSet):
             data = {"message": "Missing points values"}
             return Response(data, status=status.HTTP_400_BAD_REQUEST)
 
-        #if attempting to deduct points
+        # If attempting to deduct points
         if request.data.get("experience_points") < 0 or request.data.get("shop_points") < 0:
             data = {"message": "Can not add negative points"}
             return Response(data, status=status.HTTP_400_BAD_REQUEST)
 
         # Points values to add
         new_experience_points = int(request.data.get("experience_points"))
-        new_shop_points = int(request.data.get("shop_points"))               
+        new_shop_points = int(request.data.get("shop_points"))
 
         # Create points log for data, and save points to user
         update_user_points(user, new_experience_points, new_shop_points)
