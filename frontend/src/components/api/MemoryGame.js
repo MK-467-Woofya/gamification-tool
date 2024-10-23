@@ -38,7 +38,7 @@ const MemoryGame = () => {
             alert('Please log in to play the game.');
             return;
         }
-        axios.get(process.env.REACT_APP_BASE_URL + 'memory_game/eligibility/', { // FIXME - need to use .env url in later part
+        axios.get(process.env.REACT_APP_BASE_URL + 'memory-game/eligibility/', { // FIXME - need to use .env url in later part
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Username ${currentUsername}`
@@ -117,7 +117,7 @@ const MemoryGame = () => {
     const sendScore = useCallback(() => {
         if (!scoreSubmitted) {
             axios
-                .post(process.env.REACT_APP_BASE_URL + 'memory_game/submit_score/', { // FIXME - need to use .env url in later part
+                .post(process.env.REACT_APP_BASE_URL + 'memory-game/submit-score/', { // FIXME - need to use .env url in later part
                     username: currentUsername,
                     score: score,
                 })

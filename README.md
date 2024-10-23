@@ -53,7 +53,7 @@ Views simulating minimal versions of main application features may be necessary 
   - [Access react webpage](#access-react-webpage)
     - [Authorization](#authorization)
   - [Production setup](#production-setup)
-    - [Two settings and environment variables](#two-settings-and-environment-variables)
+    - [Dev and Prod settings and environment variables](#dev-and-prod-settings-and-environment-variables)
     - [Nginx for reverse proxy and serving static content](#nginx-for-reverse-proxy-and-serving-static-content)
     - [Running the production build](#running-the-production-build)
     - [What's different in production](#whats-different-in-production)
@@ -62,6 +62,16 @@ Views simulating minimal versions of main application features may be necessary 
     - [How to access database:](#how-to-access-database)
     - [How to open a python shell within the docker container:](#how-to-open-a-python-shell-within-the-docker-container)
     - [Testing](#testing)
+    - [1. leaderboard testing:](#1-leaderboard-testing)
+- [before start:](#before-start)
+- [run by default runner:](#run-by-default-runner)
+- [test with custom runner:](#test-with-custom-runner)
+- [test with one go(combined command, you can directly run this line):](#test-with-one-gocombined-command-you-can-directly-run-this-line)
+- [test with one script(there might be permission issue, run the line below first):](#test-with-one-scriptthere-might-be-permission-issue-run-the-line-below-first)
+- [by default:](#by-default)
+- [or you may wanna run specific test?](#or-you-may-wanna-run-specific-test)
+- [or specific class?](#or-specific-class)
+- [or specific function?](#or-specific-function)
   - [Project applications](#project-applications)
     - [1. User:](#1-user)
     - [2. Check-in:](#2-check-in)
@@ -107,33 +117,44 @@ With this set up, we should be able to begin developing locally. But we can't ru
 ### Secrets and environment variables
 Each application frontend and api have a `.env` file associated with them. They contain the environment variables and secrets to be used during development. They should be in each separate application's root folder.  
 
-These files are in `.gitignore` so they aren't version controlled meaning we each need to make them separately at the moment.
+These files are in `.gitignore` so they aren't version controlled meaning we each need to make them separately in dev environments, i.e. our local machines.
 
-Ideally they should be ignored by docker also, but that is more important in the production environment where we can use a hosted secrets manager.
+Ideally they should be ignored by docker also, but that is more important in the production environment where we can use a hosted secrets manager.  
 
-The .env files excluded from git in the project structure:    
-![alt text](readme-imgs/proj-structure-1.png)
+The .env files excluded from git in the project structure:  
+![alt text](readme-imgs/proj-structure-1.png)  
 
 #### API .env files
-__Important: The .env strategy here is no longer used for builds since merging the deployment build. The new strategy is detailed in the production section of the README. However, this still works for old builds and there is no reason to delete the .env's as they aren't pushed to version control__  
+__Important: If updating from an earlier state of the project repo, the .env files are managed slightly differently in that where there was just a single .env for the backend, there are now two. One for dev and one for prod environments__  
 
 We need to make our own .env files.  
 
 The pip package python-dotenv should already be installed from the `requirements.txt` earlier. If not, install it.
 
-Here's the example for the Django environment variables in the backend.
-![alt text](readme-imgs/env-1.png)  
+Here's an example for the Django environment variables in the backend.  
+![alt text](readme-imgs/env-dev-1.png)  
 
-The Django Secret key is added to .env. Check the commented SECRET_KEY variable in settings.py to get the values.
+The Django Secret key is added to .env instead of having it exposed in the project settings.  
+Check the commented SECRET_KEY variable in settings.py to get the values, or generate another for your own dev machine.  
 
-At the moment the database environment variables can be found in `docker-compose.yml` in the project root so just copy them over.  
-![alt text](readme-imgs/env-2.png)  
+The dev database user credentials environment variables can be found in `docker-compose.yml` in the project root so just copy them over to your `.env.dev`.  
+![alt text](readme-imgs/env-2.png)
 
 #### Frontend .env file
 The React .env file is handled by the react-scripts library.  
-All frontend secrets need to start with `REACT_APP_` to be recognised by React:   
-![alt text](readme-imgs/env-3.png)  
-This value should be the API key generated later in the next section.
+All frontend secrets need to start with `REACT_APP_` to be recognised by React: 
+
+The .env in the `/frontend` directory.  
+![alt text](readme-imgs/env-frontend-1.png)  
+This file contains a new value `REACT_APP_BASE_URL` which replaces the hard-coded domain to allow for dev and production builds.  
+__For development we set it as:__ `http://localhost:8000/`  
+__For testing production locally we set it as:__ `http://localhost/`  
+Actual production uses a different value.  
+ 
+Here's a couple of examples of how to use it in the frontend JS files: 
+- `process.env.REACT_APP_BASE_URL + "users/users/";`  
+- `axios.get(process.env.REACT_APP_BASE_URL + 'quiz/${quizId}/leaderboard/'`    
+
 
 ### Building and running the containers
 If all went to plan we should be able to build and run the containers, albeit without functioning databases yet.  
@@ -158,8 +179,9 @@ This builds and runs three containers:
 
 Note: These containers can be referenced in terminal by their name.
 
-Also note: Depending on the version of docker compose installation, the general terminal command could either be `$ docker-compose` or `$ docker compose` with the former being the older version.  
+Also note: Depending on the version of docker compose installation, the general terminal command could either be `$ docker-compose` or `$ docker compose` with the former being the older version.
 
+Note: The React front end won't be able to access the endpoints in our API until we provide an API Key to the frontend client and since environment variables are processed at build time, we can't change the value in the frontend `.env` while it is still running. So the next steps in the *Setting up and accessing API backend* are necessary as we, assuming this is a fresh dev environment, need to migrate a new database to be able to generate and store an API Key and we need an admin user with permissions to generate that key. THis is done before spinning down the containers, updating the frontend `.env` and bringing up the containers again.  
 
 ### Stop the container
 
@@ -203,24 +225,33 @@ With the docker containers running try the endpoints in browser:
 
 ### Admin access
 
-Admin endpoints can be reached at http://localhost:8000/admin/
+Admin page can be reached at http://localhost:8000/admin/
 
 ### User access
-The endpoints are accessible by users but not authorized from the browser due to the API Key needed in request headers in the API application (localhost:8000).  
+Endpoints are accessible for users but will give `403` responses in the browser due to the API Key being needed in request headers in the API application (localhost:8000).  
 
 ### Postman
-So that leaves Postman for testing endpoints. 
+So that leaves Postman for testing endpoints, curl requests, or any other service in which you can provide the headers for requests.
 
 Current endpoint testing is in this postman collection [here](https://app.getpostman.com/join-team?invite_code=bd83f7113fd74ced7c850f964c050351)
 
 #### For the API
 All authorized requests require an API key - Gamification-Api-Key. This is the key that you need to store in the `frontend/.env` file  
+  
+*Example using the API Key in a Postman request*  
 ![alt text](readme-imgs/api-1.png)  
 
 This is generated in the admin dashboard as below.
+1. Navigate to http://localhost:8000/admin/
+2. Add an API key from the *Add* link in the *API KEY PERMISSIONS* section in the example below
 ![alt text](readme-imgs/admin-1.png)  
 
-And can be saved only once at the time of creation.
+3. Give it a name, other fields are optional  
+4. *SAVE* the key  
+![alt text](readme-imgs/admin-3.png)  
+
+5. Grab the full key from the banner notification message straight after saving the key. That is the string before the second full stop i.e. `xxxxxxxx.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx`   
+**Note: This is the only time you will see the full key. Only the prefix will be available after**  
 ![alt text](readme-imgs/admin-2.png)  
 
 ## Access react webpage
@@ -243,11 +274,13 @@ Currently the setup has the API and database in the production docker-compose wi
 
 So let's get into the details.  
 
-### Two settings and environment variables
+### Dev and Prod settings and environment variables
 
 We now have two docker-compose.yml files:  
 - `docker-compose.yml` - for building our local development environment
 - `docker-compose.prod.yml` - for building our production environment
+
+The dev setup of the environment variables was detailed in the earlier section *API.env files*, but we will include it here also.  
 
 Settings in the Django project which require differences between environments are stored in .env files in the project root and are imported into the docker-compose.yml's and Django. The files are:  
 - .env.dev - for develop environment  
@@ -316,13 +349,13 @@ Accessible at http://api.gamificationtool.xyz/admin/
 11. Build and run the front end dockerfile on the usual port. Manually is easier since the .env files are processed at build time, we can't build the ReactJS container until we get the API Key from the API.
 
     From the root directory we build the frontend container and tag it as frontend:  
-`docker build -t frontend-image ./frontend`  
+`$ docker build -f Dockerfile.prod -t frontend-image ./frontend`  
 
     Then we run the docker instructions and expose port 3000:  
-`docker run -d -p 3000:3000 --name frontend-container frontend-image`  
+`$ docker run -d -p 3000:3000 --name frontend-container frontend-image`  
 
 1. Spinning down the containers:  
-`$ docker compose -f docker-compose.prod.yml down -v`  
+`$ docker compose -f docker-compose.prod.yml down`  
 
     We can stop the frontend container with:  
 `$ docker stop frontend-container`
@@ -330,7 +363,7 @@ Accessible at http://api.gamificationtool.xyz/admin/
     And delete it if need be with:  
 `$ docker rm frontend-container`  
 
-Note: When spinning down the develop and production containers (prior to actualy production) it is important to include the `-v` tag because both use the same database port. This won't be a problem when it goes to hosted production.
+Note: When spinning down the develop and production containers (prior to actualy production) it is important to make sure services using the same ports between dev and prod are not both up.
 
 ### What's different in production
 1. We are no longer using `manage.py run server`. Production uses the Gunicorn command.
@@ -338,12 +371,12 @@ Note: When spinning down the develop and production containers (prior to actualy
 3. The production Dockerfile `Dockerfile.prod` is multistage and contains a Python linter. So when we build the application, it will raise errors and stop the build process for un-conventioned python code. Build again after fixing the code.
 4. The frontend .env has an environment variable to allow for changing URL's based on which build we are going for.
 5. All requests are directed to the Nginx proxy server, currently at http://api.gamificationtool.xyz.
+6. Frontend is built in production mode
+7. Frontend application is using the `serve` package for a simple and essentially config free version of a served application. 
 
 ### To do remaining for production
-
 - Implement SSL for secure https protocol of our application
-- Upload and build a staging environment for testing and showing the client
-- Determine and implement how the front end will be served, whether on local machines or also uploaded to the hosting site
+- Backup static, media and database to ensure data integrity
 
 ## Extra command line actions
 
