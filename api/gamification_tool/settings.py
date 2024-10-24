@@ -66,6 +66,7 @@ INSTALLED_APPS = [
     'memory_game',
     'marketplace',
     'dbbackup',
+    'locations',
 ]
 # Plugins of processes that run in requests/responses
 MIDDLEWARE = [
@@ -155,6 +156,8 @@ USE_I18N = True
 USE_TZ = True
 
 
+
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
@@ -183,14 +186,10 @@ DBBACKUP_STORAGE_OPTIONS = {
     'region_name': os.environ.get("AWS_REGION", "none"),
     'default_acl': 'private',
 }
-
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
-
 # For Prodcution: Static in AWS S3 if true, else static served in STATIC_ROOT
 USING_S3 = os.environ.get("IS_S3_STORAGE")
-
 if USING_S3 == "TRUE":
     AWS_ACCESS_KEY_ID = os.environ.get("S3_ACCESS_KEY", "none")
     AWS_SECRET_ACCESS_KEY = os.environ.get("S3_SECRET_KEY", "none")
@@ -200,13 +199,10 @@ if USING_S3 == "TRUE":
     AWS_DEFAULT_ACL = None
     AWS_QUERYSTRING_AUTH = False
     AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com"
-
     STATICFILES_LOCATION = "static"
     STATIC_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/{STATICFILES_LOCATION}/"
-
     MEDIAFILES_LOCATION = "media"
     MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/{MEDIAFILES_LOCATION}/"
-
     STORAGES = {
         "default": {"BACKEND": "gamification_tool.custom_storage.MediaStorage"},
         "staticfiles": {"BACKEND": "gamification_tool.custom_storage.StaticStorage"},
@@ -217,10 +213,8 @@ if USING_S3 == "TRUE":
 else:
     STATIC_URL = '/static/'
     STATIC_ROOT = BASE_DIR / "staticfiles"
-
     MEDIA_URL = "/media/"
     MEDIA_ROOT = BASE_DIR / "mediafiles"
-
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static')
 ]

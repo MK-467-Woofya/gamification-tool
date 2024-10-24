@@ -29,3 +29,8 @@ If you don’t have Node.js and npm installed, follow these instructions:
 - npm start
 
 4. The backend will be running on http://localhost:3002
+
+### Backend Api 
+1. Run backend for locations
+docker-compose exec api python manage.py makemigrations locations
+docker-compose exec api python manage.py migrate locations

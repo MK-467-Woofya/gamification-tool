@@ -32,8 +32,9 @@ urlpatterns = [
     path('quiz/', include('quiz.urls')),
     path('memory-game/', include('memory_game.urls')),
     path("marketplace/", include("marketplace.urls")),
-
+    path("checkins/", include("locations.urls")), 
 ]
+
 # Additional auth and Media (img, etc.) urls
 urlpatterns += [
     path('api-auth/', include('rest_framework.urls')),
