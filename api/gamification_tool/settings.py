@@ -155,18 +155,7 @@ USE_I18N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / "staticfiles"
-
-STATICFILES_DIRS = [
-    BASE_DIR,
-]
-
-MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "mediafiles"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
@@ -186,3 +175,45 @@ REST_FRAMEWORK = {
 
 # Custom API Key header: Gamification-Api-Key: <key>
 API_KEY_CUSTOM_HEADER = "HTTP_GAMIFICATION_API_KEY"
+
+# Dbbackup config
+DBBACKUP_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+DBBACKUP_STORAGE_OPTIONS = {
+    'access_key': os.environ.get("S3_ACCESS_KEY"),
+    'secret_key': os.environ.get("S3_SECRET_KEY"),
+    'bucket_name': os.environ.get("S3_BUCKET_NAME"),
+    'region_name': os.environ.get("AWS_REGION"),
+    'default_acl': 'private',
+}
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/5.1/howto/static-files/
+# For Prodcution: Static in AWS S3 if true, else static served in STATIC_ROOT
+USING_S3 = os.environ.get("IS_S3_STORAGE")
+if USING_S3:
+    AWS_ACCESS_KEY_ID = os.environ.get("S3_ACCESS_KEY")
+    AWS_SECRET_ACCESS_KEY = os.environ.get("S3_SECRET_KEY")
+    AWS_S3_REGION_NAME = os.environ.get("AWS_REGION")
+    AWS_STORAGE_BUCKET_NAME = os.environ.get("S3_BUCKET_NAME")
+    AWS_S3_FILE_OVERWRITE = False
+    AWS_DEFAULT_ACL = None
+    AWS_QUERYSTRING_AUTH = False
+    AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com"
+    STATICFILES_LOCATION = "static"
+    STATIC_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/{STATICFILES_LOCATION}/"
+    MEDIAFILES_LOCATION = "media"
+    MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/{MEDIAFILES_LOCATION}/"
+    STORAGES = {
+        "default": {"BACKEND": "gamification_tool.custom_storage.MediaStorage"},
+        "staticfiles": {"BACKEND": "gamification_tool.custom_storage.StaticStorage"},
+    }
+    AWS_S3_OBJECT_PARAMETERS = {
+        "CacheControl": "max-age=2592000",
+    }
+else:
+    STATIC_URL = '/static/'
+    STATIC_ROOT = BASE_DIR / "staticfiles"
+    MEDIA_URL = "/media/"
+    MEDIA_ROOT = BASE_DIR / "mediafiles"
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static')
+]
