@@ -179,10 +179,10 @@ API_KEY_CUSTOM_HEADER = "HTTP_GAMIFICATION_API_KEY"
 # Dbbackup config
 DBBACKUP_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 DBBACKUP_STORAGE_OPTIONS = {
-    'access_key': os.environ.get("S3_ACCESS_KEY"),
-    'secret_key': os.environ.get("S3_SECRET_KEY"),
-    'bucket_name': os.environ.get("S3_BUCKET_NAME"),
-    'region_name': os.environ.get("AWS_REGION"),
+    'access_key': os.environ.get("S3_ACCESS_KEY", "none"),
+    'secret_key': os.environ.get("S3_SECRET_KEY", "none"),
+    'bucket_name': os.environ.get("S3_BUCKET_NAME", "none"),
+    'region_name': os.environ.get("AWS_REGION", "none"),
     'default_acl': 'private',
 }
 # Static files (CSS, JavaScript, Images)
@@ -190,10 +190,10 @@ DBBACKUP_STORAGE_OPTIONS = {
 # For Prodcution: Static in AWS S3 if true, else static served in STATIC_ROOT
 USING_S3 = os.environ.get("IS_S3_STORAGE")
 if USING_S3 == "TRUE":
-    AWS_ACCESS_KEY_ID = os.environ.get("S3_ACCESS_KEY")
-    AWS_SECRET_ACCESS_KEY = os.environ.get("S3_SECRET_KEY")
-    AWS_S3_REGION_NAME = os.environ.get("AWS_REGION")
-    AWS_STORAGE_BUCKET_NAME = os.environ.get("S3_BUCKET_NAME")
+    AWS_ACCESS_KEY_ID = os.environ.get("S3_ACCESS_KEY", "none")
+    AWS_SECRET_ACCESS_KEY = os.environ.get("S3_SECRET_KEY", "none")
+    AWS_S3_REGION_NAME = os.environ.get("AWS_REGION", "none")
+    AWS_STORAGE_BUCKET_NAME = os.environ.get("S3_BUCKET_NAME", "none")
     AWS_S3_FILE_OVERWRITE = False
     AWS_DEFAULT_ACL = None
     AWS_QUERYSTRING_AUTH = False
