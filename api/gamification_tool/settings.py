@@ -189,7 +189,7 @@ DBBACKUP_STORAGE_OPTIONS = {
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 # For Prodcution: Static in AWS S3 if true, else static served in STATIC_ROOT
 USING_S3 = os.environ.get("IS_S3_STORAGE")
-if USING_S3:
+if USING_S3 == "TRUE":
     AWS_ACCESS_KEY_ID = os.environ.get("S3_ACCESS_KEY")
     AWS_SECRET_ACCESS_KEY = os.environ.get("S3_SECRET_KEY")
     AWS_S3_REGION_NAME = os.environ.get("AWS_REGION")
