@@ -55,6 +55,10 @@ Views simulating minimal versions of main application features may be necessary 
   - [Production setup](#production-setup)
     - [Dev and Prod settings and environment variables](#dev-and-prod-settings-and-environment-variables)
     - [Nginx for reverse proxy and serving static content](#nginx-for-reverse-proxy-and-serving-static-content)
+    - [Hosting Providers](#hosting-providers)
+      - [Digital Ocean droplet hosting](#digital-ocean-droplet-hosting)
+      - [AWS RDS PostrgreSQL database](#aws-rds-postrgresql-database)
+      - [S3 Static and Media hosting](#s3-static-and-media-hosting)
     - [Running the production build](#running-the-production-build)
     - [What's different in production](#whats-different-in-production)
     - [To do remaining for production](#to-do-remaining-for-production)
@@ -127,7 +131,7 @@ The .env files excluded from git in the project structure:
 #### API .env files
 __Important: If updating from an earlier state of the project repo, the .env files are managed slightly differently in that where there was just a single .env for the backend, there are now two. One for dev and one for prod environments__  
 
-We need to make our own .env files.  
+As mentioned in the previous sections, we need to make our own .env files as they aren't shared in version control for dev builds.
 
 The pip package python-dotenv should already be installed from the `requirements.txt` earlier. If not, install it.
 
@@ -136,6 +140,8 @@ Here's an example for the Django environment variables in the backend.
 
 The Django Secret key is added to .env instead of having it exposed in the project settings.  
 Check the commented SECRET_KEY variable in settings.py to get the values, or generate another for your own dev machine.  
+
+`IS_S3_STORAGE` is a check for whether static and media will be collected in an AWS Bucket, or in the regular `STATIC_ROOT`. It should be false for dev builds, and can be false in the prod build in the case we don't want to use S3.
 
 The dev database user credentials environment variables can be found in `docker-compose.yml` in the project root so just copy them over to your `.env.dev`.  
 ![alt text](readme-imgs/env-2.png)
@@ -283,7 +289,7 @@ We now have two docker-compose.yml files:
 The dev setup of the environment variables was detailed in the earlier section *API.env files*, but we will include it here also.  
 
 Settings in the Django project which require differences between environments are stored in .env files in the project root and are imported into the docker-compose.yml's and Django. The files are:  
-- .env.dev - for develop environment  
+- .env.dev - for develop environment (the same one)  
 ![alt text](readme-imgs/env-dev-1.png)  
 
 - .env.prod  
@@ -315,6 +321,20 @@ At this point, Nginx is providing a reverse proxy service to the API, where requ
 
 The static from the Django project are served in the locations specified by the config file which corresponds to volumes created in `docker-compose.prod.yml`.
 
+### Hosting Providers
+We won't provide any detailed information about the providers here, but an overview of what services the project uses for hosting and backing up data.
+#### Digital Ocean droplet hosting
+This application is run using Docker orchestration to build the API, and a reverse proxy using nginx to serve it in a single Digital Ocean droplet. The containers are built and spun up from the `docker-compose.prod.yml` in this repo, and `Dockerfile.prod` for the frontend React project, and another separate `Dockerfile` for the Location service.
+
+#### AWS RDS PostrgreSQL database
+The production build is connected to a postgreSQL instance in the cloud to offload database management, and for automated backups. Performance can be slower, particularly when retrieving a lengthy list of values than a volumed instance.
+
+#### S3 Static and Media hosting
+The application is also connected to an S3 instance for hosting the static and media files. The django manage command `collectstatic` detailed below updates the static content direct to the bucket. User media is saved to the bucket when that content is posted.   
+![alt text](readme-imgs/s3-1.png)  
+
+There is an option to return to the Docker volume-served content by altering the `.env.prod` file environment variable `IS_S3_STORAGE` to `FALSE`.
+
 ### Running the production build
 The following tasks need to be run whenever the production container is being built:  
 1. Building and running in a detached instance:  
@@ -329,7 +349,9 @@ The following tasks need to be run whenever the production container is being bu
 4. Creating the superuser as before:  
 `$ docker compose -f docker-compose.prod.yml exec api python manage.py createsuperuser`  
 
-5. Create dummy users:  
+Steps 5-8 are production build commands within the scope of the project so there is some populated data. Note: the quiz feature needs to be populated with questions otherwise it won't run:  
+
+5. Create dummy users (This is part of the production build for the scope of this project):  
 `$ docker compose -f docker-compose.prod.yml exec api python manage.py create_users`
 
 6. Add Points logs if necessary:  

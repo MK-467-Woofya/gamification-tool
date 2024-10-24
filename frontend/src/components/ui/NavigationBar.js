@@ -52,7 +52,7 @@ export const NavigationBar = () => {
                             <Nav.Link href="/user/quests">Quests</Nav.Link>
                             : null}
                         {isAuth ?
-                            <Nav.Link href="/user/marketplace">Marketplace</Nav.Link>
+                            <Nav.Link href="/marketplace">Marketplace</Nav.Link>
                             : null}
                         {isAuth ?
                             <Nav.Link href="/logout">Logout</Nav.Link> :
