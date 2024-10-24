@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     'quiz',
     'memory_game',
     'marketplace',
+    'locations',
 ]
 # Plugins of processes that run in requests/responses
 MIDDLEWARE = [
