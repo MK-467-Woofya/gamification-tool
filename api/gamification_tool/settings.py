@@ -64,7 +64,7 @@ INSTALLED_APPS = [
     'quiz',
     'memory_game',
     'marketplace',
-    'dbbackup'
+    'dbbackup',
     'locations',
 ]
 # Plugins of processes that run in requests/responses
