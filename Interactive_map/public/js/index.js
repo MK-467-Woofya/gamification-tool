@@ -1,44 +1,76 @@
+import { getUserIdFromSessionOrPostUser } from './userUtils';
+import axios from 'axios';
+
 /* global L */
+let map;  // Define `map` globally using `let` for better scope management
+let eventsData = [];  // Define `eventsData` globally to make it accessible
 
-// Initialize the map and set the view to Melbourne, Victoria with a zoom level of 13
-var map = L.map('map').setView([-37.8136, 144.9631], 13);
+document.addEventListener('DOMContentLoaded', () => {
+    // Fetch the user ID from session storage or post user data if necessary
+    getUserIdFromSessionOrPostUser()
+        .then(uid => {
+            console.log("User ID retrieved:", uid);
+            // Proceed to initialize the map and fetch events after retrieving the user ID
+            initializeMap();
+            fetchEvents(); 
+        })
+        .catch(error => {
+            // If user information cannot be retrieved, alert the user and redirect to login page
+            alert('Failed to retrieve user information. Please log in again.');
+            window.location.href = 'http://localhost:3000/login';
+        });
+});
 
-// Load map tiles from OpenStreetMap with attribution
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-}).addTo(map);
+// Function to initialize the map
+function initializeMap() {
+    // Initialize the map and set the view to Melbourne, Victoria with a zoom level of 13
+    map = L.map('map').setView([-37.8136, 144.9631], 13);
 
-var eventsData = [];  // Global variable to store all event data
+    // Load map tiles from OpenStreetMap with attribution
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+}
 
-// Fetch events from the backend and populate the map and list
-fetch('http://localhost:3002/events')
-    .then(response => response.json())  // Parse the response as JSON
-    .then(events => {
-        eventsData = events;  // Store events globally for filtering/sorting
-        displayFilteredEvents(events);  // Display all events initially
-        
-        // Add event listeners for filtering and sorting
-        document.getElementById('searchBar').addEventListener('input', filterAndSortEvents);
-        document.getElementById('categoryFilter').addEventListener('change', filterAndSortEvents);
-        document.getElementById('sortBy').addEventListener('change', filterAndSortEvents);
-    });
+// Function to fetch events from the backend
+function fetchEvents() {
+    const url = CONFIG.BASE_URL + 'events';
+    axios.get(url)
+        .then(response => {
+            const events = response.data;  // Store the events data
+            eventsData = events;  // Store events globally for filtering/sorting
+            displayFilteredEvents(events);  // Display all events initially
+            
+            // Add event listeners for filtering and sorting
+            document.getElementById('searchBar').addEventListener('input', filterAndSortEvents);
+            document.getElementById('categoryFilter').addEventListener('change', filterAndSortEvents);
+            document.getElementById('sortBy').addEventListener('change', filterAndSortEvents);
+        })
+        .catch(error => {
+            // Log the error and alert the user in case fetching events fails
+            console.error('Error fetching events:', error);
+            alert("An error occurred while fetching events. Please try again later.");
+        });
+}
 
 // Function to add events to the event list
 function addEventToList(event) {
-    var eventList = document.getElementById('events');
-    var eventItem = document.createElement('li');
+    var eventList = document.getElementById('events');  // Get the event list element
+    var eventItem = document.createElement('li');  // Create a new list item for each event
 
     // Display event name and date, and add click event to zoom into the map location
     eventItem.innerHTML = `<strong>${event.name}</strong> (${event.date})`;
     eventItem.addEventListener('click', () => {
-        map.setView(event.location, 15);  // Zoom into the event location on the map
+        // Set map view to the event location with a higher zoom level
+        map.setView(event.location, 15);
+        // Display a popup with event details and a check-in button
         L.popup()
             .setLatLng(event.location)
             .setContent(
                 `<b>${event.name}</b><br>${event.description}<br>${event.date} at ${event.time}
-                <br><button onclick="checkIn('${event.code}')">Check In</button>`
+                <br><button onclick="checkIn('${event.code}', '${event.name}', ${event.location[0]}, ${event.location[1]})">Check In</button>`
             )
-            .openOn(map);  // Display a popup with event details and check-in button
+            .openOn(map);
     });
 
     eventList.appendChild(eventItem);  // Add the event to the event list in the sidebar
@@ -51,50 +83,64 @@ function addEventToMap(event) {
         .bindPopup(`<b>${event.name}</b><br>${event.description}<br>${event.date} at ${event.time}`);
 }
 
-// Function to handle the check-in process for an event
-window.checkIn = function(eventCode) {
-    var userCode = prompt("Enter the check-in code:");  // Prompt user to enter the check-in code
+// Function to handle user check-in for an event
+window.checkIn = function(eventCode, eventName, latitude, longitude) {
+    // Prompt user to enter the check-in code
+    var userCode = prompt("Enter the check-in code:");
+    var uid = sessionStorage.getItem('uid');  // Re-fetch `uid` from session storage
 
-    if (userCode === eventCode) {  // If the code matches
+    // If user ID is not found, alert the user and exit the function
+    if (!uid) {
+        console.error('User ID not found in session storage');
+        alert("Unable to save check-in. User not found. Please make sure you are logged in.");
+        return;
+    }
+
+    // If the code matches, proceed with check-in
+    if (userCode === eventCode) {
         alert("You have successfully checked in!");
 
-        // After successful check-in, update points for the user
-        var url = process.env.REACT_APP_BASE_URL + "users/users/";
-        var uid = sessionStorage.getItem('uid');
-        var headers = {
+        // Save the check-in information for the user
+        const checkInUrl = "http://localhost:3002/locations/checkins/";
+        const headers = {
             'Content-Type': 'application/json',
             'Gamification-Api-Key': process.env.REACT_APP_API_KEY
         };
+        const checkInData = {
+            user_id: uid,
+            event_name: eventName,
+            latitude: latitude,
+            longitude: longitude
+        };
 
-        if (uid) {
-            var updatePointsUrl = url + uid + '/add_points/';
-            
-            // Data for updating user points (1000 points each for shop and experience)
-            var data = {
-                'experience_points': 1000,
-                'shop_points': 1000
-            };
-
-            // Make the PATCH request to update the user's points
-            fetch(updatePointsUrl, {
-                method: 'PATCH',
-                headers: headers,
-                body: JSON.stringify(data)
+        axios.post(checkInUrl, checkInData, { headers })
+            .then(response => {
+                console.log('Checked in successfully:', response.data);
+                alert("Check-in saved successfully!");
             })
-            .then(response => response.json())
-            .then(responseData => {
-                console.log('Points added:', responseData);
+            .catch(error => {
+                console.error('Error saving check-in:', error);
+                alert("An error occurred while saving the check-in. Please try again later.");
+            });
+
+        // After successful check-in, update points for the user
+        const updatePointsUrl = "http://localhost:3002/users/users/" + uid + "/add_points/";
+        const pointsData = {
+            'experience_points': 1000,
+            'shop_points': 1000
+        };
+
+        axios.post(updatePointsUrl, pointsData, { headers })
+            .then(response => {
+                console.log('Points added:', response.data);
                 alert("You have been rewarded with 1000 experience points and 1000 shop points!");
             })
             .catch(error => {
                 console.error('Error adding points:', error);
                 alert("An error occurred while adding points. Please try again later.");
             });
-        } else {
-            console.error('User ID not found in session storage');
-            alert("Unable to update points. User not found.");
-        }
-    } else {  // If the code does not match
+    } else {
+        // If the code does not match, inform the user
         alert("Incorrect code! Please try again.");
     }
 };
