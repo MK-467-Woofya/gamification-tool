@@ -4,15 +4,6 @@ Ensure that you have the following installed:
 - Node.js (v14 or later)
 - npm (v6 or later)
 
-### Making config.js file
-1. Make a config.js file in the public js folder
-2. Copy and paste the below into the config.js file, and change the API key to your API key
-const CONFIG = {
-    BASE_URL: 'http://localhost:3002/',
-    API_KEY: 'Your API key'
-};
-
-
 ### Installing Node.js and npm
 If you don’t have Node.js and npm installed, follow these instructions:
 1. Update the package list:
