@@ -284,7 +284,9 @@ In short, the application is served using gunicorn and nginx on a Digital Ocean 
 Currently the setup has the API and related services in the production docker-compose with the frontend having to be built separately.
 This is due to the API Key being passed as an environment variable which gets processed at build time. There is no API Key until it can be generated, persisted on the system and stored in the frontend `.env`, only after that we can build the React App. 
 
-On top of this, due to the API having an SSL certificate which listens on ports 80 and 443, hosting the front end from the same domain or host results in untrusted errors in the browser as the application is trying to serve content on a non-standard http/https port, port 3000 in our case.
+On top of this, due to the API having an SSL certificate which listens on ports 80 and 443, hosting the front end from the same domain or host results in untrusted errors in the browser as the application is trying to serve content on a non-standard http/https port, port 3000 in our case.  
+
+So the current solution to this is to run the hosted API on the droplet, but to spinup the prototype from localhost and expose port 80 there. This requires the IP address of where the frontend is hosted to be included in `.env.prod` `CORS_ALLOWED_ORIGINS` variable. Otherwise setting `CORS_ALLOW_ALL_ORIGINS = True` in `settings.py` will allow all IPs.
 
 ### Dev and Prod settings and environment variables
 
@@ -342,9 +344,6 @@ Here's a couple of examples of how to use it in the frontend JS files:
 
 - .env in /frontend (the same one)  
 ![alt text](readme-imgs/env-frontend-1.png)  
-
-
-
 (Note: The above API Key is a dev environment test key)
 
 ### Nginx for reverse proxy, SSL, and serving static content
@@ -407,13 +406,13 @@ Accessible at http://api.gamificationtool.xyz/admin/
 #### Frontend
 10. Add the API-Key to the frontend .env file as before  
 
-11. Build and run the front end dockerfile on the usual port. Manually is easier since the .env files are processed at build time, we can't build the ReactJS container until we get the API Key from the API.
+11. Build and run the front end dockerfile at localhost or some other host on port 80. Manually is easier since the .env files are processed at build time, we can't build the ReactJS container until we get the API Key from the API.
 
     From the `/frontend` directory we build the frontend image and tag it as frontend:  
 `$ docker build -f Dockerfile.prod -t frontend-image .`  
 
-    Then we build and run the docker instructions and expose port 3000:  
-`$ docker run -d -p 3000:3000 --name frontend-container frontend-image`  
+    Then we build and run the docker instructions and expose port 80:  
+`$ docker run -d -p 80:3000 --name frontend-container frontend-image`  
 
 #### Stopping production
 1. Spinning down the containers:  
