@@ -5,7 +5,6 @@ import Container from "react-bootstrap/Container";
 export const HomePage = () => {
 
     const message = sessionStorage.getItem('username');
-
     const [users, setUsers] = useState([]);
 
     // Get all users from db

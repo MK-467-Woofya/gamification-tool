@@ -1,9 +1,7 @@
-import axios from "axios";
-import {useState, useEffect } from "react";
 import Container from 'react-bootstrap/Container';
 
 /**
- * Marketplace for shop functionality
+ * Marketplace Basepage for shop functionality
  * 
  */
 export const MarketplaceHomePage = () => {

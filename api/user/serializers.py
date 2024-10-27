@@ -8,7 +8,7 @@ from marketplace.serializers import TitleSerializer, AvatarSerializer
 
 class CustomUserSerializer(WritableNestedModelSerializer):
     """
-    Serializers for each model/entity in the api - users.
+    Serializers for CustomUsers.
     """
     current_title = TitleSerializer(many=False, required=False)
     current_avatar = AvatarSerializer(many=False, required=False)

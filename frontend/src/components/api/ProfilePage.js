@@ -1,36 +1,45 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Container from 'react-bootstrap/Container';
+
+import { ProfileAvatarList } from './marketplace/AvatarsComponents/ProfileAvatarList';
+import { ProfileTitleList } from './marketplace/TitleComponents/ProfileTitleList';
+
+
 /**
  * User profile showing the Gamification information about user, 
  * and linking to other user API pages
- * 
  */
 export const ProfilePage = () => {
     const [user, setUser] = useState(null);
-    const [points, setPoints] = useState(null);
+    const [avatars, setAvatars] = useState(null);
+    const [titles, setTitles] = useState(null);
 
+    const uid = sessionStorage.getItem('uid');
+
+    /** Set state for the user and their marketplace items */
     useEffect(() => {
-        console.log('Fetching user data...'); // useEffect
-
-        var url = process.env.REACT_APP_BASE_URL + "users/users/";
-        var uid = sessionStorage.getItem('uid');
-        var headers = {
+        const headers = {
             'Content-Type': 'application/json',
             'Gamification-Api-Key': process.env.REACT_APP_API_KEY
         };
-
-        axios.get(url + uid + '/', { headers })
-
+        const user_url = process.env.REACT_APP_BASE_URL + "users/users/";
+        axios.get(user_url + uid + '/', { headers })
             .then(response => {
-                console.log('User data fetched:', response.data); // data grab
+                console.log('User data fetched:', response.data);
                 setUser(response.data);
+                setAvatars(response.data.avatars);
+                setTitles(response.data.titles);
             })
             .catch(error => {
                 console.error('Error fetching user data:', error);
             });
-    }, [points]);
+        }, []);
 
+    /** Function to add 100 points to the user
+     *  Updates the points mirrored in the request
+     *  And updates the User's level
+     */
     function handleSubmit(e) {
         e.preventDefault();
 
@@ -42,8 +51,8 @@ export const ProfilePage = () => {
         };
 
         const data = {
-            'experience_points': 1000,
-            'shop_points':  1000
+            'experience_points': 100,
+            'shop_points':  100
         };
 
         var update_points_url = url + uid + '/add_points/';
@@ -58,14 +67,14 @@ export const ProfilePage = () => {
 
         setUser(prevUser => ({
             ...prevUser,
-            data
+            experience_points: Math.min(prevUser.experience_points + 100,9999999),
+            shop_points: Math.min(prevUser.shop_points + 100,9999999),
+            level: Math.floor(0.1 * Math.sqrt(prevUser.experience_points)) + 1
         }));
-
-        setPoints(data);
     }
 
-
-    if (!user) { // return this while loading
+    // Loading while requests return
+    if (!user || !avatars) {
         return <div>Loading...</div>;
     }
 
@@ -85,62 +94,15 @@ export const ProfilePage = () => {
                 <p>Experience: {user.experience_points}</p>
                 <p>Shop Points: {user.shop_points}</p>
                 <form onSubmit={handleSubmit}>
-                    <button type="submit">+1000 points</button>
+                    <button type="submit">+100 points</button>
                 </form>
             </section>
-
-            <Container className="justify-content-md-center">
-            <div>
-                <h1>Titles</h1>
-            </div>
-            <div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Title name</th>
-                            <th>Title text</th>
-                            <th>Cost</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {Array.isArray(user.titles) && user.titles.map((title, index) => (
-                            <tr key={index}>
-                                <td>{title.name}</td>
-                                <td>{title.text}</td>
-                                <td>{title.cost}</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
-            </Container>
-
-            <Container className="justify-content-md-center">
-            <div>
-                <h1>Avatars</h1>
-            </div>
-            <div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Avatar name</th>
-                            <th>Avatar</th>
-                            <th>Cost</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {Array.isArray(user.avatars) && user.avatars.map((avatar, index) => (
-                            <tr key={index}>
-                                <td>{avatar.name}</td>
-                                <td><img src={avatar.img_url} alt={avatar.name} width={60} height={60}/></td>
-                                <td>{avatar.cost}</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
-            </Container>
-
+            <>
+                <ProfileTitleList user={user} titles={titles} setUser={setUser} setTitles={setTitles}/>
+            </>
+            <>
+                <ProfileAvatarList user={user} avatars={avatars} setUser={setUser} setAvatars={setAvatars}/>
+            </>
             <section>
                 <h2>Visited Locations and Events</h2>
                 {/* Future Development: Display user's visited locations and events here */}

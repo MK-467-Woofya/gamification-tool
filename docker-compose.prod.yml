@@ -34,3 +34,6 @@ volumes:
   # api_postgres_data:
   static_volume:
   media_volume:
+
+# Postgres commented out
+# but could be used instead of the AWS RDS instance if preferred

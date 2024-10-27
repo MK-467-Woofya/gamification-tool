@@ -25,26 +25,15 @@ load_dotenv(os.path.join(BASE_DIR, '.env'))
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-# SECRET_KEY = 'django-insecure-182-5f*ibrd^g#ygq07w!vv%2vqa_ug()1=t4so-l=aax=17v-'
 SECRET_KEY = os.environ.get('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(os.environ.get("DEBUG", default=0))
 
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(",")
-
-
-# HTTPS security is handled by nginx reverse proxy
-# SECURE_SSL_REDIRECT = False
-# Other security settings from Django production-ready check
-# SECURE_HSTS_SECONDS = os.environ.get("SECURE_HSTS_SECONDS")
-# SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-# SECURE_HSTS_PRELOAD = True
-# SESSION_COOKIE_SECURE = True
-# CSRF_COOKIE_SECURE = True
-
 CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS").split(",")
 
-# SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+if not DEBUG:
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Application definition
 # Includes all packages/apps registered with the main project
@@ -79,8 +68,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+# IPs whitelisted for CORS
 CORS_ALLOWED_ORIGINS = os.environ.get("CORS_ALLOWED_ORIGINS").split(",")
-
 
 # Allow any CORS headers
 CORS_ALLOW_HEADERS = '*'
@@ -148,18 +137,13 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
-
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-
-
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Settings specific to Django Rest Framework
@@ -173,6 +157,7 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10
 }
 
+# Settings for customising the API Key generation
 # Custom API Key header: Gamification-Api-Key: <key>
 API_KEY_CUSTOM_HEADER = "HTTP_GAMIFICATION_API_KEY"
 
@@ -185,6 +170,7 @@ DBBACKUP_STORAGE_OPTIONS = {
     'region_name': os.environ.get("AWS_REGION", "none"),
     'default_acl': 'private',
 }
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 # For Prodcution: Static in AWS S3 if true, else static served in STATIC_ROOT
@@ -210,10 +196,13 @@ if USING_S3 == "TRUE":
         "CacheControl": "max-age=2592000",
     }
 else:
+    # Locally served static
     STATIC_URL = '/static/'
     STATIC_ROOT = BASE_DIR / "staticfiles"
     MEDIA_URL = "/media/"
     MEDIA_ROOT = BASE_DIR / "mediafiles"
+
+# Extra directories for static
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static')
 ]

@@ -1,31 +1,31 @@
-# my python version
+# Python image
 FROM python:3.11.4-slim
 
-# work dir
+# Working directory
 WORKDIR /usr/src/app
 
-# install Django
+# Install Django
 RUN pip install django==5.1
 
-# set Django environment
+# Set Django environment
 ENV DJANGO_SETTINGS_MODULE=gamification_tool.settings
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED=1
 
-# install system dependencies
+# Install system dependencies
 RUN apt-get update && apt-get install -y netcat-traditional
 
-# requirements and python
+# Requirements and python
 COPY requirements.txt /usr/src/app
 RUN pip install --no-cache-dir -r requirements.txt
 
-# copy entrypoint.sh
+# Copy entrypoint script
 COPY ./entrypoint.sh .
 RUN sed -i 's/\r$//g' /usr/src/app/entrypoint.sh
 RUN chmod +x /usr/src/app/entrypoint.sh
 
-# copy project
+# Copy whole project
 COPY . /usr/src/app
 
-# run entrypoint.sh
+# Run entrypoint script
 ENTRYPOINT ["/usr/src/app/entrypoint.sh"]

@@ -3,7 +3,8 @@ from rest_framework.routers import DefaultRouter
 
 from . import views
 
-# register the ViewSets with for each API objct type
+# Register the ViewSets for each API object within the users application
+# Routes collected in gamification_tool main application.
 router = DefaultRouter()
 router.register(r'users', views.CustomUserViewSet, basename='users')
 

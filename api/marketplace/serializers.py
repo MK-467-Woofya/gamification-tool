@@ -17,7 +17,7 @@ class TitleSerializer(serializers.HyperlinkedModelSerializer):
 
 class AvatarSerializer(serializers.HyperlinkedModelSerializer):
     """
-    Serializers for Titles.
+    Serializers for Avatars.
     """
     url = serializers.HyperlinkedIdentityField(view_name="avatars-detail")  # links to the basename used in user.urls.py
     users = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
