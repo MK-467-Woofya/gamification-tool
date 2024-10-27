@@ -531,3 +531,58 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 
 #### or specific function? 
 .\run_tests.ps1 -TestPath "leaderboard.tests.test_edge_cases.LeaderboardEdgeCasesTests.test_leaderboard_with_boundary_dates"
+
+
+# quiz tests:
+.\run_tests.ps1 -TestPath "quiz.tests.test_quiz"
+
+# memory game tests:
+.\run_tests.ps1 -TestPath "memory_game.tests.gameTests"
+
+
+## Project applications
+### 1. User: 
+Custom user implementation built on top of Django users.
+On top of the base implementation each user has:
+- Total points
+- Spendable points
+- Level
+- VIP user (a bool indicating a high contributor o Woofya)
+- Avatar, which is either:
+    - An uploaded image by the user
+    - Or a cartoon representation of the user
+- Lists of:
+    - Dog entities
+        - May contain their own avatar, cosmetics, etc.
+    - Milestones (FK)
+    - Titles (FK)
+    - Badges (FK)
+    - Any other cosmetics (FK)
+    - locations visited (FK)
+    - events visited (FK)
+
+### 2. Check-in: 
+Application for handling location and event check-ins.
+Contains models for:
+- Location
+- Event
+
+### 3. Leaderboard
+Application for handling the user points leaderboard.
+
+Depending on the implementations, leaderboard could be used for:
+- Points accumulated over time
+- Locations visited
+- Measure related to their pets - e.g. distance walked, for example
+
+### 4. Marketplace
+Application for handling points-spending activities. Acts as not only the shop, but also the database to view all available items, purchaseable or not.
+
+Contains:
+- Shop
+- Entities:
+    - Badges
+    - Titles
+    - Milestones (_unsure if this should be here or in the user app_)
+    - Any other cosmetics
+

@@ -7,6 +7,9 @@
 # or run quiz tests? .\run_tests.ps1 -TestPath "quiz.tests.test_quiz"
 # or specific quiz test class? .\run_tests.ps1 -TestPath "quiz.tests.test_quiz.QuizAPITests"
 # or specific quiz test method? .\run_tests.ps1 -TestPath "quiz.tests.test_quiz.QuizAPITests.test_get_quiz_questions_success"
+# or run memory game tests?  .\run_tests.ps1 -TestPath "memory_game.tests.gameTests"
+#
+# 
 
 
 param(
