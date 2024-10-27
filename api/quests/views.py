@@ -32,38 +32,35 @@ class UserQuestProgressViewSet(viewsets.ModelViewSet):
     lookup_field = 'pk'  # Use primary key lookup for retrieve and update
 
     def get_queryset(self):
-        # Only filter for list action, showing active quests for the logged-in user
         if self.action == 'list':
             current_date = timezone.now()
             user_id = self.request.query_params.get('user_id', None)
-            
             if user_id is None:
                 return UserQuestProgress.objects.none()
-
-            # Filter active quests based on the current date
             active_quests = Quest.objects.filter(start_date__lte=current_date, end_date__gte=current_date)
-
-            # Filter UserQuestProgress for the specified user and active quests
             return UserQuestProgress.objects.filter(user_id=user_id, quest__in=active_quests)
-        
-        # For retrieve, update, partial_update, we allow full access to primary keys
         return UserQuestProgress.objects.all()
 
     def perform_update(self, serializer):
         quest_progress = serializer.save()
-        
+
         # Check if the progress meets or exceeds the goal to mark as complete
-        if quest_progress.progress >= quest_progress.quest.goal:
+        if quest_progress.progress >= quest_progress.quest.goal and not quest_progress.completed:
             quest_progress.completed = True
             quest_progress.save()
 
-            # Mark rewards as claimed if quest is completed
+            # Check if rewards have not been claimed and mark as claimed
             if not quest_progress.rewards_claimed:
                 quest_progress.rewards_claimed = True
                 quest_progress.save()
 
+                # Add rewards to the user's account
+                user = quest_progress.user
+                user.experience_points += quest_progress.quest.rewards
+                user.shop_points += quest_progress.quest.rewards
+                user.save()  # Save the user's updated points
+
     def retrieve(self, request, *args, **kwargs):
-        """Retrieve UserQuestProgress by its primary key without filtering by user or active quests"""
         try:
             instance = UserQuestProgress.objects.get(pk=kwargs['pk'])
             serializer = self.get_serializer(instance)

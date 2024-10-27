@@ -6,7 +6,7 @@ class Quest(models.Model):
     goal = models.IntegerField()  # The target users need to achieve
     start_date = models.DateField()
     end_date = models.DateField()
-    rewards = models.CharField(max_length=255)  # Points or other rewards
+    rewards = models.PositiveIntegerField()  # Points or other rewards
     description = models.TextField(blank=True, null=True)
 
     def __str__(self):
