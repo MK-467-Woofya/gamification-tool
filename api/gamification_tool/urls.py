@@ -7,7 +7,7 @@ from django.conf.urls.static import static
 from django.conf import settings
 
 # Patterns for each application's endpoints.
-# The way Django's ModelViewSets work along with having to collect routes from each application 
+# The way Django's ModelViewSets work along with having to collect routes from each application
 # doesn't allow for collecting each separate application's URLs in one path
 # because it only assigns the first set of routes assigned to that path.
 # This results in the project having endpoint paths such as '/users/users/...'

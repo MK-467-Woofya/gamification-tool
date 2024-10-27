@@ -10,13 +10,12 @@ from .models import CustomUser, FriendList, PointsLog
 
 class UserCreationForm(forms.ModelForm):
     """CustomUser creation form within the Admin site"""
-    
+
     # Password form
     password1 = forms.CharField(label="Password", widget=forms.PasswordInput)
     password2 = forms.CharField(
         label="Password confirmation", widget=forms.PasswordInput
     )
-
 
     class Meta:
         model = CustomUser
@@ -42,6 +41,7 @@ class UserCreationForm(forms.ModelForm):
 class UserChangeForm(forms.ModelForm):
     """Update user form"""
     password = ReadOnlyPasswordHashField()
+
     class Meta:
         model = CustomUser
         fields = ["username", "password", "level", "experience_points", "shop_points", "current_title", "current_avatar", "is_active", "is_admin", "titles", "avatars"]

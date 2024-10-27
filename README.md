@@ -7,7 +7,7 @@ This project is an API tool aiming to provide the Woofya application with gamifi
 
 A simiplified description of the main Woofya application is that it provides features to dog owners based primarily around finding dog-friendly and dog-centric locations and activities for users to share with their pet. 
 
-The API provides extensions to these features through user check-ins, quests, titles, and other gamification and social systems.
+The API provides extensions to these features through user check-ins, quests, titles, avatars, games, and leaderboards.
 
 Ultimately, through enhanced interaction, this project seeks to incentivise attending these events and fostering more experiences between dog and owner.
 
@@ -54,33 +54,37 @@ Views simulating minimal versions of main application features may be necessary 
     - [Authorization](#authorization)
   - [Production setup](#production-setup)
     - [Dev and Prod settings and environment variables](#dev-and-prod-settings-and-environment-variables)
-    - [Nginx for reverse proxy and serving static content](#nginx-for-reverse-proxy-and-serving-static-content)
+      - [Dev](#dev)
+      - [Staging](#staging)
+      - [Production](#production)
+      - [Frontend React prototype](#frontend-react-prototype)
+    - [Nginx for reverse proxy, SSL, and serving static content](#nginx-for-reverse-proxy-ssl-and-serving-static-content)
     - [Hosting Providers](#hosting-providers)
       - [Digital Ocean droplet hosting](#digital-ocean-droplet-hosting)
       - [AWS RDS PostrgreSQL database](#aws-rds-postrgresql-database)
       - [S3 Static and Media hosting](#s3-static-and-media-hosting)
     - [Running the production build](#running-the-production-build)
+      - [API](#api)
+      - [Frontend](#frontend)
+      - [Stopping production](#stopping-production)
+      - [Interactive Map](#interactive-map)
     - [What's different in production](#whats-different-in-production)
     - [To do remaining for production](#to-do-remaining-for-production)
   - [Extra command line actions](#extra-command-line-actions)
     - [How to access database:](#how-to-access-database)
     - [How to open a python shell within the docker container:](#how-to-open-a-python-shell-within-the-docker-container)
-    - [Testing](#testing)
+  - [Testing](#testing)
+    - [Postman](#postman-1)
     - [1. leaderboard testing:](#1-leaderboard-testing)
-- [before start:](#before-start)
-- [run by default runner:](#run-by-default-runner)
-- [test with custom runner:](#test-with-custom-runner)
-- [test with one go(combined command, you can directly run this line):](#test-with-one-gocombined-command-you-can-directly-run-this-line)
-- [test with one script(there might be permission issue, run the line below first):](#test-with-one-scriptthere-might-be-permission-issue-run-the-line-below-first)
-- [by default:](#by-default)
-- [or you may wanna run specific test?](#or-you-may-wanna-run-specific-test)
-- [or specific class?](#or-specific-class)
-- [or specific function?](#or-specific-function)
-  - [Project applications](#project-applications)
-    - [1. User:](#1-user)
-    - [2. Check-in:](#2-check-in)
-    - [3. Leaderboard](#3-leaderboard)
-    - [4. Marketplace](#4-marketplace)
+      - [before start:](#before-start)
+      - [run by default runner:](#run-by-default-runner)
+      - [test with custom runner:](#test-with-custom-runner)
+      - [test with one go(combined command, you can directly run this line):](#test-with-one-gocombined-command-you-can-directly-run-this-line)
+      - [test with one script(there might be permission issue, run the line below first):](#test-with-one-scriptthere-might-be-permission-issue-run-the-line-below-first)
+      - [by default:](#by-default)
+      - [or you may wanna run specific test?](#or-you-may-wanna-run-specific-test)
+      - [or specific class?](#or-specific-class)
+      - [or specific function?](#or-specific-function)
 
 
 ## How to run
@@ -271,58 +275,91 @@ The API Key needs to be included in headers for any authorized API request.
 This is done through the use of reactscripts native .env file for secrets. 
 
 ## Production setup
-
 For splitting the project into develop and production applications, we need to utilise separate settings for the application, as well as use tools to serve the application in a production environment.  
 
-Our production set up follows [this tutorial](https://testdriven.io/blog/dockerizing-django-with-postgres-gunicorn-and-nginx) which utilizes gunicorn as the WGSI server, and Nginx for reverse proxy. 
+Our production set up follows [this tutorial](https://testdriven.io/blog/dockerizing-django-with-postgres-gunicorn-and-nginx) and the subsequent tutorials to host and secure the applicatio.  
 
-Currently the setup has the API and database in the production docker-compose with the front-end having to be built separately.
+In short, the application is served using gunicorn and nginx on a Digital Ocean droplet with static and persistance using AWS services. The following sections will go into some detail about how this is set up.
 
-So let's get into the details.  
+Currently the setup has the API and related services in the production docker-compose with the frontend having to be built separately.
+This is due to the API Key being passed as an environment variable which gets processed at build time. There is no API Key until it can be generated, persisted on the system and stored in the frontend `.env`, only after that we can build the React App. 
+
+On top of this, due to the API having an SSL certificate which listens on ports 80 and 443, hosting the front end from the same domain or host results in untrusted errors in the browser as the application is trying to serve content on a non-standard http/https port, port 3000 in our case.
 
 ### Dev and Prod settings and environment variables
 
-We now have two docker-compose.yml files:  
+There are three docker-compose.yml files for the API:  
+- `docker-compose.yml` - for building our local development environment
+- `docker-compose.staging.yml` - for building a test production environment
+- `docker-compose.prod.yml` - for building our production environment
+
+And two for the React application:
 - `docker-compose.yml` - for building our local development environment
 - `docker-compose.prod.yml` - for building our production environment
 
+#### Dev
 The dev setup of the environment variables was detailed in the earlier section *API.env files*, but we will include it here also.  
 
 Settings in the Django project which require differences between environments are stored in .env files in the project root and are imported into the docker-compose.yml's and Django. The files are:  
-- .env.dev - for develop environment (the same one)  
+
+Dev .env is entirely contained in one file, as all build instructions and volumes are based on one `docker-compose.yml` and connect to no external services otherwise:  
+- .env.dev - for develop environment (the same one as earlier)  
 ![alt text](readme-imgs/env-dev-1.png)  
 
+#### Staging
+The staging environment exists to test the production build process. This includes serving the content using nginx and gunicorn, as well as using the staging environment of Let's Encrypt to test SSL:  
+- .env.staging  
+![alt text](readme-imgs/env-staging-1.png)  
+
+- .env.staging.db  
+![alt text](readme-imgs/env-staging-db-1.png)  
+
+- .env.staging.proxy-companion  
+![alt text](readme-imgs/env-staging-proxy-1.png)  
+
+#### Production
+The production environment incorporates the external services used in hosting the site and its content. Namely, the production build `.envs` only exist on the hosting server, currently a Digital Ocean droplet, and they specify the credentials and storage locations of the S3-hosted static and media, as well as the AWS RDS managed postgres database:  
 - .env.prod  
 ![alt text](readme-imgs/env-prod-1.png)  
 
 - .env.prod.db  
 ![alt text](readme-imgs/env-prod-db-1.png)  
 
-- .env in /frontend (the same one)
-![alt text](readme-imgs/env-frontend-1.png)  
-This file contains a new value `REACT_APP_BASE_URL` which replaces the hard-coded domain to allow for dev and production builds.  
+- .env.prod.proxy-companion  
+![alt text](readme-imgs/env-prod-proxy-1.png)  
+
+#### Frontend React prototype 
+Since the frontend needs a dynamic URL to match endpoints depending on if they are local in dev or hosted in production, the environment variable `REACT_APP_BASE_URL` replaces the hard-coded domain to allow for dev and production builds. 
+
+Specifically,  
 __For development we set it as:__ `http://localhost:8000/`  
 __For testing production locally we set it as:__ `http://localhost/`  
-Actual production uses a different value.  
+Actual production uses the host URL: `api.gamificationtool.xyz`
  
 Here's a couple of examples of how to use it in the frontend JS files: 
 - `process.env.REACT_APP_BASE_URL + "users/users/";`  
 - `axios.get(process.env.REACT_APP_BASE_URL + 'quiz/${quizId}/leaderboard/'`    
 
+- .env in /frontend (the same one)  
+![alt text](readme-imgs/env-frontend-1.png)  
 
-(Note: The above are placehoder env values)
 
-### Nginx for reverse proxy and serving static content
-Nginx contains both a config file, and a Dockerfile as it is part of the production docker-compose build.  
 
+(Note: The above API Key is a dev environment test key)
+
+### Nginx for reverse proxy, SSL, and serving static content
+Previously the nginx setup contained an explicit config file, and a Dockerfile as it is part of the production docker-compose build.  
+
+Example here:  
 ![alt text](readme-imgs/nginx-1.png)  
 
-At this point, Nginx is providing a reverse proxy service to the API, where requests are sent to Nginx at port 1337, which it forwards to the actual application.
+Following on from the production tutorial specified earlier in  [this part](https://testdriven.io/blog/django-lets-encrypt/), the API uses [nginx-proxy](https://github.com/nginx-proxy/nginx-proxy) which uses Docker containers to dynamically set up the proxy configs. The build process also sets up let's encrypt through similar means using [acme-companion](https://github.com/nginx-proxy/acme-companion), effectively removing the need for fully specified configs in the repo, and automating the reverse proxy and SSL processes to some degree.
 
-The static from the Django project are served in the locations specified by the config file which corresponds to volumes created in `docker-compose.prod.yml`.
+The static from the Django project are served in the locations specified by the config file which either corresponds to volumes created in a given `docker-compose.prod.yml`, or through AWS services as seen here in `settings.py`:  
+![alt text](readme-imgs/static-hosting-1.png)  
 
 ### Hosting Providers
-We won't provide any detailed information about the providers here, but an overview of what services the project uses for hosting and backing up data.
+On the topic of AWS, there won't provide any detailed information about specific credentials of external services here, but here is an overview of what services the project uses for hosting and backing up data.  
 #### Digital Ocean droplet hosting
 This application is run using Docker orchestration to build the API, and a reverse proxy using nginx to serve it in a single Digital Ocean droplet. The containers are built and spun up from the `docker-compose.prod.yml` in this repo, and `Dockerfile.prod` for the frontend React project, and another separate `Dockerfile` for the Location service.
 
@@ -336,7 +373,8 @@ The application is also connected to an S3 instance for hosting the static and m
 There is an option to return to the Docker volume-served content by altering the `.env.prod` file environment variable `IS_S3_STORAGE` to `FALSE`.
 
 ### Running the production build
-The following tasks need to be run whenever the production container is being built:  
+#### API
+The following tasks need to be run whenever the production container is being built with fresh volumes:  
 1. Building and running in a detached instance:  
 `$ docker compose -f docker-compose.prod.yml up -d --build`  
 
@@ -366,16 +404,18 @@ Steps 5-8 are production build commands within the scope of the project so there
 9. Generate a new API-Key for the frontend from the Admin dash:  
 Accessible at http://api.gamificationtool.xyz/admin/  
 
+#### Frontend
 10. Add the API-Key to the frontend .env file as before  
 
 11. Build and run the front end dockerfile on the usual port. Manually is easier since the .env files are processed at build time, we can't build the ReactJS container until we get the API Key from the API.
 
-    From the root directory we build the frontend container and tag it as frontend:  
-`$ docker build -f Dockerfile.prod -t frontend-image ./frontend`  
+    From the `/frontend` directory we build the frontend image and tag it as frontend:  
+`$ docker build -f Dockerfile.prod -t frontend-image .`  
 
-    Then we run the docker instructions and expose port 3000:  
+    Then we build and run the docker instructions and expose port 3000:  
 `$ docker run -d -p 3000:3000 --name frontend-container frontend-image`  
 
+#### Stopping production
 1. Spinning down the containers:  
 `$ docker compose -f docker-compose.prod.yml down`  
 
@@ -387,12 +427,33 @@ Accessible at http://api.gamificationtool.xyz/admin/
 
 Note: When spinning down the develop and production containers (prior to actualy production) it is important to make sure services using the same ports between dev and prod are not both up.
 
+#### Interactive Map
+For details about the Interactive Map, see [Interactive_map/README.md](https://github.com/MK-467-Woofya/gamification-tool/blob/feature/144/marketplace-mockups/Interactive_map/README.md).  
+In short, the whole Check-In service is built on a separate frontend using Node and Express. It is connected with the API.
+However, since it is a separate application again, and the frontend isn't running off of the same Create React App with the same packages, it does not share the same frontend `.env` and requires manually specifying the URLs between dev and produciton build.
+
+The build process is similar to running the frontend application:
+    From the `Interactive_map/back_end` directory we build the image and tag it:  
+`$ docker build -t map-backend-image .`  
+
+    Then we build and run the docker instructions and expose port 3000:  
+`$ docker run -d -p 3002:3002 --name map-backend-container map-backend-image`  
+
+And the same for the frontend from the `Interactive_map/public` directory:  
+`$ docker build -t map-frontend-image .`  
+
+    Then we build and run the docker instructions and expose port 3000:  
+`$ docker run -d -p 3002:3002 --name map-frontend-container map-backend-image`  
+
+These containers can be stopped and removed as before.
+
+
 ### What's different in production
 1. We are no longer using `manage.py run server`. Production uses the Gunicorn command.
 2. We have multiple .env's to separate develop and production builds
 3. The production Dockerfile `Dockerfile.prod` is multistage and contains a Python linter. So when we build the application, it will raise errors and stop the build process for un-conventioned python code. Build again after fixing the code.
 4. The frontend .env has an environment variable to allow for changing URL's based on which build we are going for.
-5. All requests are directed to the Nginx proxy server, currently at http://api.gamificationtool.xyz.
+5. All requests are directed to the Nginx proxy server, currently at https://api.gamificationtool.xyz.
 6. Frontend is built in production mode
 7. Frontend application is using the `serve` package for a simple and essentially config free version of a served application. 
 
@@ -433,89 +494,41 @@ Once in:
 >>> l.id
 ```
 
-### Testing
-Unit tests are made in each app under tests.py
+## Testing
+Besides the Leaderboard and Quiz applications, no other comprehensive test cases were set up due to time constraints.
 
-1. To run tests:  
-`$ python manage.py test <app name>`
-
-View testing requires using the python shell under test environment conditions. Look at Django tutorial part 5 in the documentation: [here](https://docs.djangoproject.com/en/5.1/intro/tutorial05/)
+### Postman
+Some endpoints have been tested using the Postman service where possible, but were not . There is a three user limit on the free tier, so some team were not able to add their endpoint tests on time.
 
 ### 1. leaderboard testing: 
 
-# before start:
+#### before start:
 docker-compose down --volumes --remove-orphans
 
-# run by default runner:
+#### run by default runner:
 docker-compose run api python manage.py test leaderboard.tests --noinput -v 2
 
-# test with custom runner:
+#### test with custom runner:
 
 docker-compose run api python manage.py test leaderboard.tests --testrunner=custom_test_runner.CustomTestRunner --noinput -v 2
 
-# test with one go(combined command, you can directly run this line):
+#### test with one go(combined command, you can directly run this line):
 docker-compose down --volumes --remove-orphans; Start-Sleep -Seconds 5; docker-compose run api python manage.py test leaderboard.tests --noinput -v 2
 
-# test with one script(there might be permission issue, run the line below first):
+#### test with one script(there might be permission issue, run the line below first):
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 
-# by default: 
+#### by default: 
 
 .\run_tests.ps1
 
-# or you may wanna run specific test? 
+#### or you may wanna run specific test? 
 
 .\run_tests.ps1 -TestPath "leaderboard.tests.test_edge_cases"
 
-# or specific class? 
+#### or specific class? 
 
 .\run_tests.ps1 -TestPath "leaderboard.tests.test_edge_cases.LeaderboardEdgeCasesTests"
 
-# or specific function? 
+#### or specific function? 
 .\run_tests.ps1 -TestPath "leaderboard.tests.test_edge_cases.LeaderboardEdgeCasesTests.test_leaderboard_with_boundary_dates"
-
-## Project applications
-### 1. User: 
-Custom user implementation built on top of Django users.
-On top of the base implementation each user has:
-- Total points
-- Spendable points
-- Level
-- VIP user (a bool indicating a high contributor o Woofya)
-- Avatar, which is either:
-    - An uploaded image by the user
-    - Or a cartoon representation of the user
-- Lists of:
-    - Dog entities
-        - May contain their own avatar, cosmetics, etc.
-    - Milestones (FK)
-    - Titles (FK)
-    - Badges (FK)
-    - Any other cosmetics (FK)
-    - locations visited (FK)
-    - events visited (FK)
-
-### 2. Check-in: 
-Application for handling location and event check-ins.
-Contains models for:
-- Location
-- Event
-
-### 3. Leaderboard
-Application for handling the user points leaderboard.
-
-Depending on the implementations, leaderboard could be used for:
-- Points accumulated over time
-- Locations visited
-- Measure related to their pets - e.g. distance walked, for example
-
-### 4. Marketplace
-Application for handling points-spending activities. Acts as not only the shop, but also the database to view all available items, purchaseable or not.
-
-Contains:
-- Shop
-- Entities:
-    - Badges
-    - Titles
-    - Milestones (_unsure if this should be here or in the user app_)
-    - Any other cosmetics

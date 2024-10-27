@@ -5,7 +5,6 @@ from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, Permis
 from django.conf import settings
 from django.utils import timezone
 from django.dispatch import receiver
-from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db.models.signals import post_save
 
 from marketplace.models import Title, Avatar
@@ -70,8 +69,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         unique=True,
     )
     level = models.IntegerField("User level", default=1, null=True, blank=True, validators=[MinValueValidator(1), MaxValueValidator(100)])
-    experience_points = models.IntegerField("Experience points", default=0, validators=[MinValueValidator(0),MaxValueValidator(9999999)])
-    shop_points = models.IntegerField("Shop points", default=0, validators=[MinValueValidator(0),MaxValueValidator(9999999)])
+    experience_points = models.IntegerField("Experience points", default=0, validators=[MinValueValidator(0), MaxValueValidator(9999999)])
+    shop_points = models.IntegerField("Shop points", default=0, validators=[MinValueValidator(0), MaxValueValidator(9999999)])
     location = models.CharField("Location", max_length=100, choices=CITY_CHOICES, blank=True, null=True)  # Optional location field
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
@@ -82,11 +81,11 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     objects = CustomUserManager()
     USERNAME_FIELD = "username"
     REQUIRED_FIELDS = []
-    
+
     def calculate_level(self) -> int:
         """Formula for calculating user level based on experience_points"""
-        return math.floor(0.1 * math.sqrt(self.experience_points)) + 1 
-                
+        return math.floor(0.1 * math.sqrt(self.experience_points)) + 1
+
     def __str__(self):
         return self.username
 
@@ -95,7 +94,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     def has_module_perms(self, app_label):
         return self.is_admin or self.is_superuser
-    
+
     @property
     def is_staff(self):
         return self.is_admin
@@ -130,7 +129,7 @@ def update_user_points(user, experience_points_delta, shop_points_delta):
     # check if available
     if user.shop_points + shop_points_delta < 0:
         raise ValueError("Insufficient spendable points")
-    
+
     # points max-value validations
     # case: both points types are at max-value
     if user.experience_points + experience_points_delta >= 9999999 and user.shop_points + shop_points_delta >= 9999999:
@@ -145,14 +144,14 @@ def update_user_points(user, experience_points_delta, shop_points_delta):
         user.experience_points += experience_points_delta
         user.shop_points = 9999999
     # case: both points types within max threshold
-    else:   
+    else:
         user.experience_points += experience_points_delta
         user.shop_points += shop_points_delta
-    
+
     # Update users level
     user.level = user.calculate_level()
-    
-    # update user points    
+
+    # update user points
     user.save()
 
     # record score change

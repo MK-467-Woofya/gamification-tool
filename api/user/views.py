@@ -161,7 +161,7 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         user = self.get_object()
         # Get Title matching request ID
         title = get_object_or_404(Title.objects.filter(id=request.data.get("title_id")))
-        
+
         # Check for Title ownership
         if (not user.titles.filter(id=title.id)):
             data = {"message": "User does not own this Title."}
@@ -202,7 +202,7 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         user = self.get_object()
         # Get Title matching request ID
         avatar = get_object_or_404(Avatar.objects.filter(id=request.data.get("avatar_id")))
-        
+
         # Check for Avatar ownership
         if (not user.avatars.filter(id=avatar.id)):
             data = {"message": "User does not own this Avatar."}
@@ -256,7 +256,7 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         if (avatar.cost > user.shop_points):
             data = {"message": "User does not have enough points to buy this item"}
             return Response(data, status=status.HTTP_200_OK)
-        
+
         # Check if Avatar is for sale
         if (not avatar.is_listed):
             data = {"message": "Avatar is not available for purchase"}
@@ -264,20 +264,20 @@ class CustomUserViewSet(viewsets.ModelViewSet):
 
         # Deduct shop_points and add to user Avatars, M2M Manager handles the update
         new_shop_points = user.shop_points - avatar.cost
-        user.avatars.add(avatar.id)         
-        
-        # Data to update, 
+        user.avatars.add(avatar.id)
+
+        # Data to update,
         # Nested writable ManyToMany relationship is handled by the ManyRelatedManager and does not need to be added in the data
         data = {
             "shop_points": new_shop_points,
         }
-        
+
         # Parse data and update the User model
         serializer = self.get_serializer(user, data=data, partial=True)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
         return Response(serializer.data)
-    
+
     @action(detail=True, methods=['PUT'], name="Refund Avatar")
     def refund_avatar(self, request, *args, **kwargs):
         """
@@ -301,7 +301,7 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         user = self.get_object()
         # Get Avatar matching request ID
         avatar = get_object_or_404(Avatar.objects.filter(id=request.data.get("avatar_id")))
-        
+
         # Get initial Avatar in case of removing all other Avatar objects from the User
         base_avatar = get_object_or_404(Avatar.objects.filter(id=1))
 
@@ -309,21 +309,21 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         if (not user.avatars.filter(id=avatar.id)):
             data = {"message": "User does not own this item."}
             return Response(data, status=status.HTTP_200_OK)
-        
+
         # Check if trying to refund base Avatar
         if (avatar.id == base_avatar.id):
             data = {"message": "Can not refund base Avatar."}
             return Response(data, status=status.HTTP_200_OK)
-        
+
         # Deduct shop_points
         new_shop_points = user.shop_points + avatar.cost
-        
+
         # Data to update
-        # If Avatar being refunded is current Avatar, current Avatar is base Avatar  
+        # If Avatar being refunded is current Avatar, current Avatar is base Avatar
         data = {
             "shop_points": new_shop_points,
         }
-        
+
         # Remove Avatar from User M2M list
         user.avatars.remove(avatar.id)
 
@@ -368,7 +368,7 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         if (title.cost > user.shop_points):
             data = {"message": "User does not have enough points to buy this item"}
             return Response(data, status=status.HTTP_200_OK)
-        
+
         # Check if title is for sale
         if (not title.is_listed):
             data = {"message": "Title is not available for purchase"}
@@ -389,7 +389,7 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
         return Response(serializer.data)
-    
+
     @action(detail=True, methods=['PUT'], name="Refund Title")
     def refund_title(self, request, *args, **kwargs):
         """
@@ -420,20 +420,20 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         if (not user.titles.filter(id=title.id)):
             data = {"message": "User does not own this item."}
             return Response(data, status=status.HTTP_200_OK)
-        
+
         # Check if trying to refund base Title
         if (title.id == base_title.id):
             data = {"message": "Can not refund base Title."}
             return Response(data, status=status.HTTP_200_OK)
-        
+
         # Deduct shop_points
         new_shop_points = user.shop_points + title.cost
-        
-        # Data to update     
+
+        # Data to update
         data = {
             "shop_points": new_shop_points,
         }
-        
+
         # Remove Avatar from User M2M list
         user.titles.remove(title.id)
 
@@ -448,13 +448,9 @@ class CustomUserViewSet(viewsets.ModelViewSet):
     def get_by_username(self, request, username):
         """
         GET BY USERNAME
-
         Definition: Endpoint to get user by username.
-
         Endpoint: http://localhost:8000/users/users/username/<username>/
-
         Request JSON structure: No body
-
         Returns 200 if found, 404 if Not Found.
         """
         user = get_object_or_404(CustomUser, username=username)
