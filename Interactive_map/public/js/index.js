@@ -8,87 +8,78 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 }).addTo(map);
 
-let eventsData = [];  // Global variable to store all event data
+var eventsData = [];
 
-// Fetch events from the backend and populate the map and list
+    // Fetch events from the backend and populate the map and list
 fetch('http://localhost:3002/events')
     .then(response => response.json())  // Parse the response as JSON
     .then(events => {
         eventsData = events;  // Store events globally for filtering/sorting
         displayFilteredEvents(events);  // Display all events initially
-        
+
         // Add event listeners for filtering and sorting
         document.getElementById('searchBar').addEventListener('input', filterAndSortEvents);
         document.getElementById('categoryFilter').addEventListener('change', filterAndSortEvents);
         document.getElementById('sortBy').addEventListener('change', filterAndSortEvents);
     });
 
-// Function to add events to the event list
 function addEventToList(event) {
-    const eventList = document.getElementById('events');
-    const eventItem = document.createElement('li');
+    var eventList = document.getElementById('events');
+    var eventItem = document.createElement('li');
 
+    // Display event name and date, and add click event to zoom into the map location
     eventItem.innerHTML = `<strong>${event.name}</strong> (${event.date})`;
     eventItem.addEventListener('click', () => {
-        map.setView(event.location, 15);
+        map.setView(event.location, 15);  // Zoom into the event location on the map
         L.popup()
             .setLatLng(event.location)
             .setContent(
                 `<b>${event.name}</b><br>${event.description}<br>${event.date} at ${event.time}
                 <br><button onclick="checkIn('${event.code}')">Check In</button>`
             )
-            .openOn(map);
+            .openOn(map);  // Display a popup with event details and check-in button
     });
 
-    eventList.appendChild(eventItem);
+    eventList.appendChild(eventItem);  // Add the event to the event list in the sidebar
 }
 
 // Function to add event markers to the map
 function addEventToMap(event) {
+    // Add a marker for the event on the map and bind a popup with event details
     L.marker(event.location).addTo(map)
         .bindPopup(`<b>${event.name}</b><br>${event.description}<br>${event.date} at ${event.time}`);
 }
 
-window.checkIn = function(eventCode) {
+// Function to handle user check-in for an event
+window.checkIn = function(eventCode, eventName, latitude, longitude) {
     const userCode = prompt("Enter the check-in code:");
+    const uid = sessionStorage.getItem('uid');
+
+    if (!uid) {
+        alert("Unable to save check-in. User not found. Please log in.");
+        return;
+    }
 
     if (userCode === eventCode) {
         alert("You have successfully checked in!");
 
-        // After successful check-in, update points for the user
-        const uid = sessionStorage.getItem('uid'); // Get the logged-in user's ID
-        if (uid) {
-            const addPointsUrl = `http://localhost:8000/users/users/${uid}/add_points/`;
-            const headers = {
-                'Content-Type': 'application/json',
-                'Gamification-Api-Key': process.env.REACT_APP_API_KEY
-            };
+        const checkInData = {
+            user_id: uid,
+            event_name: eventName,
+            latitude: latitude,
+            longitude: longitude
+        };
+        const headers = { 'Content-Type': 'application/json', 'Gamification-Api-Key': process.env.REACT_APP_API_KEY };
 
-            // Data for updating user points (500 points each for shop and experience)
-            const data = {
-                'experience_points': 500,
-                'shop_points': 500
-            };
+        // Post check-in data to the backend to be retrieved by checked_in_locations.js
+        axios.post("http://localhost:3002/locations/checkins/", checkInData, { headers })
+            .then(() => alert("Check-in saved successfully!"))
+            .catch(error => alert("An error occurred while saving the check-in."));
 
-            // Make the PATCH request to update the user's points
-            fetch(addPointsUrl, {
-                method: 'PATCH',
-                headers: headers,
-                body: JSON.stringify(data)
-            })
-            .then(response => response.json())
-            .then(responseData => {
-                console.log('Points added:', responseData);
-                alert("You have been rewarded with 500 experience points and 500 shop points!");
-            })
-            .catch(error => {
-                console.error('Error adding points:', error);
-                alert("An error occurred while adding points. Please try again later.");
-            });
-        } else {
-            console.error('User ID not found in session storage');
-            alert("Unable to update points. User not found.");
-        }
+        // Update user points after a successful check-in
+        axios.post(`http://localhost:3002/users/users/${uid}/add_points/`, { 'experience_points': 1000, 'shop_points': 1000 }, { headers })
+            .then(() => alert("You have been rewarded with 1000 experience points and 1000 shop points!"))
+            .catch(error => alert("An error occurred while adding points."));
     } else {
         alert("Incorrect code! Please try again.");
     }
@@ -96,16 +87,19 @@ window.checkIn = function(eventCode) {
 
 // Filtering and Sorting Functions
 function filterAndSortEvents() {
-    const searchTerm = document.getElementById('searchBar').value.toLowerCase();
-    const selectedCategory = document.getElementById('categoryFilter').value;
-    const sortBy = document.getElementById('sortBy').value;
+    // Get search term, selected category, and sorting option from the UI
+    var searchTerm = document.getElementById('searchBar').value.toLowerCase();
+    var selectedCategory = document.getElementById('categoryFilter').value;
+    var sortBy = document.getElementById('sortBy').value;
 
-    let filteredEvents = eventsData.filter(event => {
-        const matchesSearch = event.name.toLowerCase().includes(searchTerm);
-        const matchesCategory = selectedCategory === 'all' || event.genre === selectedCategory;
+    // Filter events based on search term and category
+    var filteredEvents = eventsData.filter(event => {
+        var matchesSearch = event.name.toLowerCase().includes(searchTerm);
+        var matchesCategory = selectedCategory === 'all' || event.genre === selectedCategory;
         return matchesSearch && matchesCategory;
     });
 
+    // Sort events based on the selected sorting option
     if (sortBy === 'most-reviewed') {
         filteredEvents.sort((a, b) => b.reviews - a.reviews);
     } else if (sortBy === 'most-viewed') {
@@ -114,19 +108,22 @@ function filterAndSortEvents() {
         filteredEvents.sort((a, b) => b.rating - a.rating);
     }
 
+    // Display the filtered and sorted events
     displayFilteredEvents(filteredEvents);
 }
 
 function displayFilteredEvents(events) {
-    const eventList = document.getElementById('events');
-    eventList.innerHTML = '';
+    var eventList = document.getElementById('events');
+    eventList.innerHTML = '';  // Clear the current event list
 
+    // Remove all existing markers from the map
     map.eachLayer(layer => {
         if (layer instanceof L.Marker) {
             map.removeLayer(layer);
         }
     });
 
+    // Add filtered events to the list and map
     events.forEach(event => {
         addEventToList(event);
         addEventToMap(event);

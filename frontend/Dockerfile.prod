@@ -1,0 +1,22 @@
+# BUILD
+FROM node:20-alpine
+
+# Working directory
+WORKDIR /usr/src/app
+COPY package.json /usr/src/app
+
+# Install node packs
+RUN npm i
+COPY . /usr/src/app
+
+# Build production
+RUN npm run build --production
+
+# Install serve
+RUN npm install -g serve
+
+# Application Port
+EXPOSE 3000
+
+# Run
+CMD ["serve", "-s" ,"build"]

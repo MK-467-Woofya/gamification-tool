@@ -9,8 +9,9 @@ from .models import CustomUser, FriendList, PointsLog
 
 
 class UserCreationForm(forms.ModelForm):
-    """New user creation form"""
+    """CustomUser creation form within the Admin site"""
 
+    # Password form
     password1 = forms.CharField(label="Password", widget=forms.PasswordInput)
     password2 = forms.CharField(
         label="Password confirmation", widget=forms.PasswordInput
@@ -21,7 +22,7 @@ class UserCreationForm(forms.ModelForm):
         fields = ["username"]
 
     def clean_password2(self):
-        # Password match ?
+        # Password validation
         password1 = self.cleaned_data.get("password1")
         password2 = self.cleaned_data.get("password2")
         if password1 and password2 and password1 != password2:
@@ -39,7 +40,6 @@ class UserCreationForm(forms.ModelForm):
 
 class UserChangeForm(forms.ModelForm):
     """Update user form"""
-
     password = ReadOnlyPasswordHashField()
 
     class Meta:
@@ -83,13 +83,15 @@ class FriendListInline(admin.TabularInline):
 
 class CustomUserAdmin(admin.ModelAdmin):
     inlines = [FriendListInline]
-    list_display = ('username', 'email', 'location', 'points_accumulated', 'points_spendable')
+    list_display = ('username', 'email', 'location', 'shop_points', 'points_spendable')
     search_fields = ('username', 'location')
 
 
-# Register user types
+# Register CustomUser-related models to the Admin site
 admin.site.register(CustomUser, UserAdmin)
-# Unregister groups as they aren't used by the custom types
-admin.site.unregister(Group)
 admin.site.register(FriendList)
 admin.site.register(PointsLog)
+
+# Groups are a Django permissions-based grouping of user types.
+# CustomUser does not use this, so we unregister it from the Admin site
+admin.site.unregister(Group)

@@ -9,7 +9,7 @@ const MemoryGameLeaderboard = () => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        axios.get('http://localhost:8000/memory-game/leaderboard/')
+        axios.get(process.env.REACT_APP_BASE_URL + 'memory-game/leaderboard/')
             .then(response => {
                 setLeaderboard(response.data);
                 setLoading(false);

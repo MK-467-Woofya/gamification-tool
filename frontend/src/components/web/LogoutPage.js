@@ -3,23 +3,18 @@ import Container from 'react-bootstrap/Container';
 
 /**
  * Logout view
- * Clears authorization, session and local storage
+ * Clears session and local storage
  */
 export const LogoutPage = () => {
-
     const delay = ms => new Promise(res => setTimeout(res,ms));
-
     useEffect(() => {
         (async () => {
             try {
                 console.log('Logging user out')
-
                 // Clear current user
                 sessionStorage.clear();
-
                 // wait 3 seconds before redirecting
-                await delay(3000);
-
+                await delay(2000);
                 window.location.href = '/login'
             } catch (e) {
         console.log('logout failed')

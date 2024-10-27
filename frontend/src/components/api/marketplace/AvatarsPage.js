@@ -1,102 +1,73 @@
 import axios from "axios";
 import {useState, useEffect } from "react";
 import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+
+import { ShopAvatarList } from "./AvatarsComponents/ShopAvatarList";
 
 /**
- * View to see all available Avatars
- * 
+ * Shop view for Avatars
+ * Users can see the list of Avatars, descriptions, costs, etc.
+ * Users can buy an Avatar for their profile
  */
 export const AvatarsPage = () => {
     
     const [avatars, setAvatars] = useState(null);
     const [user, setUser] = useState(null);
-
     const uid = sessionStorage.getItem('uid');
 
-
+    /** GET User from API and store user state */
     useEffect(() => {
-        console.log('Fetching avatars data...'); // useEffect
-
-        const avatars_url = process.env.REACT_APP_BASE_URL + "marketplace/avatars/";
-
         const headers = {
             'Content-Type': 'application/json',
             'Gamification-Api-Key': process.env.REACT_APP_API_KEY
         };
-
-        axios.get(avatars_url, { headers })
-
-            .then(response => {
-                console.log('Avatars fetched:', response.data); // data grab
-                setAvatars(response.data.results);
-            })
-            .catch(error => {
-                console.error('Error fetching avatars data:', error);
-            });
-        
         const user_url = process.env.REACT_APP_BASE_URL + "users/users/";
-
         axios.get(user_url + uid + '/', { headers })
-
             .then(response => {
-                console.log('User data fetched:', response.data); // data grab
+                console.log('User data fetched:', response.data);
                 setUser(response.data);
             })
             .catch(error => {
                 console.error('Error fetching user data:', error);
             });
-        
-        console.log(avatars);
-
         }, []);
 
-
-    if (!avatars) { // return this while loading
+        /** GET Avatars list from API and store state */
+        useEffect(() => {
+            const avatars_url = process.env.REACT_APP_BASE_URL + "marketplace/avatars/";
+            const headers = {
+                'Content-Type': 'application/json',
+                'Gamification-Api-Key': process.env.REACT_APP_API_KEY
+            };
+            axios.get(avatars_url, { headers })
+                .then(response => {
+                    console.log('Avatars:', response.data);
+                    setAvatars(response.data);
+                })
+                .catch(error => {
+                    console.error('Error fetching avatars data:', error);
+                });
+            }, []);
+            
+    // Load before requests return
+    if (!avatars || !user) {
         return <div>Loading...</div>;
     }
-
+    
     return (
-        <Container className="justify-content-md-center">
-            <div>
-                <h1>Avatars</h1>
-            </div>
-            <div className="table-responsive">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Avatar name</th>
-                            <th>Avatar image</th>
-                            <th>Collaborator</th>
-                            <th>Description</th>
-                            <th>Cost</th>
-                            <th>Is Listed?</th>
-                            <th>Already owned</th>
-                            <th>Buy</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {Array.isArray(avatars) && avatars.map((avatar, index) => (
-                            <tr key={index}>
-                                <td>{avatar.name}</td>
-                                <td><img src={avatar.img_url} alt={avatar.name} width={192} height={192}/></td>
-                                <td>{avatar.partner}</td>
-                                <td>{avatar.description}</td>
-                                <td>{avatar.cost}</td>
-                                <td>{avatar.is_listed.toString()}</td>
-                                <td>{(avatar.users.includes(parseInt(uid,10))) ? <p>Already owned</p>
-                                    : <p>Not owned</p> }
-                                </td>
-                                <td>
-                                    {avatar.is_listed ? <button>Buy</button>
-                                    : <p>Not available</p> }
-                                </td>
-
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
+        <Container fluid>
+            <Row>
+                <Col>
+                    <h5>User shop points: {user.shop_points}</h5>
+                </Col>
+            </Row>
+            <Row>
+                <Col>
+                    <ShopAvatarList user={user} avatars={avatars} setUser={setUser}/>
+                </Col>
+            </Row>
         </Container>
     );
-
 }

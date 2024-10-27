@@ -1,53 +1,28 @@
-document.addEventListener("DOMContentLoaded", function() {
-    // Initialize the map and set the view to Melbourne, Victoria with a zoom level of 10
-    var map = L.map('map').setView([-37.8136, 144.9631], 10);
+/* global L */
+var map = L.map('map').setView([-37.8136, 144.9631], 10);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors'
+}).addTo(map);
 
-    // Load map tiles from OpenStreetMap with attribution
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
+function fetchCheckIns(uid, map) {
+    const baseUrl = "http://localhost:3002/locations/checkins/";
+    const headers = { 'Content-Type': 'application/json', 'Gamification-Api-Key': process.env.REACT_APP_API_KEY };
 
-    function loadUserCheckIns() {
-        const uid = sessionStorage.getItem('uid');  // Assuming the user ID is stored here
-        const authToken = sessionStorage.getItem('authToken');  // Assuming a token is stored after login
-        if (!uid || !authToken) {
-            console.error('User not authenticated or ID not found.');
-            return;
-        }
+    axios.get(`${baseUrl}?user=${uid}`, { headers })
+        .then(response => {
+            const checkIns = response.data;
+            checkIns.forEach(checkIn => {
+                L.marker([checkIn.latitude, checkIn.longitude])
+                    .addTo(map)
+                    .bindPopup(`<b>${checkIn.event_name}</b><br>Checked in on ${new Date(checkIn.check_in_time).toLocaleString()}`);
 
-        // Fetch user's check-ins using the user's ID and token
-        fetch(`http://localhost:8000/api/user/${uid}/checkins/`, {
-            headers: {
-                'Authorization': `Bearer ${authToken}`,
-                'Content-Type': 'application/json'
-            }
-        })
-            .then(response => response.json())
-            .then(data => {
-                let checkinList = document.getElementById('checked-events');
-                data.checkins.forEach(function(checkin) {
-                    let listItem = document.createElement('li');
-                    listItem.textContent = `${checkin.event_name} - ${checkin.date_checked_in}`;
-                    listItem.dataset.lat = checkin.lat;
-                    listItem.dataset.lng = checkin.lng;
-
-                    listItem.addEventListener('click', function() {
-                        // On click, center the map on the event location and add a marker
-                        let latLng = [parseFloat(this.dataset.lat), parseFloat(this.dataset.lng)];
-                        map.setView(latLng, 15);
-                        L.marker(latLng).addTo(map)
-                            .bindPopup(`<b>${checkin.event_name}</b><br>${checkin.date_checked_in}`)
-                            .openPopup();
-                    });
-
-                    checkinList.appendChild(listItem);
-                });
-            })
-            .catch(error => {
-                console.error('Error fetching check-ins:', error);
+                const listElement = document.createElement('li');
+                listElement.textContent = `${checkIn.event_name} - Checked in on ${new Date(checkIn.check_in_time).toLocaleString()}`;
+                document.getElementById('checked-events').appendChild(listElement);
             });
-    }
-
-    // Load user check-ins
-    loadUserCheckIns();
-});
+        })
+        .catch(error => {
+            console.error('Error fetching checked-in locations:', error);
+            alert("An error occurred while fetching checked-in locations. Please try again later.");
+        });
+}

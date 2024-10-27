@@ -2,6 +2,7 @@ from django.db import models
 
 
 class Item(models.Model):
+    """Abstract Item Model definitions for ORM"""
     name = models.CharField("Name of marketplace item", max_length=50, unique=True)
     cost = models.IntegerField("Price in shop_points", default=0)
     partner = models.CharField("Name of collaborator", max_length=50, blank=True, null=True)
@@ -19,8 +20,18 @@ class Item(models.Model):
 
 
 class Title(Item):
+    """
+    Title Model class
+    Titles are a purchaseable or otherwise obtainable object for users to collect and display.
+    Title.text is the intended display text for the title, whereas Title.name, inherited from Item is a unique identifier
+    """
     text = models.CharField("Title text", max_length=50, null=True, blank=True)
 
 
 class Avatar(Item):
+    """
+    Avatar Model class
+    Avatars are an image-based object for Users to collect.
+    They can be uploaded to the backend through endpoints or through the Admin page
+    """
     img_url = models.ImageField("URL of image", upload_to='avatars', height_field=None, width_field=None, max_length=None, null=True, blank=True)

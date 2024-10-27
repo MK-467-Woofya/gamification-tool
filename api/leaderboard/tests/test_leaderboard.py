@@ -28,9 +28,6 @@ class LeaderboardTests(APITestCase):
         # mock user login
         self.client.credentials(HTTP_AUTHORIZATION='Username ' + self.user1.username)
 
-
-
-    
     def test_all_time_leaderboard(self):
         url = reverse('leaderboard')
         response = self.client.get(url)
@@ -50,8 +47,6 @@ class LeaderboardTests(APITestCase):
         self.assertIn('user2', usernames)
         self.assertIn('user3', usernames)
 
-
-
     def test_current_user_not_in_top_10(self):
         # delete point log of user1
         PointsLog.objects.filter(user=self.user1).delete()
@@ -59,7 +54,7 @@ class LeaderboardTests(APITestCase):
         # new log
         PointsLog.objects.create(user=self.user1, experience_points=10, shop_points=50)
 
-        # create more user to let user1 out of top 10 
+        # create more user to let user1 out of top 10
         for i in range(4, 15):
             user = CustomUser.objects.create_user(username=f'user{i}', password='pass')
             #  delete auto created PointsLog
@@ -86,7 +81,6 @@ class LeaderboardTests(APITestCase):
         user1_data = next((user for user in data if user['username'] == 'user1'), None)
         self.assertIsNotNone(user1_data)
         self.assertGreaterEqual(user1_data['rank'], 11)
-
 
     def test_current_user_in_top_10(self):
         # Ensure user1 has high enough points
@@ -117,7 +111,6 @@ class LeaderboardTests(APITestCase):
         self.assertIn('user1', usernames)
         self.assertTrue(any(user['is_current_user'] for user in data if user['username'] == 'user1'))
 
-
     def test_points_accumulation(self):
         # Add additional PointsLog entries for user1
         PointsLog.objects.create(user=self.user1, experience_points=50, shop_points=25)
@@ -142,7 +135,6 @@ class LeaderboardTests(APITestCase):
         self.assertIsNotNone(user1_data)
         self.assertEqual(user1_data['experience_points'], expected_total_points)
 
-
     def test_is_current_user_flag(self):
         url = reverse('leaderboard')
         response = self.client.get(url)
@@ -161,8 +153,6 @@ class LeaderboardTests(APITestCase):
                 self.assertTrue(user['is_current_user'])
             else:
                 self.assertFalse(user.get('is_current_user', False))
-
-
 
     def test_leaderboard_without_login(self):
         # Remove the credentials to simulate not logged in
@@ -183,7 +173,6 @@ class LeaderboardTests(APITestCase):
         # Since current user is not logged in, 'is_current_user' should not be True for any user
         for user in data:
             self.assertFalse(user.get('is_current_user', False))
-
 
     def test_leaderboard_with_invalid_user(self):
         # Set invalid username in the credentials
