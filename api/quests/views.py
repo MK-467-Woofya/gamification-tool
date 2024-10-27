@@ -11,6 +11,7 @@ class QuestViewSet(viewsets.ModelViewSet):
     queryset = Quest.objects.all()
     serializer_class = QuestSerializer
 
+    # Creates entries in quest progress data for every user upon creating a new Quest
     def perform_create(self, serializer):
         new_quest = serializer.save()
         users = CustomUser.objects.all()
@@ -29,7 +30,7 @@ class QuestViewSet(viewsets.ModelViewSet):
 
 class UserQuestProgressViewSet(viewsets.ModelViewSet):
     serializer_class = UserQuestProgressSerializer
-    lookup_field = 'pk'  # Use primary key lookup for retrieve and update
+    lookup_field = 'pk'
 
     def get_queryset(self):
         if self.action == 'list':
