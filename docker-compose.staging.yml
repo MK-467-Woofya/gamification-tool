@@ -1,10 +1,4 @@
 services:
-  # api_db:
-  #  image: postgres:13
-  #  volumes:
-  #    - api_postgres_data:/var/lib/postgresql/data/
-  #  env_file:
-  #    - ./.env.prod.db
   api:
     build: 
       context: ./api
@@ -16,16 +10,19 @@ services:
     expose:
       - 8000
     env_file:
-      - ./.env.prod
-    #depends_on:
-    #  - api_db
+      - ./.env.staging
+    depends_on:
+      - api_db
+  api_db:
+    image: postgres:13
+    volumes:
+      - api_postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - ./.env.staging.db
   nginx-proxy:
     container_name: nginx-proxy
     build: ./nginx
     restart: always
-    ports:
-      - 80:80
-      - 443:443
     volumes:
       - static_volume:/home/app/api/staticfiles
       - media_volume:/home/app/api/mediafiles
@@ -33,12 +30,15 @@ services:
       - html:/usr/share/nginx/html
       - vhost:/etc/nginx/vhost.d
       - /var/run/docker.sock:/tmp/docker.sock:ro
+    ports:
+      - 80:80
+      - 443:443
     depends_on:
       - api
   acme-companion:
     image: nginxproxy/acme-companion
     env_file:
-      - ./.env.prod.proxy-companion
+      - ./.env.staging.proxy-companion
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - certs:/etc/nginx/certs
@@ -47,14 +47,12 @@ services:
       - acme:/etc/acme.sh
     depends_on:
       - nginx-proxy
+
 volumes:
-  # api_postgres_data:
+  api_postgres_data:
   static_volume:
   media_volume:
   certs:
   html:
   vhost:
   acme:
-
-# Postgres commented out
-# but could be used instead of the AWS RDS instance if preferred

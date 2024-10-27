@@ -8,22 +8,21 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 }).addTo(map);
 
-var eventsData = [];  // Global variable to store all event data
+var eventsData = [];
 
-// Fetch events from the backend and populate the map and list
+    // Fetch events from the backend and populate the map and list
 fetch('http://localhost:3002/events')
     .then(response => response.json())  // Parse the response as JSON
     .then(events => {
         eventsData = events;  // Store events globally for filtering/sorting
         displayFilteredEvents(events);  // Display all events initially
-        
+
         // Add event listeners for filtering and sorting
         document.getElementById('searchBar').addEventListener('input', filterAndSortEvents);
         document.getElementById('categoryFilter').addEventListener('change', filterAndSortEvents);
         document.getElementById('sortBy').addEventListener('change', filterAndSortEvents);
     });
 
-// Function to add events to the event list
 function addEventToList(event) {
     var eventList = document.getElementById('events');
     var eventItem = document.createElement('li');
@@ -51,50 +50,37 @@ function addEventToMap(event) {
         .bindPopup(`<b>${event.name}</b><br>${event.description}<br>${event.date} at ${event.time}`);
 }
 
-// Function to handle the check-in process for an event
-window.checkIn = function(eventCode) {
-    var userCode = prompt("Enter the check-in code:");  // Prompt user to enter the check-in code
+// Function to handle user check-in for an event
+window.checkIn = function(eventCode, eventName, latitude, longitude) {
+    const userCode = prompt("Enter the check-in code:");
+    const uid = sessionStorage.getItem('uid');
 
-    if (userCode === eventCode) {  // If the code matches
+    if (!uid) {
+        alert("Unable to save check-in. User not found. Please log in.");
+        return;
+    }
+
+    if (userCode === eventCode) {
         alert("You have successfully checked in!");
 
-        // After successful check-in, update points for the user
-        var url = process.env.REACT_APP_BASE_URL + "users/users/";
-        var uid = sessionStorage.getItem('uid');
-        var headers = {
-            'Content-Type': 'application/json',
-            'Gamification-Api-Key': process.env.REACT_APP_API_KEY
+        const checkInData = {
+            user_id: uid,
+            event_name: eventName,
+            latitude: latitude,
+            longitude: longitude
         };
+        const headers = { 'Content-Type': 'application/json', 'Gamification-Api-Key': process.env.REACT_APP_API_KEY };
 
-        if (uid) {
-            var updatePointsUrl = url + uid + '/add_points/';
-            
-            // Data for updating user points (1000 points each for shop and experience)
-            var data = {
-                'experience_points': 1000,
-                'shop_points': 1000
-            };
+        // Post check-in data to the backend to be retrieved by checked_in_locations.js
+        axios.post("http://localhost:3002/locations/checkins/", checkInData, { headers })
+            .then(() => alert("Check-in saved successfully!"))
+            .catch(error => alert("An error occurred while saving the check-in."));
 
-            // Make the PATCH request to update the user's points
-            fetch(updatePointsUrl, {
-                method: 'PATCH',
-                headers: headers,
-                body: JSON.stringify(data)
-            })
-            .then(response => response.json())
-            .then(responseData => {
-                console.log('Points added:', responseData);
-                alert("You have been rewarded with 1000 experience points and 1000 shop points!");
-            })
-            .catch(error => {
-                console.error('Error adding points:', error);
-                alert("An error occurred while adding points. Please try again later.");
-            });
-        } else {
-            console.error('User ID not found in session storage');
-            alert("Unable to update points. User not found.");
-        }
-    } else {  // If the code does not match
+        // Update user points after a successful check-in
+        axios.post(`http://localhost:3002/users/users/${uid}/add_points/`, { 'experience_points': 1000, 'shop_points': 1000 }, { headers })
+            .then(() => alert("You have been rewarded with 1000 experience points and 1000 shop points!"))
+            .catch(error => alert("An error occurred while adding points."));
+    } else {
         alert("Incorrect code! Please try again.");
     }
 };
@@ -126,7 +112,6 @@ function filterAndSortEvents() {
     displayFilteredEvents(filteredEvents);
 }
 
-// Function to display filtered events in the list and add them to the map
 function displayFilteredEvents(events) {
     var eventList = document.getElementById('events');
     eventList.innerHTML = '';  // Clear the current event list

@@ -74,7 +74,7 @@ export const HomePage = () => {
         }
     }, [users]);
 
-    if (users.length == 0) { // return this while loading
+    if (users.length === 0) { // return this while loading
         return <div>Loading...</div>;
     }
     
