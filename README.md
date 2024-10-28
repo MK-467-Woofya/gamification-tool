@@ -429,20 +429,19 @@ Note: When spinning down the develop and production containers (prior to actualy
 #### Interactive Map
 For details about the Interactive Map, see [Interactive_map/README.md](https://github.com/MK-467-Woofya/gamification-tool/blob/feature/144/marketplace-mockups/Interactive_map/README.md).  
 In short, the whole Check-In service is built on a separate frontend using Node and Express. It is connected with the API.
-However, since it is a separate application again, and the frontend isn't running off of the same Create React App with the same packages, it does not share the same frontend `.env` and requires manually specifying the URLs between dev and produciton build.
 
 The build process is similar to running the frontend application:
     From the `Interactive_map/back_end` directory we build the image and tag it:  
 `$ docker build -t map-backend-image .`  
 
-    Then we build and run the docker instructions and expose port 3000:  
+Then we build and run the docker instructions and expose port 3002:  
 `$ docker run -d -p 3002:3002 --name map-backend-container map-backend-image`  
 
 And the same for the frontend from the `Interactive_map/public` directory:  
 `$ docker build -t map-frontend-image .`  
 
-    Then we build and run the docker instructions and expose port 3000:  
-`$ docker run -d -p 3002:3002 --name map-frontend-container map-backend-image`  
+Then we build and run the docker instructions and expose port 3001:  
+`$ docker run -d -p 3001:3001 --name map-frontend-container map-frontend-image`  
 
 These containers can be stopped and removed as before.
 
