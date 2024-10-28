@@ -1,32 +1,25 @@
 import {useState} from "react";
 /**
  * Login view
- * Renders login form and sets access tokens
+ * Renders login form and sets username
+ * Username can be any value, as the User will either be retrieved or created
  */
 export const LoginPage = () => {
+    const [username, setUsername] = useState('');
 
     // If current user, redirect to homepage
     if(sessionStorage.getItem('username') != null){
         window.location.href = '/'  
     }
-    
-    const [username, setUsername] = useState('');
-
     // Set username on submit
     const submit = async e => {
         e.preventDefault();
-
-        console.log(username)
-
         // Clear current user before signing in
         sessionStorage.clear();
-
         // Web backend username stored for API user get request
         sessionStorage.setItem('username', username);
-        
         window.location.href = '/';
     }
-
     // username field
     return(
         <div className="Auth-form-container col-md-4">

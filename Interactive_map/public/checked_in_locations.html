@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8"> <!-- Character encoding set to UTF-8 for wide language support -->
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Ensures responsiveness on different screen sizes -->
+        <title>User Checked-In Locations</title> <!-- Page title that appears on the browser tab -->
+        
+        <!-- Link to the external stylesheet for custom styles -->
+        <link rel="stylesheet" href="css/styles.css">  <!-- Custom CSS styles for the page -->
+    
+        <!-- Link to Leaflet's CSS file for map styling -->
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+
+        <!-- Add Axios CDN -->
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    </head>
+<body>
+
+    <!-- Navigation bar for switching between Add and Remove event functionalities -->
+    <div class="nav-bar">
+        <!-- Change the URL below to the deployed URL for the Locations service -->
+        <a href="http://localhost:3000/" class="navbar-brand">Woofya</a>
+        <a href="index.html">Home</a>
+        <!-- Link to the Add Event page -->
+        <a href="add_event.html">Add Event</a>
+        <!-- Link to the Remove Event page, marked as active since this is the current page -->
+        <a href="remove_event.html">Remove Event</a>
+        <!-- Link to checked in locations page -->
+        <a href="checked_in_locations.html" class="active">Checked in Locations</a>
+    </div>
+
+    <!-- Main heading for the Remove Doggy Event page -->
+    <h1>Checked In Locations</h1>
+
+    <!-- Main container for check-in list and map -->
+    <div id="container">
+        <div id="checkin-list">
+            <h2>Your Checked-In Locations</h2>
+            <ul id="checked-events"></ul>
+        </div>
+        <div id="map" style="height: 500px; width: 100%;"></div>
+    </div>
+
+    <!-- Leaflet and Custom JavaScript -->
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script type="module" src="js/checked_in_locations.js"></script>
+</body>
+</html>

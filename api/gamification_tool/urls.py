@@ -1,36 +1,32 @@
 """
 URL configuration for gamification-tool project.
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/5.1/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
 from django.urls import include, path
-from rest_framework import routers
-from user import views as user_views
+from django.conf.urls.static import static
+from django.conf import settings
 
-from django.views.generic import TemplateView
-from django.urls import re_path
-
-
-
+# Patterns for each application's endpoints.
+# The way Django's ModelViewSets work along with having to collect routes from each application
+# doesn't allow for collecting each separate application's URLs in one path
+# because it only assigns the first set of routes assigned to that path.
+# This results in the project having endpoint paths such as '/users/users/...'
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("users/", include("user.urls")),
     path("leaderboard/", include("leaderboard.urls")),
+    path('quiz/', include('quiz.urls')),
+    path('memory-game/', include('memory_game.urls')),
+    path("marketplace/", include("marketplace.urls")),
+    path("checkins/", include("locations.urls")),
     path('quests/', include('quests.urls')),
 ]
 
+# Additional auth urls
 urlpatterns += [
     path('api-auth/', include('rest_framework.urls')),
 ]
+
+# URLs for static and media if in dev environment
+if bool(settings.DEBUG):
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

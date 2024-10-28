@@ -12,8 +12,8 @@ export const LeaderboardPage = () => {
     useEffect(() => {
         // friend or global
         const apiEndpoint = isFriends
-            ? 'http://localhost:8000/leaderboard/friends/'  // friend API
-            : `http://localhost:8000/leaderboard/${timeframe}/`;  // global API
+            ? process.env.REACT_APP_BASE_URL + 'leaderboard/friends/'  // friend API
+            : process.env.REACT_APP_BASE_URL + `leaderboard/${timeframe}/`;  // global API
 
         axios.get(apiEndpoint, {
             headers: {
@@ -52,6 +52,7 @@ export const LeaderboardPage = () => {
                 <table>
                     <thead>
                         <tr>
+                            <th>Rank</th>  {/* rank list */}
                             <th>name</th>
                             <th>experience</th>
                             <th>available points</th>
@@ -60,6 +61,7 @@ export const LeaderboardPage = () => {
                     <tbody>
                         {Array.isArray(users) && users.map((user, index) => (
                             <tr key={index} className={user.is_current_user ? 'highlight' : ''}>
+                                <td>{user.rank}</td>  {/* user rank from backend */}
                                 <td>{user.username}</td>
                                 <td>{user.experience_points}</td>
                                 <td>{user.shop_points}</td>

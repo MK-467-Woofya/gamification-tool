@@ -7,7 +7,6 @@ services:
       POSTGRES_DB: apidatabase
       POSTGRES_USER: apiuser
       POSTGRES_PASSWORD: apipassword
-      PGPORT: 5432
     networks:
       - api-api_db
 
@@ -23,25 +22,41 @@ services:
     networks:
       - frontend-api
       - api-api_db
-  
+    env_file:
+      - ./.env.dev
+
   frontend:
     build: ./frontend
-    
     volumes:
       - ./frontend/:/usr/src/app
       - /usr/src/app/node_modules
     ports:
       - '3000:3000'
-  
     depends_on:
       - api
-
     networks:
       - frontend-api
+
+  interactive_map_backend:
+    build: ./Interactive_map/back_end
+    ports:
+      - "3002:3002"
+    networks:
+      - interactive-map
+
+  interactive_map_frontend:
+    build: ./Interactive_map/public
+    ports:
+      - "3001:3001"
+    depends_on:
+      - interactive_map_backend
+    networks:
+      - interactive-map
 
 networks:
   frontend-api:
   api-api_db:
+  interactive-map:
 
 volumes:
   api_postgres_data:

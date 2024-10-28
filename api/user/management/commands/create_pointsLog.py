@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand
 from user.models import CustomUser, PointsLog
 
+
 class Command(BaseCommand):
     help = 'Creates missing PointsLog entries for users without one'
 
