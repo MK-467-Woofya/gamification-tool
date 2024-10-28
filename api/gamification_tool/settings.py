@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'user',
     'leaderboard',
+    'quests',
     'quiz',
     'memory_game',
     'marketplace',

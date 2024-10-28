@@ -19,6 +19,7 @@ urlpatterns = [
     path('memory-game/', include('memory_game.urls')),
     path("marketplace/", include("marketplace.urls")),
     path("checkins/", include("locations.urls")),
+    path('quests/', include('quests.urls')),
 ]
 
 # Additional auth urls
